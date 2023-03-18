@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESTMS.API.Host", "src\ESTMS.API\ESTMS.API.Host.csproj", "{B183BAA5-1BF9-4B4B-A03A-7CA7FE64671A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESTMS.API.DataAccess", "src\ESTMS.API.DataAccess\ESTMS.API.DataAccess.csproj", "{0F5C8C8A-4F60-4E34-BA1D-918577F19913}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESTMS.API.Services", "src\ESTMS.API.Services\ESTMS.API.Services.csproj", "{E5E715EB-E86A-4E74-A3C0-49E88FA61E40}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6EC83232-4FC2-4278-A36B-17F0CA2833CC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{13C13F97-AAF5-476C-9441-82286ECEC802}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESTMS.API.UnitTests", "tests\ESTMS.API.UnitTests\ESTMS.API.UnitTests.csproj", "{28D86D44-8E36-438E-9252-B03DD92212E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESTMS.API.IntegrationTests", "tests\ESTMS.API.IntegrationTests\ESTMS.API.IntegrationTests.csproj", "{481E7477-E4D1-4177-8D4A-8A572DAEECC1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B183BAA5-1BF9-4B4B-A03A-7CA7FE64671A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B183BAA5-1BF9-4B4B-A03A-7CA7FE64671A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B183BAA5-1BF9-4B4B-A03A-7CA7FE64671A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B183BAA5-1BF9-4B4B-A03A-7CA7FE64671A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F5C8C8A-4F60-4E34-BA1D-918577F19913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F5C8C8A-4F60-4E34-BA1D-918577F19913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F5C8C8A-4F60-4E34-BA1D-918577F19913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F5C8C8A-4F60-4E34-BA1D-918577F19913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5E715EB-E86A-4E74-A3C0-49E88FA61E40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5E715EB-E86A-4E74-A3C0-49E88FA61E40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5E715EB-E86A-4E74-A3C0-49E88FA61E40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5E715EB-E86A-4E74-A3C0-49E88FA61E40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28D86D44-8E36-438E-9252-B03DD92212E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28D86D44-8E36-438E-9252-B03DD92212E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28D86D44-8E36-438E-9252-B03DD92212E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28D86D44-8E36-438E-9252-B03DD92212E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{481E7477-E4D1-4177-8D4A-8A572DAEECC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{481E7477-E4D1-4177-8D4A-8A572DAEECC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{481E7477-E4D1-4177-8D4A-8A572DAEECC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{481E7477-E4D1-4177-8D4A-8A572DAEECC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B183BAA5-1BF9-4B4B-A03A-7CA7FE64671A} = {6EC83232-4FC2-4278-A36B-17F0CA2833CC}
+		{0F5C8C8A-4F60-4E34-BA1D-918577F19913} = {6EC83232-4FC2-4278-A36B-17F0CA2833CC}
+		{E5E715EB-E86A-4E74-A3C0-49E88FA61E40} = {6EC83232-4FC2-4278-A36B-17F0CA2833CC}
+		{28D86D44-8E36-438E-9252-B03DD92212E5} = {13C13F97-AAF5-476C-9441-82286ECEC802}
+		{481E7477-E4D1-4177-8D4A-8A572DAEECC1} = {13C13F97-AAF5-476C-9441-82286ECEC802}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {79C5BB62-14A9-4F9A-B9E3-4D69AB936F9A}
+	EndGlobalSection
+EndGlobal
