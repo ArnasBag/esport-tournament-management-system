@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  estms-api:
+    image: estms-api
+    depends_on:
+      - "estms-db"
+    container_name: estms-api
+    ports:
+      - "8080:80"
+    build:
+      context: .
+      dockerfile: Dockerfile
+  estms-db:
+    image: postgres:latest
+    container_name: estms-db
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=estms-db
+    ports:
+      - "5433:5432"
+    restart: always
