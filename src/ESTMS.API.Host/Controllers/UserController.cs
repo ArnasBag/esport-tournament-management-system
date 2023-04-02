@@ -28,6 +28,7 @@ public class UserController : ControllerBase
         return Ok(_mapper.Map<UserResponse>(user));
     }
 
+    [Authorize(Roles = "admin")]
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {

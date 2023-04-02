@@ -1,4 +1,5 @@
-﻿using ESTMS.API.DataAccess.Settings;
+﻿using ESTMS.API.DataAccess.Entities;
+using ESTMS.API.DataAccess.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
@@ -17,10 +18,10 @@ public class JwtTokenProvider : ITokenProvider
         _authSettings = authSettings;
     }
 
-    public string GetToken(string userId)
+    public string GetToken(ApplicationUser user, List<string> roles)
     {
         var expiration = DateTime.UtcNow.AddMinutes(30);
-        var token = CreateJwtToken(CreateClaims(userId), CreateSigningCredentials(), expiration);
+        var token = CreateJwtToken(CreateClaims(user, roles), CreateSigningCredentials(), expiration);
 
         var tokenHandler = new JwtSecurityTokenHandler();
         return tokenHandler.WriteToken(token);
@@ -33,14 +34,15 @@ public class JwtTokenProvider : ITokenProvider
             SecurityAlgorithms.HmacSha256);
     }
 
-    private List<Claim> CreateClaims(string userId)
+    private List<Claim> CreateClaims(ApplicationUser user, List<string> roles)
     {
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, 
                DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
-            new Claim(ClaimTypes.NameIdentifier, userId),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Role, roles.First())
         };
 
         return claims;

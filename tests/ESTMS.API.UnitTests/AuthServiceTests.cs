@@ -40,7 +40,7 @@ public class AuthServiceTests
 
         _userManagerMock.Verify(x => x.FindByEmailAsync(It.IsAny<string>()), Times.Once);
         _userManagerMock.Verify(x => x.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()), Times.Once);
-        _tokenProviderMock.Verify(x => x.GetToken(It.IsAny<string>()), Times.Once);
+        _tokenProviderMock.Verify(x => x.GetToken(It.IsAny<ApplicationUser>(), It.IsAny<List<string>>()), Times.Once);
     }
 
     [Test]

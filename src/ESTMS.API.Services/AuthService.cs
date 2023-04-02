@@ -1,4 +1,5 @@
 ﻿using ESTMS.API.Core.Exceptions;
+using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -27,7 +28,9 @@ public class AuthService : IAuthService
             throw new BadRequestException();
         }
 
-        var accessToken = _tokenProvider.GetToken(user.Id);
+        var roles = (await _userManager.GetRolesAsync(user)).ToList();
+
+        var accessToken = _tokenProvider.GetToken(user, roles);
 
         return accessToken;
     }
@@ -41,5 +44,9 @@ public class AuthService : IAuthService
         {
             throw new BadRequestException(string.Join(",", result.Errors.Select(x => x.Description)));
         }
+
+        var user = await _userManager.FindByEmailAsync(email);
+
+        await _userManager.AddToRoleAsync(user!, Roles.Member);
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace ESTMS.API.Services;
+﻿using ESTMS.API.DataAccess.Entities;
+
+namespace ESTMS.API.Services;
 
 public interface ITokenProvider
 {
-    public string GetToken(string userId);
+    public string GetToken(ApplicationUser user, List<string> roles);
 }

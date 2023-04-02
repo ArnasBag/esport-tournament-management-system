@@ -46,6 +46,7 @@ public static class StartupIdentity
                         Encoding.UTF8.GetBytes(authSettings.IssuerSigningKey))
                 };
             });
+
         return services;
     }
 
