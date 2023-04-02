@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ESTMS.API.Core\ESTMS.API.Core.csproj" />
     <ProjectReference Include="..\ESTMS.API.DataAccess\ESTMS.API.DataAccess.csproj" />
+    <ProjectReference Include="..\ESTMS.API.Services\ESTMS.API.Services.csproj" />
   </ItemGroup>
 
 </Project>

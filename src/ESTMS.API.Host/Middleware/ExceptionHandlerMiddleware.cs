@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using ESTMS.API.Core.Exceptions;
+using System.Net;
 using System.Text.Json;
 
 namespace ESTMS.API.Host.Middleware;
@@ -40,6 +41,9 @@ public class ExceptionHandlerMiddleware
 
         switch (exception)
         {
+            case BadRequestException:
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                break;
             default:
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;

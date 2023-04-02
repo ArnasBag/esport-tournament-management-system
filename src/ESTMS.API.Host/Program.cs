@@ -1,4 +1,5 @@
 using ESTMS.API.Host.Capabilities;
+using ESTMS.API.Host.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,8 @@ builder.Services
     .AddSwaggerGen()
     .ConfigureAuthentication(builder.Configuration)
     .ConfigureAuthorization()
-    .ConfigureDatabase();
+    .ConfigureDatabase()
+    .ConfigureInjection();
 
 var app = builder.Build();
 
@@ -20,8 +22,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.MapControllers();
 

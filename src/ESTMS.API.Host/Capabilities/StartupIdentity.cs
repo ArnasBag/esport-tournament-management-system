@@ -1,7 +1,10 @@
-﻿using ESTMS.API.Host.Identity;
+﻿using ESTMS.API.DataAccess.Data;
+using ESTMS.API.DataAccess.Entities;
+using ESTMS.API.Host.Identity;
 using ESTMS.API.Host.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -27,9 +30,18 @@ public static class StartupIdentity
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = "estmsapi",
                     ValidAudience = "estmsapi",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("random"))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("randomrandomrandomrandomrandomrandomrandomrandomrandomrandom"))
                 };
             });
+
+        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 3;
+        })
+        .AddEntityFrameworkStores<ApplicationDbContext>();
 
         return services;
     }
