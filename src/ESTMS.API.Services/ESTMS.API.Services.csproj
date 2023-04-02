@@ -1,9 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ESTMS.API.Core\ESTMS.API.Core.csproj" />
+    <ProjectReference Include="..\ESTMS.API.DataAccess\ESTMS.API.DataAccess.csproj" />
+  </ItemGroup>
 
 </Project>
