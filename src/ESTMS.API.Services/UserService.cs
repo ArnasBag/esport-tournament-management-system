@@ -20,4 +20,11 @@ public class UserService : IUserService
 
         return user;
     }
+
+    public async Task<List<ApplicationUser>> GetUsersAsync()
+    {
+        var users = await _userRepository.GetUsersAsync();
+
+        return users;
+    }
 }

@@ -17,4 +17,9 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
+
+    public async Task<List<ApplicationUser>> GetUsersAsync()
+    {
+        return await _context.Users.ToListAsync();
+    }
 }

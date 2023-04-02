@@ -25,4 +25,12 @@ public class UserController : ControllerBase
 
         return Ok(_mapper.Map<UserResponse>(user));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUsers()
+    {
+        var users = await _userService.GetUsersAsync();
+
+        return Ok(_mapper.Map<List<UserResponse>>(users));
+    }
 }

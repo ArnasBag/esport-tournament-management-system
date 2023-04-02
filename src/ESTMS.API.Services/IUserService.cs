@@ -5,4 +5,5 @@ namespace ESTMS.API.Services;
 public interface IUserService
 {
     public Task<ApplicationUser> GetUserByIdAsync(string id);
+    public Task<List<ApplicationUser>> GetUsersAsync();
 }
