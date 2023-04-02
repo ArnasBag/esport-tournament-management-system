@@ -1,4 +1,5 @@
-﻿using ESTMS.API.Services;
+﻿using ESTMS.API.DataAccess.Settings;
+using ESTMS.API.Services;
 
 namespace ESTMS.API.Host.Capabilities
 {
@@ -9,6 +10,13 @@ namespace ESTMS.API.Host.Capabilities
             return services
                 .AddTransient<IAuthService, AuthService>()
                 .AddTransient<ITokenProvider, JwtTokenProvider>();
+        }
+
+        public static IServiceCollection ConfigureOptions(this IServiceCollection services, 
+            IConfiguration configuration)
+        {
+            return services
+                .Configure<AuthSettings>(configuration.GetSection("Auth"));
         }
     }
 }

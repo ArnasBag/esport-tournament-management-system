@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ESTMS.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("test")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -19,8 +19,8 @@ namespace ESTMS.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        [Authorize]
+        [HttpGet("weather")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

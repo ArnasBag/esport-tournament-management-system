@@ -11,7 +11,8 @@ builder.Services
     .ConfigureAuthentication(builder.Configuration)
     .ConfigureAuthorization()
     .ConfigureDatabase()
-    .ConfigureInjection();
+    .ConfigureInjection()
+    .ConfigureOptions(builder.Configuration);
 
 var app = builder.Build();
 
