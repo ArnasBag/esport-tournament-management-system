@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ESTMS.API.Host.Models;
 using ESTMS.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;
@@ -18,6 +19,7 @@ public class UserController : ControllerBase
         _mapper = mapper;
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(string id)
     {

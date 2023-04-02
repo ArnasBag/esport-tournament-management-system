@@ -24,10 +24,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.MapControllers();
 

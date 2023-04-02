@@ -15,6 +15,16 @@ public static class StartupIdentity
         var authSettings = configuration.GetSection("Auth").Get<AuthSettings>() ??
             throw new ArgumentNullException(nameof(configuration));
 
+        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 6;
+            options.User.RequireUniqueEmail = true;
+        })
+        .AddEntityFrameworkStores<ApplicationDbContext>();
+
         services
             .AddAuthentication(options =>
             {
@@ -36,17 +46,6 @@ public static class StartupIdentity
                         Encoding.UTF8.GetBytes(authSettings.IssuerSigningKey))
                 };
             });
-
-        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-        {
-            options.Password.RequireUppercase = false;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireDigit = false;
-            options.Password.RequiredLength = 6;
-            options.User.RequireUniqueEmail = true;
-        })
-        .AddEntityFrameworkStores<ApplicationDbContext>();
-
         return services;
     }
 
