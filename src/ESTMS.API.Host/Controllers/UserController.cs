@@ -1,0 +1,28 @@
+﻿using AutoMapper;
+using ESTMS.API.Host.Models;
+using ESTMS.API.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace ESTMS.API.Host.Controllers;
+
+[ApiController]
+[Route("users")]
+public class UserController : ControllerBase
+{
+    private readonly IUserService _userService;
+    private readonly IMapper _mapper;
+
+    public UserController(IUserService userService, IMapper mapper)
+    {
+        _userService = userService;
+        _mapper = mapper;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById(string id)
+    {
+        var user = await _userService.GetUserByIdAsync(id);
+
+        return Ok(_mapper.Map<UserResponse>(user));
+    }
+}

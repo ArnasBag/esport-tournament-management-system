@@ -39,7 +39,7 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            throw new BadRequestException();
+            throw new BadRequestException(string.Join(",", result.Errors.Select(x => x.Description)));
         }
     }
 }

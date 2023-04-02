@@ -1,4 +1,6 @@
-﻿using ESTMS.API.DataAccess.Settings;
+﻿using ESTMS.API.DataAccess.Repositories;
+using ESTMS.API.DataAccess.Settings;
+using ESTMS.API.Host.Profiles;
 using ESTMS.API.Services;
 
 namespace ESTMS.API.Host.Capabilities
@@ -9,7 +11,10 @@ namespace ESTMS.API.Host.Capabilities
         {
             return services
                 .AddTransient<IAuthService, AuthService>()
-                .AddTransient<ITokenProvider, JwtTokenProvider>();
+                .AddTransient<ITokenProvider, JwtTokenProvider>()
+                .AddTransient<IUserRepository, UserRepository>()
+                .AddTransient<IUserService, UserService>()
+                .AddAutoMapper(typeof(UserProfile).Assembly);
         }
 
         public static IServiceCollection ConfigureOptions(this IServiceCollection services, 
