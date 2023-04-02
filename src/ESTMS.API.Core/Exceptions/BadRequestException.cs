@@ -1,5 +1,5 @@
 ﻿namespace ESTMS.API.Core.Exceptions;
 
-public class BadRequestException
+public class BadRequestException : Exception
 {
 }
