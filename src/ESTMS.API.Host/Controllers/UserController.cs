@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ESTMS.API.Host.Controllers;
 
 [ApiController]
+[Authorize(Roles = "admin")]
 [Route("users")]
 public class UserController : ControllerBase
 {
@@ -19,7 +20,6 @@ public class UserController : ControllerBase
         _mapper = mapper;
     }
 
-    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(string id)
     {
@@ -28,12 +28,27 @@ public class UserController : ControllerBase
         return Ok(_mapper.Map<UserResponse>(user));
     }
 
-    [Authorize(Roles = "admin")]
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
         var users = await _userService.GetUsersAsync();
 
         return Ok(_mapper.Map<List<UserResponse>>(users));
+    }
+
+    [HttpPut("{id}/activation-status")]
+    public async Task<IActionResult> ChangeUserActivationStatus(string id, [FromBody] ChangeUserActivationStatusRequest status)
+    {
+        await _userService.ChangeUserActivityAsync(id, status.ActivationStatus);
+
+        return Ok();
+    }
+
+    [HttpPut("{id}/role")]
+    public async Task<IActionResult> ChageUserRole(string id, [FromBody] ChangeUserRoleRequest role)
+    {
+        await _userService.ChangeUserRoleAsync(id, role.Role);
+
+        return Ok();
     }
 }

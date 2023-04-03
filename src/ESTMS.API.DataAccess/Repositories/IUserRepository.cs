@@ -6,4 +6,5 @@ public interface IUserRepository
 {
     public Task<ApplicationUser?> GetUserByIdAsync(string id);
     public Task<List<ApplicationUser>> GetUsersAsync();
+    public Task UpdateUserAsync(ApplicationUser user);
 }
