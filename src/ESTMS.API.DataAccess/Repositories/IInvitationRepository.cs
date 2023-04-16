@@ -5,5 +5,6 @@ namespace ESTMS.API.DataAccess.Repositories;
 public interface IInvitationRepository
 {
     Task<Invitation> CreateInvitationAsync(Invitation invitation);
-    Task<Invitation?> GetInvitationByIdAsync(int id);
+    Task<Invitation?> GetInvitationByIdAsync(int id, string userId);
+    Task UpdateInvitationAsync(Invitation invitation);
 }

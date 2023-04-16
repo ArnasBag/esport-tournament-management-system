@@ -12,6 +12,12 @@ public class TeamRepository : ITeamRepository
         _context = context;
     }
 
+    public async Task AssignPlayerToTeamAsync(Team team, Player player)
+    {
+        team.Players.Add(player);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<Team> CreateTeamAsync(Team team)
     {
         await _context.Teams.AddAsync(team);

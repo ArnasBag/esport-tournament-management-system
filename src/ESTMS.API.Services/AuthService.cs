@@ -52,7 +52,7 @@ public class AuthService : IAuthService
 
         var user = await _userManager.FindByEmailAsync(email);
 
-        await _userManager.AddToRoleAsync(user!, Roles.Member);
+        await _userManager.AddToRoleAsync(user!, Roles.Player);
         await _userRepository.CreatePlayerAsync(new Player 
         { 
             ApplicationUser = user!

@@ -35,10 +35,17 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Player?> GetPlayerByUserId(string userId)
+    public async Task<Player?> GetPlayerByUserIdAsync(string userId)
     {
         return await _context.Players
             .Include(p => p.ApplicationUser)
             .SingleOrDefaultAsync(p => p.ApplicationUser.Id == userId);
+    }
+
+    public async Task<TeamManager?> GetTeamManagerByUserIdAsync(string userId)
+    {
+        return await _context.TeamManagers
+            .Include(t => t.ApplicationUser)
+            .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
     }
 }

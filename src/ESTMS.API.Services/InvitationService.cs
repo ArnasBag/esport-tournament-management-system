@@ -9,14 +9,41 @@ public class InvitationService : IInvitationService
     private readonly IInvitationRepository _invitationRepository;
     private readonly ITeamRepository _teamRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IUserIdProvider _userIdProvider;
 
-    public InvitationService(IInvitationRepository invitationRepository, 
-        ITeamRepository teamRepository, 
-        IUserRepository userRepository)
+    public InvitationService(IInvitationRepository invitationRepository,
+        ITeamRepository teamRepository,
+        IUserRepository userRepository,
+        IUserIdProvider userIdProvider)
     {
         _invitationRepository = invitationRepository;
         _teamRepository = teamRepository;
         _userRepository = userRepository;
+        _userIdProvider = userIdProvider;
+    }
+
+    public async Task ChangeInvitationStatusAsync(int id, InvitationStatus status)
+    {
+        var userId = _userIdProvider.UserId ?? throw new Exception();
+
+        var invitation = await _invitationRepository.GetInvitationByIdAsync(id, userId)
+            ?? throw new NotFoundException();
+
+        if(invitation.Status != InvitationStatus.Pending)
+        {
+            throw new BadRequestException("Invitation is already accepted or declined.");
+        }
+
+        invitation.Status = status;
+        invitation.UpdatedAt = DateTime.UtcNow;
+
+        await _invitationRepository.UpdateInvitationAsync(invitation);
+
+        if (status == InvitationStatus.Accepted)
+        {
+            var player = await _userRepository.GetPlayerByUserIdAsync(userId);
+            await _teamRepository.AssignPlayerToTeamAsync(invitation.Team, player);
+        }
     }
 
     public async Task<Invitation> CreateInvitationAsync(int teamId, string receiverId)
@@ -24,14 +51,18 @@ public class InvitationService : IInvitationService
         var team = await _teamRepository.GetTeamByIdAsync(teamId)
             ?? throw new NotFoundException();
 
-        var receiver = await _userRepository.GetPlayerByUserId(receiverId) 
+        var receiver = await _userRepository.GetPlayerByUserIdAsync(receiverId) 
             ?? throw new NotFoundException();
 
-        //if(receiver.Invitations.Where(i => i.Sender == senderId).Any(i => i.Status == pending))
+        if(receiver.Team != null)
+        {
+            throw new BadRequestException("Player is already part of a team.");
+        }
 
         var invitation = await _invitationRepository.CreateInvitationAsync(new Invitation
         {
-            Sender = new TeamManager(),
+            Sender = await _userRepository.GetTeamManagerByUserIdAsync(_userIdProvider.UserId) 
+                ?? throw new ForbiddenException(),
             Receiver = receiver,
             Team = team,
             Status = InvitationStatus.Pending,

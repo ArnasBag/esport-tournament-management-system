@@ -18,6 +18,8 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IInvitationService, InvitationService>()
                 .AddTransient<ITeamService, TeamService>()
                 .AddTransient<IUserService, UserService>()
+                .AddTransient<IUserIdProvider, UserIdProvider>()
+                .AddHttpContextAccessor()
                 .AddAutoMapper(typeof(UserProfile).Assembly);
         }
 
