@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.Host.Models;
 using ESTMS.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;
@@ -39,6 +41,7 @@ public class TeamController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Roles.TeamManager)]
     public async Task<IActionResult> CreateTeam(CreateTeamRequest request)
     {
         var team = _mapper.Map<Team>(request);
@@ -49,6 +52,7 @@ public class TeamController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Roles.TeamManager)]
     public async Task<IActionResult> UpdateTeam(int id, UpdateTeamRequest request)
     {
         var team = await _teamService.UpdateTeamAsync(id, _mapper.Map<Team>(request));
@@ -57,6 +61,7 @@ public class TeamController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.TeamManager)]
     public async Task<IActionResult> DeactivateTeam(int id)
     {
         await _teamService.DeactivateTeamAsync(id);
@@ -65,6 +70,7 @@ public class TeamController : ControllerBase
     }
 
     [HttpPost("{id}/invitations")]
+    [Authorize(Roles = Roles.TeamManager)]
     public async Task<IActionResult> InvitePlayerToTeam(int id, CreateInvitationRequest request)
     {
         var invitation = await _invitationService.CreateInvitationAsync(id, request.UserId);

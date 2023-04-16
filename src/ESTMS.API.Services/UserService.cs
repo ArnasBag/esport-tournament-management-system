@@ -43,6 +43,9 @@ public class UserService : IUserService
             throw new BadRequestException(string.Join(",", removeRoleResult.Errors.Select(e => e.Description)));
         }
 
+        //remove from player table or add if role is changed to player
+        //add to teammanager table if role is changed to teammanager
+
         try
         {
             var addRoleResult = await _userManager.AddToRoleAsync(user, role);
