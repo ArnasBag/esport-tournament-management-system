@@ -46,6 +46,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.TeamManagers
             .Include(t => t.ApplicationUser)
+            .Include(t => t.Teams)
             .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
     }
 }

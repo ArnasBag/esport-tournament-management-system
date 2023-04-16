@@ -1,5 +1,6 @@
 ﻿using ESTMS.API.DataAccess.Data;
 using ESTMS.API.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ESTMS.API.DataAccess.Repositories;
 
@@ -26,9 +27,17 @@ public class TeamRepository : ITeamRepository
         return team;        
     }
 
+    public async Task<List<Team>> GetAllTeamsAsync()
+    {
+        return await _context.Teams.ToListAsync();
+    }
+
     public async Task<Team?> GetTeamByIdAsync(int id)
     {
-        return await _context.Teams.FindAsync(id);
+        return await _context.Teams.Include(t => t.TeamManager)
+            .ThenInclude(m => m.ApplicationUser)
+            .Where(t => t.Id == id)
+            .SingleOrDefaultAsync();
     }
 
     public async Task<Team> UpdateTeamAsync(Team updatedTeam)

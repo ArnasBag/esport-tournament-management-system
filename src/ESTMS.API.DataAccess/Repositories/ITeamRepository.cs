@@ -5,6 +5,7 @@ namespace ESTMS.API.DataAccess.Repositories;
 public interface ITeamRepository
 {
     Task<Team?> GetTeamByIdAsync(int id);
+    Task<List<Team>> GetAllTeamsAsync();
     Task<Team> CreateTeamAsync(Team team);
     Task<Team> UpdateTeamAsync(Team updatedTeam);
     Task AssignPlayerToTeamAsync(Team team, Player player);

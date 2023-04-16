@@ -27,7 +27,7 @@ public class InvitationService : IInvitationService
         var userId = _userIdProvider.UserId ?? throw new Exception();
 
         var invitation = await _invitationRepository.GetInvitationByIdAsync(id, userId)
-            ?? throw new NotFoundException();
+            ?? throw new NotFoundException("Invitation with this id was not found.");
 
         if(invitation.Status != InvitationStatus.Pending)
         {
@@ -59,10 +59,16 @@ public class InvitationService : IInvitationService
             throw new BadRequestException("Player is already part of a team.");
         }
 
+        var teamManagerUserId = _userIdProvider.UserId;
+
+        if(team.TeamManager.ApplicationUser.Id != teamManagerUserId)
+        {
+            throw new ForbiddenException("Cannot invite player to a team you don't have access to.");
+        }
+
         var invitation = await _invitationRepository.CreateInvitationAsync(new Invitation
         {
-            Sender = await _userRepository.GetTeamManagerByUserIdAsync(_userIdProvider.UserId) 
-                ?? throw new ForbiddenException(),
+            Sender = team.TeamManager,
             Receiver = receiver,
             Team = team,
             Status = InvitationStatus.Pending,

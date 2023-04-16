@@ -13,13 +13,31 @@ public class TeamController : ControllerBase
     private readonly ITeamService _teamService;
     private readonly IInvitationService _invitationService;
     private readonly IMapper _mapper;
+    private readonly IUserIdProvider _userIdProvider;
 
-    public TeamController(ITeamService teamService, IMapper mapper, 
-        IInvitationService invitationService)
+    public TeamController(ITeamService teamService, IMapper mapper,
+        IInvitationService invitationService, IUserIdProvider userIdProvider)
     {
         _teamService = teamService;
         _mapper = mapper;
         _invitationService = invitationService;
+        _userIdProvider = userIdProvider;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetTeams(string? teamManagerId)
+    {
+        var teams = await _teamService.GetAllTeamsAsync(teamManagerId);
+
+        return Ok(_mapper.Map<List<TeamResponse>>(teams));
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetTeamById(int id)
+    {
+        var team = await _teamService.GetTeamByIdAsync(id);
+
+        return Ok(_mapper.Map<TeamResponse>(team));
     }
 
     [HttpPost]
