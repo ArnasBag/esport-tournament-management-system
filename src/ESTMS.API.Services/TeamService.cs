@@ -21,10 +21,9 @@ public class TeamService : ITeamService
 
     public async Task<Team> CreateTeamAsync(Team team)
     {
-        var manager = await _userRepository.GetTeamManagerByUserIdAsync(_userIdProvider.UserId)
-            ?? throw new NotFoundException();
-
-        team.TeamManager = manager;
+        var manager = await _userRepository.GetTeamManagerByUserIdAsync(_userIdProvider.UserId!);
+     
+        team.TeamManager = manager!;
 
         var createdTeam = await _teamRepository.CreateTeamAsync(team);
 

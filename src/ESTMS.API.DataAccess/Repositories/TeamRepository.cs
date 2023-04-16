@@ -36,6 +36,8 @@ public class TeamRepository : ITeamRepository
     {
         return await _context.Teams.Include(t => t.TeamManager)
             .ThenInclude(m => m.ApplicationUser)
+            .Include(t => t.Players)
+            .ThenInclude(p => p.ApplicationUser)
             .Where(t => t.Id == id)
             .SingleOrDefaultAsync();
     }

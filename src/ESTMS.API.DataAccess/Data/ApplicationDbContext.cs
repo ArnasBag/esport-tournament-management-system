@@ -24,6 +24,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<ApplicationUser>()
             .UseTptMappingStrategy();
 
+        builder.Entity<Team>()
+            .HasQueryFilter(t => !t.Deleted);
+
         base.OnModelCreating(builder);
     }
 }

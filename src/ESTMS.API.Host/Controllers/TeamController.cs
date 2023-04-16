@@ -13,15 +13,13 @@ public class TeamController : ControllerBase
     private readonly ITeamService _teamService;
     private readonly IInvitationService _invitationService;
     private readonly IMapper _mapper;
-    private readonly IUserIdProvider _userIdProvider;
 
     public TeamController(ITeamService teamService, IMapper mapper,
-        IInvitationService invitationService, IUserIdProvider userIdProvider)
+        IInvitationService invitationService)
     {
         _teamService = teamService;
         _mapper = mapper;
         _invitationService = invitationService;
-        _userIdProvider = userIdProvider;
     }
 
     [HttpGet]

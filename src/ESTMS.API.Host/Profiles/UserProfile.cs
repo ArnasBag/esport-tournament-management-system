@@ -8,10 +8,15 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<ApplicationUser, UserResponse>();
-        CreateMap<Player, PlayerResponse>();
-        CreateMap<TeamManager, TeamManagerResponse>();
-
+        CreateMap<ApplicationUser, UserResponse>().ReverseMap();
+        CreateMap<TeamManager, UserResponse>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ApplicationUser.Id))
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.ApplicationUser.Email));
+        CreateMap<Player, UserResponse>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ApplicationUser.Id))
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.ApplicationUser.Email));
 
         CreateMap<CreateTeamRequest, Team>();
         CreateMap<Team, TeamResponse>();
