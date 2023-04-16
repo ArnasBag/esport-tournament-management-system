@@ -4,5 +4,6 @@ namespace ESTMS.API.Services;
 
 public interface ITeamService
 {
-    Task<Team> CreateTeamAsync(Team team); 
+    Task<Team> CreateTeamAsync(Team team);
+    Task<Team> UpdateTeamAsync(int id, Team updatedTeam);
 }

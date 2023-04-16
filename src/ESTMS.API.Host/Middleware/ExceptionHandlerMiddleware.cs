@@ -44,6 +44,9 @@ public class ExceptionHandlerMiddleware
             case BadRequestException:
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 break;
+            case NotFoundException:
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                break;
             default:
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;

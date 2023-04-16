@@ -28,4 +28,12 @@ public class TeamController : ControllerBase
 
         return Created("/test", _mapper.Map<TeamResponse>(createdTeam));
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTeam(int id, UpdateTeamRequest request)
+    {
+        var team = await _teamService.UpdateTeamAsync(id, _mapper.Map<Team>(request));
+
+        return Ok(_mapper.Map<TeamResponse>(team));
+    }
 }

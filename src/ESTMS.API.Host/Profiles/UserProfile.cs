@@ -12,5 +12,6 @@ public class UserProfile : Profile
 
         CreateMap<CreateTeamRequest, Team>();
         CreateMap<Team, TeamResponse>();
+        CreateMap<UpdateTeamRequest, Team>();
     }
 }

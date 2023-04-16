@@ -19,4 +19,18 @@ public class TeamRepository : ITeamRepository
 
         return team;        
     }
+
+    public async Task<Team?> GetTeamByIdAsync(int id)
+    {
+        return await _context.Teams.FindAsync(id);
+    }
+
+    public async Task<Team> UpdateTeamAsync(Team updatedTeam)
+    {
+        _context.Teams.Update(updatedTeam);
+
+        await _context.SaveChangesAsync();
+
+        return updatedTeam;
+    }
 }
