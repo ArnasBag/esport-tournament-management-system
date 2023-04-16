@@ -11,12 +11,15 @@ namespace ESTMS.API.Host.Controllers;
 public class TeamController : ControllerBase
 {
     private readonly ITeamService _teamService;
+    private readonly IInvitationService _invitationService;
     private readonly IMapper _mapper;
 
-    public TeamController(ITeamService teamService, IMapper mapper)
+    public TeamController(ITeamService teamService, IMapper mapper, 
+        IInvitationService invitationService)
     {
         _teamService = teamService;
         _mapper = mapper;
+        _invitationService = invitationService;
     }
 
     [HttpPost]
@@ -43,5 +46,13 @@ public class TeamController : ControllerBase
         await _teamService.DeactivateTeamAsync(id);
 
         return NoContent();
+    }
+
+    [HttpPost("{id}/invitations")]
+    public async Task<IActionResult> InvitePlayerToTeam(int id, CreateInvitationRequest request)
+    {
+        var invitation = await _invitationService.CreateInvitationAsync(id, request.UserId);
+
+        return Created("/test", _mapper.Map<InvitationResponse>(invitation));
     }
 }

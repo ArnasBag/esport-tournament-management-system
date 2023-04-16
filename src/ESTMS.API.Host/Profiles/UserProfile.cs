@@ -9,9 +9,14 @@ public class UserProfile : Profile
     public UserProfile()
     {
         CreateMap<ApplicationUser, UserResponse>();
+        CreateMap<Player, PlayerResponse>();
+        CreateMap<TeamManager, TeamManagerResponse>();
+
 
         CreateMap<CreateTeamRequest, Team>();
         CreateMap<Team, TeamResponse>();
         CreateMap<UpdateTeamRequest, Team>();
+
+        CreateMap<Invitation, InvitationResponse>();
     }
 }

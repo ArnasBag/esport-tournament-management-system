@@ -14,6 +14,8 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<ITokenProvider, JwtTokenProvider>()
                 .AddTransient<IUserRepository, UserRepository>()
                 .AddTransient<ITeamRepository, TeamRepository>()
+                .AddTransient<IInvitationRepository, InvitationRepository>()
+                .AddTransient<IInvitationService, InvitationService>()
                 .AddTransient<ITeamService, TeamService>()
                 .AddTransient<IUserService, UserService>()
                 .AddAutoMapper(typeof(UserProfile).Assembly);

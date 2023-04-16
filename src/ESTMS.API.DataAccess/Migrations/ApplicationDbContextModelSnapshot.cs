@@ -37,10 +37,6 @@ namespace ESTMS.API.DataAccess.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -92,9 +88,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.ToTable("AspNetUsers", (string)null);
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("ApplicationUser");
-
-                    b.UseTphMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Invitation", b =>
@@ -108,13 +102,11 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("SenderId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -134,6 +126,29 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("Invitations");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Player", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("Players");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
@@ -158,6 +173,24 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TeamManager", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("TeamManagers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -292,20 +325,6 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Player", b =>
-                {
-                    b.HasBaseType("ESTMS.API.DataAccess.Entities.ApplicationUser");
-
-                    b.HasDiscriminator().HasValue("Player");
-                });
-
-            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TeamManager", b =>
-                {
-                    b.HasBaseType("ESTMS.API.DataAccess.Entities.ApplicationUser");
-
-                    b.HasDiscriminator().HasValue("TeamManager");
-                });
-
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Invitation", b =>
                 {
                     b.HasOne("ESTMS.API.DataAccess.Entities.Player", "Receiver")
@@ -331,6 +350,30 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Navigation("Sender");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Player", b =>
+                {
+                    b.HasOne("ESTMS.API.DataAccess.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("ESTMS.API.DataAccess.Entities.Team", "Team")
+                        .WithMany("Players")
+                        .HasForeignKey("TeamId");
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TeamManager", b =>
+                {
+                    b.HasOne("ESTMS.API.DataAccess.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -387,6 +430,11 @@ namespace ESTMS.API.DataAccess.Migrations
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Player", b =>
                 {
                     b.Navigation("Invitations");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
+                {
+                    b.Navigation("Players");
                 });
 #pragma warning restore 612, 618
         }
