@@ -6,6 +6,9 @@ namespace ESTMS.API.DataAccess.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
+    public DbSet<Invitation> Invitations { get; set; }
+    public DbSet<Team> Teams { get; set; }
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
