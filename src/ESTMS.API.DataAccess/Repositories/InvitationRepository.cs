@@ -1,7 +1,6 @@
 ﻿using ESTMS.API.DataAccess.Data;
 using ESTMS.API.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ESTMS.API.DataAccess.Repositories;
 
@@ -21,6 +20,18 @@ public class InvitationRepository : IInvitationRepository
         await _context.SaveChangesAsync();
 
         return invitation;
+    }
+
+    public async Task<List<Invitation>> GetAllInvitationsAsync(string receiverId)
+    {
+        return await _context.Invitations
+            .Include(i => i.Receiver)
+            .ThenInclude(r => r.ApplicationUser)
+            .Include(i => i.Sender)
+            .ThenInclude(s => s.ApplicationUser)
+            .Include(i => i.Team)
+            .Where(i => i.Receiver.ApplicationUser.Id == receiverId)
+            .ToListAsync();
     }
 
     public async Task<Invitation?> GetInvitationByIdAsync(int id, string userId)

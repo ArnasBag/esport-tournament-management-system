@@ -77,4 +77,9 @@ public class InvitationService : IInvitationService
 
         return invitation;
     }
+
+    public async Task<List<Invitation>> GetAllInitationsAsync()
+    {
+        return await _invitationRepository.GetAllInvitationsAsync(_userIdProvider.UserId!);
+    }
 }
