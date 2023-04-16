@@ -22,11 +22,22 @@ public class TeamService : ITeamService
 
     public async Task<Team> UpdateTeamAsync(int id, Team updatedTeam)
     {
-        var team = await _teamRepository.GetTeamByIdAsync(id) ?? throw new NotFoundException();
+        var team = await _teamRepository.GetTeamByIdAsync(id) 
+            ?? throw new NotFoundException("Team with this id doesn't exist.");
 
         team.Name = updatedTeam.Name;
         team.Description = updatedTeam.Description;
 
         return await _teamRepository.UpdateTeamAsync(team);
+    }
+
+    public async Task DeactivateTeamAsync(int id)
+    {
+        var team = await _teamRepository.GetTeamByIdAsync(id)
+            ?? throw new NotFoundException("Team with this id doesn't exist.");
+
+        team.Deleted = true;
+
+        await _teamRepository.UpdateTeamAsync(team);
     }
 }

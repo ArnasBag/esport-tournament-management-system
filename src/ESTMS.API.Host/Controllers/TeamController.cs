@@ -36,4 +36,12 @@ public class TeamController : ControllerBase
 
         return Ok(_mapper.Map<TeamResponse>(team));
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeactivateTeam(int id)
+    {
+        await _teamService.DeactivateTeamAsync(id);
+
+        return NoContent();
+    }
 }
