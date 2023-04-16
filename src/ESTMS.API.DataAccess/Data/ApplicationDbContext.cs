@@ -12,6 +12,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Entity<Invitation>()
+            .HasOne(i => i.Receiver)
+            .WithMany(r => r.Invitations);
+
         base.OnModelCreating(builder);
     }
 }
