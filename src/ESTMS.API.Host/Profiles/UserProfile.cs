@@ -23,5 +23,11 @@ public class UserProfile : Profile
         CreateMap<UpdateTeamRequest, Team>();
 
         CreateMap<Invitation, InvitationResponse>();
+
+        CreateMap<CreatePlayerRequest, Player>();
+        CreateMap<UpdatePlayerRequest, Player>();
+        CreateMap<Player, PlayerResponse>();
+
+        CreateMap<Rank, RankResponse>();
     }
 }
