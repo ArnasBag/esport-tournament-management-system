@@ -136,8 +136,22 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AboutMeText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
+
+                    b.Property<string>("PicturePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("RankId")
+                        .HasColumnType("smallint");
 
                     b.Property<int?>("TeamId")
                         .HasColumnType("integer");
@@ -146,9 +160,50 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
+                    b.HasIndex("RankId");
+
                     b.HasIndex("TeamId");
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Rank", b =>
+                {
+                    b.Property<short>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ranks");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = (short)1,
+                            Name = "Bronze"
+                        },
+                        new
+                        {
+                            Id = (short)2,
+                            Name = "Silver"
+                        },
+                        new
+                        {
+                            Id = (short)3,
+                            Name = "Gold"
+                        },
+                        new
+                        {
+                            Id = (short)4,
+                            Name = "Platinum"
+                        });
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
@@ -363,11 +418,19 @@ namespace ESTMS.API.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
+                    b.HasOne("ESTMS.API.DataAccess.Entities.Rank", "Rank")
+                        .WithMany()
+                        .HasForeignKey("RankId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ESTMS.API.DataAccess.Entities.Team", "Team")
                         .WithMany("Players")
                         .HasForeignKey("TeamId");
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Rank");
 
                     b.Navigation("Team");
                 });
