@@ -10,6 +10,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Team> Teams { get; set; }
     public DbSet<Player> Players { get; set; }
     public DbSet<TeamManager> TeamManagers { get; set; }
+    public DbSet<Rank> Ranks { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -26,6 +27,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<Team>()
             .HasQueryFilter(t => !t.Deleted);
+
+        builder.Entity<Rank>()
+            .HasData(Enum.GetValues(typeof(RankEnum))
+                .Cast<RankEnum>()
+                .Select(e => new Rank
+                {
+                    Id = (short)e,
+                    Name = e.ToString()
+                }));
 
         base.OnModelCreating(builder);
     }
