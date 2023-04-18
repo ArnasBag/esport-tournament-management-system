@@ -19,9 +19,9 @@ public class PlayerService : IPlayerService
                throw new NotFoundException("Player with this id doesn't exist.");
     }
 
-    public Task<List<Player>> GetAllPlayersAsync(string? userId = null)
+    public async Task<List<Player>> GetAllPlayersAsync(string? userId = null)
     {
-        throw new NotImplementedException();
+        return await _playerRepository.GetAllPlayersAsync();
     }
 
     public Task<Player> CreatePlayerAsync(Player player)

@@ -16,7 +16,8 @@ public class UserProfile : Profile
         CreateMap<Player, UserResponse>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ApplicationUser.Id))
             .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.ApplicationUser.UserName))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.ApplicationUser.Email));
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.ApplicationUser.Email))
+            .ReverseMap();
 
         CreateMap<CreateTeamRequest, Team>();
         CreateMap<Team, TeamResponse>();
