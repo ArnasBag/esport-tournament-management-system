@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.Host.Models;
-using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace ESTMS.API.Host.Profiles;
 
@@ -28,7 +27,6 @@ public class UserProfile : Profile
 
         CreateMap<CreatePlayerRequest, Player>();
         CreateMap<UpdatePlayerRequest, Player>();
-        CreateMap<Player, PlayerResponse>()
-            .ForMember(src => src.Rank, opt => opt.MapFrom(dest => dest.Rank.Value));
+        CreateMap<Player, PlayerResponse>();
     }
 }

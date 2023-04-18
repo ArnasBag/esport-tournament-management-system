@@ -18,7 +18,6 @@ public class PlayerRepository : IPlayerRepository
         return await _context.Players.Include(i => i.Invitations)
             .Include(t => t.Team)
             .Include(u => u.ApplicationUser)
-            .Include(r => r.Rank)
             .Where(p => p.Id == id)
             .SingleOrDefaultAsync();
     }
@@ -29,7 +28,6 @@ public class PlayerRepository : IPlayerRepository
             .Include(i => i.Invitations)
             .Include(t => t.Team)
             .Include(u => u.ApplicationUser)
-            .Include(r => r.Rank)
             .ToListAsync();
     }
 
@@ -41,14 +39,13 @@ public class PlayerRepository : IPlayerRepository
         return player;
     }
 
-    public Task<Player> UpdatePlayerAsync(Player updatedPlayer)
+    public async Task<Player> UpdatePlayerAsync(Player updatedPlayer)
     {
-        throw new NotImplementedException();
-    }
+        _context.Players.Update(updatedPlayer);
 
-    public Task<Player> UpdatePlayerRankAsync(Player updatedPlayer)
-    {
-        throw new NotImplementedException();
+        await _context.SaveChangesAsync();
+
+        return updatedPlayer;
     }
 
     public Task<Player> UpdatePlayerPointsAsync(Player updatedPlayer)

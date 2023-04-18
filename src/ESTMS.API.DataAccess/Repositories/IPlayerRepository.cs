@@ -8,6 +8,4 @@ public interface IPlayerRepository
     Task<List<Player>> GetAllPlayersAsync();
     Task<Player> CreatePlayerAsync(Player player);
     Task<Player> UpdatePlayerAsync(Player updatedPlayer);
-    Task<Player> UpdatePlayerRankAsync(Player updatedPlayer);
-    Task<Player> UpdatePlayerPointsAsync(Player updatedPlayer);
 }

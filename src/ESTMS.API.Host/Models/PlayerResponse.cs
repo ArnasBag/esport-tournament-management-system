@@ -1,4 +1,6 @@
-﻿namespace ESTMS.API.Host.Models;
+﻿using ESTMS.API.DataAccess.Entities;
+
+namespace ESTMS.API.Host.Models;
 
 public class PlayerResponse
 {
@@ -9,5 +11,5 @@ public class PlayerResponse
     public string PicturePath { get; set; } = string.Empty;
     public string AboutMeText { get; set; } = string.Empty;
     public int Points { get; set; }
-    public int Rank { get; set; } = new();
+    public Rank Rank { get; set; }
 }

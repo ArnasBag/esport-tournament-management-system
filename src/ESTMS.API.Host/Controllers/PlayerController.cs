@@ -40,7 +40,6 @@ public class PlayerController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = Roles.Player)]
     public async Task<IActionResult> CreatePlayer(CreatePlayerRequest request)
     {
         var player = _mapper.Map<Player>(request);
@@ -51,11 +50,19 @@ public class PlayerController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = Roles.Player)]
     public async Task<IActionResult> UpdatePlayer(int id, UpdatePlayerRequest request)
     {
-        var team = await _playerService.UpdatePlayerAsync(id, _mapper.Map<Player>(request));
+        var player = await _playerService.UpdatePlayerAsync(id, _mapper.Map<Player>(request));
 
-        return Ok(_mapper.Map<PlayerResponse>(team));
+        return Ok(_mapper.Map<PlayerResponse>(player));
+    }
+
+    [HttpPut("{id}/rank")]
+    //[Authorize(Roles = Roles.Player)]
+    public async Task<IActionResult> UpdatePlayerRank(int id)
+    {
+        var player = await _playerService.UpdatePlayersRankAsync(id);
+
+        return Ok(_mapper.Map<PlayerResponse>(player));
     }
 }
