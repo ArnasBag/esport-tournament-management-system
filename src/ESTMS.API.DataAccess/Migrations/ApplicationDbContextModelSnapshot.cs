@@ -137,20 +137,18 @@ namespace ESTMS.API.DataAccess.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AboutMeText")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("text");
 
                     b.Property<string>("PicturePath")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Points")
+                    b.Property<int?>("Points")
                         .HasColumnType("integer");
 
-                    b.Property<short>("RankId")
+                    b.Property<short?>("RankId")
                         .HasColumnType("smallint");
 
                     b.Property<int?>("TeamId")
@@ -420,9 +418,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasOne("ESTMS.API.DataAccess.Entities.Rank", "Rank")
                         .WithMany()
-                        .HasForeignKey("RankId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RankId");
 
                     b.HasOne("ESTMS.API.DataAccess.Entities.Team", "Team")
                         .WithMany("Players")
