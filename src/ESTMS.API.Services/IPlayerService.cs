@@ -9,4 +9,5 @@ public interface IPlayerService
     Task<Player> GetPlayerByIdAsync(int id);
     Task<List<Player>> GetAllPlayersAsync(string? userId = null);
     Task<Player> UpdatePlayersRankAsync(int id);
+    Task<Player> UpdatePlayersPointAsync(int id, int points);
 }

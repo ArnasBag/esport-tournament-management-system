@@ -72,4 +72,25 @@ public class PlayerService : IPlayerService
 
         return await _playerRepository.UpdatePlayerAsync(player);
     }
+
+    public async Task<Player> UpdatePlayersPointAsync(int id, int points)
+    {
+        var player = await _playerRepository.GetPlayerByIdAsync(id) ??
+                     throw new NotFoundException("Player with this id doesn't exist.");
+
+        if (player.Points is null)
+        {
+            player.Points = 0;
+        }
+
+        player.Points += points;
+
+        if (player.Points < 0)
+        {
+            player.Points = 0;
+        }
+
+        await _playerRepository.UpdatePlayerAsync(player);
+        return await UpdatePlayersRankAsync(player.Id);
+    }
 }

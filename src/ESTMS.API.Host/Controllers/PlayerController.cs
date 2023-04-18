@@ -57,11 +57,11 @@ public class PlayerController : ControllerBase
         return Ok(_mapper.Map<PlayerResponse>(player));
     }
 
-    [HttpPut("{id}/rank")]
+    [HttpPut("{id}/point")]
     //[Authorize(Roles = Roles.Player)]
-    public async Task<IActionResult> UpdatePlayerRank(int id)
+    public async Task<IActionResult> UpdatePlayerPoint(int id, [FromBody] int points)
     {
-        var player = await _playerService.UpdatePlayersRankAsync(id);
+        var player = await _playerService.UpdatePlayersPointAsync(id, points);
 
         return Ok(_mapper.Map<PlayerResponse>(player));
     }

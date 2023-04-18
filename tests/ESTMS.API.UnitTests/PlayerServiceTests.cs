@@ -63,4 +63,43 @@ public class PlayerServiceTests
 
         Assert.That(result.Message, Is.EqualTo("Player with this id doesn't exist."));
     }
+
+    private static IEnumerable<TestCaseData> UpdatePlayerPointsTestCases()
+    {
+        yield return new TestCaseData(0, 1, 10, 10);
+        yield return new TestCaseData(10, 1, -10, 0);
+        yield return new TestCaseData(null, 1, 10, 10);
+        yield return new TestCaseData(null, 1, -10, 0);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(UpdatePlayerPointsTestCases))]
+    public async Task UpdatePlayersPointAsync_GetsPlayer_Ok(int? playerPoints, int playerId, int points, int result)
+    {
+        var player = new Player
+        {
+            Id = playerId,
+            Points = playerPoints
+        };
+
+        var expectedPlayer = new Player
+        {
+            Id = playerId,
+            Points = result
+        };
+
+        _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(playerId)).ReturnsAsync(player);
+
+        _playerRepositoryMock.SetupSequence(x => x.UpdatePlayerAsync(It.IsAny<Player>()))
+            .ReturnsAsync(expectedPlayer)
+            .ReturnsAsync(expectedPlayer);
+
+        var actualPlayer = await _playerService.UpdatePlayersPointAsync(playerId, points);
+
+
+        _playerRepositoryMock.Verify(x => x.GetPlayerByIdAsync(playerId), Times.Exactly(2));
+        _playerRepositoryMock.Verify(x => x.UpdatePlayerAsync(player), Times.Exactly(2));
+
+        Assert.That(actualPlayer.Points, Is.EqualTo(expectedPlayer.Points));
+    }
 }

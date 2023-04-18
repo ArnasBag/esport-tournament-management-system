@@ -47,9 +47,4 @@ public class PlayerRepository : IPlayerRepository
 
         return updatedPlayer;
     }
-
-    public Task<Player> UpdatePlayerPointsAsync(Player updatedPlayer)
-    {
-        throw new NotImplementedException();
-    }
 }
