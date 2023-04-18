@@ -9,5 +9,5 @@ public class PlayerResponse
     public string PicturePath { get; set; } = string.Empty;
     public string AboutMeText { get; set; } = string.Empty;
     public int Points { get; set; }
-    public RankResponse Rank { get; set; } = new();
+    public int Rank { get; set; } = new();
 }

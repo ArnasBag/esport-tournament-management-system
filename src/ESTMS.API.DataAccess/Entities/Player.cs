@@ -11,3 +11,11 @@ public class Player
     public int? Points { get; set; }
     public Rank? Rank { get; set; }
 }
+
+public enum Rank
+{
+    Bronze = 1,
+    Silver = 2,
+    Gold = 3,
+    Platinum = 4
+}
