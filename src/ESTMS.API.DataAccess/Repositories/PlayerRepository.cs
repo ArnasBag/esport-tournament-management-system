@@ -31,14 +31,6 @@ public class PlayerRepository : IPlayerRepository
             .ToListAsync();
     }
 
-    public async Task<Player> CreatePlayerAsync(Player player)
-    {
-        await _context.Players.AddAsync(player);
-        await _context.SaveChangesAsync();
-
-        return player;
-    }
-
     public async Task<Player> UpdatePlayerAsync(Player updatedPlayer)
     {
         _context.Players.Update(updatedPlayer);
