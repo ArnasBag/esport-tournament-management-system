@@ -22,12 +22,44 @@ public class PlayerServiceTests
     }
 
     [Test]
+    public async Task GetPlayerByIdAsync_GetsPlayer_Ok()
+    {
+        _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(It.IsAny<int>())).ReturnsAsync(new Player());
+
+        await _playerService.GetPlayerByIdAsync(It.IsAny<int>());
+
+        _playerRepositoryMock.Verify(x => x.GetPlayerByIdAsync(It.IsAny<int>()), Times.Once);
+    }
+
+    [Test]
     public void GetPlayerByIdAsync_GetsNullPlayer_ThrowsError()
     {
         _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(It.IsAny<int>())).ReturnsAsync((Player)null);
 
         var result = Assert.ThrowsAsync<NotFoundException>(async () =>
             await _playerService.GetPlayerByIdAsync(It.IsAny<int>()));
+
+        Assert.That(result.Message, Is.EqualTo("Player with this id doesn't exist."));
+    }
+
+    [Test]
+    public async Task UpdatePlayersRankAsync_GetsPlayer_Ok()
+    {
+        _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(It.IsAny<int>())).ReturnsAsync(new Player());
+
+        await _playerService.UpdatePlayersRankAsync(It.IsAny<int>());
+
+        _playerRepositoryMock.Verify(x => x.GetPlayerByIdAsync(It.IsAny<int>()), Times.Once);
+        _playerRepositoryMock.Verify(x => x.UpdatePlayerAsync(It.IsAny<Player>()), Times.Once);
+    }
+
+    [Test]
+    public void UpdatePlayersRankAsync_GetsNullPlayer_ThrowsError()
+    {
+        _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(It.IsAny<int>())).ReturnsAsync((Player)null);
+
+        var result = Assert.ThrowsAsync<NotFoundException>(async () =>
+            await _playerService.UpdatePlayersRankAsync(It.IsAny<int>()));
 
         Assert.That(result.Message, Is.EqualTo("Player with this id doesn't exist."));
     }
