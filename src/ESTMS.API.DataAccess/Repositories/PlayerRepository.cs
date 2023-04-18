@@ -26,6 +26,8 @@ public class PlayerRepository : IPlayerRepository
     public async Task<List<Player>> GetAllPlayersAsync()
     {
         return await _context.Players
+            .Include(i => i.Invitations)
+            .Include(t => t.Team)
             .Include(u => u.ApplicationUser)
             .Include(r => r.Rank)
             .ToListAsync();
