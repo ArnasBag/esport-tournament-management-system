@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.Host.Models;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ESTMS.API.Host.Controllers;
 
 [ApiController]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = Roles.Admin)]
 [Route("users")]
 public class UserController : ControllerBase
 {

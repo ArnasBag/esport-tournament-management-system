@@ -13,7 +13,15 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IAuthService, AuthService>()
                 .AddTransient<ITokenProvider, JwtTokenProvider>()
                 .AddTransient<IUserRepository, UserRepository>()
+                .AddTransient<ITeamRepository, TeamRepository>()
+                .AddTransient<IInvitationRepository, InvitationRepository>()
+                .AddTransient<IInvitationService, InvitationService>()
+                .AddTransient<ITeamService, TeamService>()
                 .AddTransient<IUserService, UserService>()
+                .AddTransient<IPlayerService, PlayerService>()
+                .AddTransient<IPlayerRepository, PlayerRepository>()
+                .AddTransient<IUserIdProvider, UserIdProvider>()
+                .AddHttpContextAccessor()
                 .AddAutoMapper(typeof(UserProfile).Assembly);
         }
 

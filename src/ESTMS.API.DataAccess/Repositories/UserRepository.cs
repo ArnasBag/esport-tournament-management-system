@@ -28,4 +28,25 @@ public class UserRepository : IUserRepository
         _context.Update(user);
         await _context.SaveChangesAsync();
     }
+
+    public async Task CreatePlayerAsync(Player player)
+    {
+        await _context.Players.AddAsync(player);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Player?> GetPlayerByUserIdAsync(string userId)
+    {
+        return await _context.Players
+            .Include(p => p.ApplicationUser)
+            .SingleOrDefaultAsync(p => p.ApplicationUser.Id == userId);
+    }
+
+    public async Task<TeamManager?> GetTeamManagerByUserIdAsync(string userId)
+    {
+        return await _context.TeamManagers
+            .Include(t => t.ApplicationUser)
+            .Include(t => t.Teams)
+            .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
+    }
 }

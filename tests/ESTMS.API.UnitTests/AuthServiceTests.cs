@@ -1,5 +1,6 @@
 ﻿using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
+using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -12,6 +13,7 @@ public class AuthServiceTests
     private Mock<IUserStore<ApplicationUser>> _userStoreMock;
     private Mock<UserManager<ApplicationUser>> _userManagerMock;
     private Mock<ITokenProvider> _tokenProviderMock;
+    private Mock<IUserRepository> _userRepositoryMock;
     private IAuthService _authService;
 
     [SetUp]
@@ -24,8 +26,9 @@ public class AuthServiceTests
         _userManagerMock.Object.PasswordValidators.Add(new PasswordValidator<ApplicationUser>());
 
         _tokenProviderMock = new Mock<ITokenProvider>();
+        _userRepositoryMock = new Mock<IUserRepository>();
 
-        _authService = new AuthService(_userManagerMock.Object, _tokenProviderMock.Object);
+        _authService = new AuthService(_userManagerMock.Object, _tokenProviderMock.Object, _userRepositoryMock.Object);
     }
 
     [Test]
@@ -35,6 +38,8 @@ public class AuthServiceTests
             It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
         _userManagerMock.Setup(x => x.CheckPasswordAsync(
             It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+        _userManagerMock.Setup(x => x.GetRolesAsync(
+            It.IsAny<ApplicationUser>())).ReturnsAsync(new List<string>());
 
         await _authService.LoginUserAsync(It.IsAny<string>(), It.IsAny<string>());
 
@@ -70,6 +75,7 @@ public class AuthServiceTests
         await _authService.RegisterUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>());
 
         _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()), Times.Once);
+        _userRepositoryMock.Verify(x => x.CreatePlayerAsync(It.IsAny<Player>()), Times.Once);
     }
 
     [Test]
