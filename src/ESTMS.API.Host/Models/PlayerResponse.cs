@@ -6,7 +6,7 @@ public class PlayerResponse
 {
     public int Id { get; set; }
     public List<InvitationResponse> Invitations { get; set; } = new();
-    public TeamResponse? Team { get; set; }
+    public PlayersTeamResponse? Team { get; set; }
     public UserResponse ApplicationUser { get; set; } = new();
     public string PicturePath { get; set; } = string.Empty;
     public string AboutMeText { get; set; } = string.Empty;

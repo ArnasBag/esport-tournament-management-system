@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.Host.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace ESTMS.API.Host.Profiles;
 
@@ -27,6 +28,11 @@ public class UserProfile : Profile
 
         CreateMap<CreatePlayerRequest, Player>();
         CreateMap<UpdatePlayerRequest, Player>();
+
+        CreateMap<ApplicationUser, PlayersUserInfo>();
         CreateMap<Player, PlayerResponse>();
+
+        CreateMap<Team, PlayersTeamResponse>()
+            .ForMember(dest => dest.TeamManager, opt => opt.MapFrom(src => src.TeamManager));
     }
 }

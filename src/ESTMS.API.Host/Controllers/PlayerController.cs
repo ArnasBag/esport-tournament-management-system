@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;
 
-//TODO add mapping profiles for player DTO's
-
 [ApiController]
 [Route("players")]
 public class PlayerController : ControllerBase
@@ -39,29 +37,37 @@ public class PlayerController : ControllerBase
         return Ok(_mapper.Map<PlayerResponse>(player));
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreatePlayer(CreatePlayerRequest request)
-    {
-        var player = _mapper.Map<Player>(request);
-
-        var createdPlayer = await _playerService.CreatePlayerAsync(player);
-
-        return Created("/test", _mapper.Map<PlayerResponse>(createdPlayer));
-    }
-
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePlayer(int id, UpdatePlayerRequest request)
     {
-        var player = await _playerService.UpdatePlayerAsync(id, _mapper.Map<Player>(request));
+        //TODO
+        // Auto mapper has problems mapping to inherit class properties
+        // lets leave like this
+        var updatedPlayer = new Player
+        {
+            ApplicationUser = new ApplicationUser
+            {
+                UserName = request.UserInfo.Username,
+                NormalizedUserName = request.UserInfo.Username.ToUpper(),
+            },
+            PicturePath = request.PicturePath,
+            AboutMeText = request.AboutMeText,
+            Team = new Team
+            {
+                Id = request.TeamId
+            }
+        };
+
+        var player = await _playerService.UpdatePlayerAsync(id, updatedPlayer);
 
         return Ok(_mapper.Map<PlayerResponse>(player));
     }
 
     [HttpPut("{id}/point")]
     //[Authorize(Roles = Roles.Player)]
-    public async Task<IActionResult> UpdatePlayerPoint(int id, [FromBody] int points)
+    public async Task<IActionResult> UpdatePlayerPoint(int id, [FromBody] UpdatePlayerPointRequest request)
     {
-        var player = await _playerService.UpdatePlayersPointAsync(id, points);
+        var player = await _playerService.UpdatePlayersPointAsync(id, request.Points);
 
         return Ok(_mapper.Map<PlayerResponse>(player));
     }

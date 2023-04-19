@@ -27,6 +27,7 @@ public class PlayerRepository : IPlayerRepository
         return await _context.Players
             .Include(i => i.Invitations)
             .Include(t => t.Team)
+            .ThenInclude(tm => tm.TeamManager)
             .Include(u => u.ApplicationUser)
             .ToListAsync();
     }
