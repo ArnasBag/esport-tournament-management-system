@@ -24,11 +24,6 @@ public class PlayerService : IPlayerService
         return await _playerRepository.GetAllPlayersAsync();
     }
 
-    public Task<Player> CreatePlayerAsync(Player player)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<Player> UpdatePlayerAsync(int id, Player updatedPlayer)
     {
         var player = await _playerRepository.GetPlayerByIdAsync(id)
@@ -37,6 +32,7 @@ public class PlayerService : IPlayerService
         player.ApplicationUser.UserName = updatedPlayer.ApplicationUser.UserName;
         player.AboutMeText = updatedPlayer.AboutMeText;
         player.PicturePath = updatedPlayer.PicturePath;
+        //update players team
 
         return await _playerRepository.UpdatePlayerAsync(player);
     }
