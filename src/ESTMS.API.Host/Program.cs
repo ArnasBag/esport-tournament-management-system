@@ -16,7 +16,9 @@ builder.Services
     .ConfigureAuthorization()
     .ConfigureDatabase()
     .ConfigureInjection()
+    .ConfigureCors()
     .ConfigureOptions(builder.Configuration);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -26,6 +28,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowVueFrontend");
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 

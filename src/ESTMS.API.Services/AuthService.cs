@@ -21,6 +21,14 @@ public class AuthService : IAuthService
         _userRepository = userRepository;
     }
 
+    public async Task<(ApplicationUser, string?)> GetMeAsync(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return (user, roles.FirstOrDefault());
+    }
+
     public async Task<string> LoginUserAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email) 
