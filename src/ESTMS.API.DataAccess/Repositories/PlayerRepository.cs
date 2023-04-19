@@ -15,8 +15,10 @@ public class PlayerRepository : IPlayerRepository
 
     public async Task<Player?> GetPlayerByIdAsync(int id)
     {
-        return await _context.Players.Include(i => i.Invitations)
+        return await _context.Players
             .Include(t => t.Team)
+            .ThenInclude(tm => tm.TeamManager)
+            .ThenInclude(userInfo => userInfo.ApplicationUser)
             .Include(u => u.ApplicationUser)
             .Where(p => p.Id == id)
             .SingleOrDefaultAsync();
@@ -25,7 +27,6 @@ public class PlayerRepository : IPlayerRepository
     public async Task<List<Player>> GetAllPlayersAsync()
     {
         return await _context.Players
-            .Include(i => i.Invitations)
             .Include(t => t.Team)
             .ThenInclude(tm => tm.TeamManager)
             .Include(u => u.ApplicationUser)

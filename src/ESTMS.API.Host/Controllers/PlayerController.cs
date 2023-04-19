@@ -53,10 +53,6 @@ public class PlayerController : ControllerBase
             },
             PicturePath = request.PicturePath,
             AboutMeText = request.AboutMeText,
-            Team = new Team
-            {
-                Id = request.TeamId
-            }
         };
 
         var player = await _playerService.UpdatePlayerAsync(id, updatedPlayer);

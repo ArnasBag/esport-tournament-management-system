@@ -1,4 +1,5 @@
-﻿using ESTMS.API.DataAccess.Entities;
+﻿using ESTMS.API.Host.Models.Player;
+using InvitationStatus = ESTMS.API.DataAccess.Entities.InvitationStatus;
 
 namespace ESTMS.API.Host.Models;
 
@@ -10,5 +11,5 @@ public class InvitationResponse
     public DateTime UpdatedAt { get; set; }
     public UserResponse Receiver { get; set; } = new();
     public UserResponse Sender { get; set; } = new();
-    public TeamResponse Team { get; set; }  
+    public PlayersTeamResponse Team { get; set; }  
 }

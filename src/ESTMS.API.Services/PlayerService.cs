@@ -30,9 +30,9 @@ public class PlayerService : IPlayerService
                      ?? throw new NotFoundException("Player with this id doesn't exist.");
 
         player.ApplicationUser.UserName = updatedPlayer.ApplicationUser.UserName;
+        player.ApplicationUser.NormalizedUserName = updatedPlayer.ApplicationUser.NormalizedUserName;
         player.AboutMeText = updatedPlayer.AboutMeText;
         player.PicturePath = updatedPlayer.PicturePath;
-        //update players team
 
         return await _playerRepository.UpdatePlayerAsync(player);
     }
