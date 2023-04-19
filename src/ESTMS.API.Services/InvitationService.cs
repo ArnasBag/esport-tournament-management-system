@@ -24,14 +24,14 @@ public class InvitationService : IInvitationService
 
     public async Task ChangeInvitationStatusAsync(int id, InvitationStatus status)
     {
-        var userId = _userIdProvider.UserId ?? throw new Exception();
+        var userId = _userIdProvider.UserId;
 
         var invitation = await _invitationRepository.GetInvitationByIdAsync(id, userId)
             ?? throw new NotFoundException("Invitation with this id was not found.");
 
-        if(invitation.Status != InvitationStatus.Pending)
+        if(invitation.Status == InvitationStatus.Accepted)
         {
-            throw new BadRequestException("Invitation is already accepted or declined.");
+            throw new BadRequestException("Invitation is already accepted");
         }
 
         invitation.Status = status;

@@ -50,6 +50,9 @@ public class ExceptionHandlerMiddleware
             case ForbiddenException:
                 context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 break;
+            case UnauthorizedRequestException:
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                break;
             default:
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;
