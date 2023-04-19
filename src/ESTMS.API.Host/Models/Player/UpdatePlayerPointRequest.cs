@@ -1,4 +1,4 @@
-﻿namespace ESTMS.API.Host.Models;
+﻿namespace ESTMS.API.Host.Models.Player;
 
 public class UpdatePlayerPointRequest
 {

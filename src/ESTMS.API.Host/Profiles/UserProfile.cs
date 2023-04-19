@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.Host.Models;
+using ESTMS.API.Host.Models.Player;
 using Microsoft.AspNetCore.Identity;
 
 namespace ESTMS.API.Host.Profiles;

@@ -2,6 +2,7 @@
 using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.Host.Models;
+using ESTMS.API.Host.Models.Player;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
