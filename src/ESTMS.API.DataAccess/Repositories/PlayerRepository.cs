@@ -13,14 +13,14 @@ public class PlayerRepository : IPlayerRepository
         _context = context;
     }
 
-    public async Task<Player?> GetPlayerByIdAsync(int id)
+    public async Task<Player?> GetPlayerByIdAsync(string id)
     {
         return await _context.Players
             .Include(t => t.Team)
             .ThenInclude(tm => tm.TeamManager)
             .ThenInclude(userInfo => userInfo.ApplicationUser)
             .Include(u => u.ApplicationUser)
-            .Where(p => p.Id == id)
+            .Where(p => p.ApplicationUser.Id == id)
             .SingleOrDefaultAsync();
     }
 

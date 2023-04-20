@@ -13,7 +13,7 @@ public class PlayerService : IPlayerService
         _playerRepository = playerRepository;
     }
 
-    public async Task<Player> GetPlayerByIdAsync(int id)
+    public async Task<Player> GetPlayerByIdAsync(string id)
     {
         return await _playerRepository.GetPlayerByIdAsync(id) ??
                throw new NotFoundException("Player with this id doesn't exist.");
@@ -24,7 +24,7 @@ public class PlayerService : IPlayerService
         return await _playerRepository.GetAllPlayersAsync();
     }
 
-    public async Task<Player> UpdatePlayerAsync(int id, Player updatedPlayer)
+    public async Task<Player> UpdatePlayerAsync(string id, Player updatedPlayer)
     {
         var player = await _playerRepository.GetPlayerByIdAsync(id)
                      ?? throw new NotFoundException("Player with this id doesn't exist.");
@@ -37,7 +37,7 @@ public class PlayerService : IPlayerService
         return await _playerRepository.UpdatePlayerAsync(player);
     }
 
-    public async Task<Player> UpdatePlayersRankAsync(int id)
+    public async Task<Player> UpdatePlayersRankAsync(string id)
     {
         var player = await _playerRepository.GetPlayerByIdAsync(id)
                      ?? throw new NotFoundException("Player with this id doesn't exist.");
@@ -69,7 +69,7 @@ public class PlayerService : IPlayerService
         return await _playerRepository.UpdatePlayerAsync(player);
     }
 
-    public async Task<Player> UpdatePlayersPointAsync(int id, int points)
+    public async Task<Player> UpdatePlayersPointAsync(string id, int points)
     {
         var player = await _playerRepository.GetPlayerByIdAsync(id) ??
                      throw new NotFoundException("Player with this id doesn't exist.");
@@ -87,6 +87,6 @@ public class PlayerService : IPlayerService
         }
 
         await _playerRepository.UpdatePlayerAsync(player);
-        return await UpdatePlayersRankAsync(player.Id);
+        return await UpdatePlayersRankAsync(player.ApplicationUser.Id);
     }
 }

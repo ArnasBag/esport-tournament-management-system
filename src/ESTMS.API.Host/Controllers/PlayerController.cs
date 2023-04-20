@@ -31,7 +31,7 @@ public class PlayerController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetPlayerById(int id)
+    public async Task<IActionResult> GetPlayerById(string id)
     {
         var player = await _playerService.GetPlayerByIdAsync(id);
 
@@ -39,7 +39,7 @@ public class PlayerController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdatePlayer(int id, UpdatePlayerRequest request)
+    public async Task<IActionResult> UpdatePlayer(string id, UpdatePlayerRequest request)
     {
         //TODO
         // Auto mapper has problems mapping to inherit class properties
@@ -62,7 +62,7 @@ public class PlayerController : ControllerBase
 
     [HttpPut("{id}/point")]
     //[Authorize(Roles = Roles.Player)]
-    public async Task<IActionResult> UpdatePlayerPoint(int id, [FromBody] UpdatePlayerPointRequest request)
+    public async Task<IActionResult> UpdatePlayerPoint(string id, [FromBody] UpdatePlayerPointRequest request)
     {
         var player = await _playerService.UpdatePlayersPointAsync(id, request.Points);
 
