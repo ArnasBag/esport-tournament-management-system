@@ -20,7 +20,7 @@ public class UserRepository : IUserRepository
 
     public async Task<List<ApplicationUser>> GetUsersAsync()
     {
-        return await _context.Users.ToListAsync();
+        return await _context.Users.OrderBy(x => x.Id).ToListAsync();
     }
 
     public async Task UpdateUserAsync(ApplicationUser user)

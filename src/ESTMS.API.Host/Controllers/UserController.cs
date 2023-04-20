@@ -3,6 +3,7 @@ using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.Host.Models;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;
@@ -10,6 +11,7 @@ namespace ESTMS.API.Host.Controllers;
 [ApiController]
 [Authorize(Roles = Roles.Admin)]
 [Route("users")]
+[EnableCors("AllowVueFrontend")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
