@@ -42,6 +42,6 @@ public class AuthenticationController : ControllerBase
     {
         var response = await _authService.GetMeAsync(_userIdProvider.UserId);
 
-        return Ok(new { Username = response.Item1.UserName, Role = response.Item2});
+        return Ok(new { Id = response.Item1.Id, Username = response.Item1.UserName, Role = response.Item2});
     }
 }
