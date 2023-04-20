@@ -14,12 +14,15 @@ namespace ESTMS.API.Host.Controllers;
 public class PlayerController : ControllerBase
 {
     private readonly IPlayerService _playerService;
+    private readonly IInvitationService _invitationService;
     private readonly IMapper _mapper;
 
-    public PlayerController(IPlayerService playerService, IMapper mapper)
+    public PlayerController(IPlayerService playerService, IMapper mapper, 
+        IInvitationService invitationService)
     {
         _playerService = playerService;
         _mapper = mapper;
+        _invitationService = invitationService;
     }
 
     [HttpGet]
@@ -67,5 +70,14 @@ public class PlayerController : ControllerBase
         var player = await _playerService.UpdatePlayersPointAsync(id, request.Points);
 
         return Ok(_mapper.Map<PlayerResponse>(player));
+    }
+
+    [HttpPost("{id}/invitations")]
+    [Authorize(Roles = Roles.TeamManager)]
+    public async Task<IActionResult> InvitePlayerToTeam(int id, CreateInvitationRequest request)
+    {
+        var invitation = await _invitationService.CreateInviteForPlayerAsync(request.UserId, id);
+
+        return Created("/test", _mapper.Map<InvitationResponse>(invitation));
     }
 }

@@ -22,24 +22,30 @@ public class InvitationRepository : IInvitationRepository
         return invitation;
     }
 
-    public async Task<List<Invitation>> GetAllInvitationsAsync(string receiverId)
+    public async Task<List<Invitation>> GetAllReceivedInvitations(string userId)
     {
         return await _context.Invitations
-            .Include(i => i.Receiver)
-            .ThenInclude(r => r.ApplicationUser)
             .Include(i => i.Sender)
-            .ThenInclude(s => s.ApplicationUser)
+            .Include(i => i.Receiver)
             .Include(i => i.Team)
-            .Where(i => i.Receiver.ApplicationUser.Id == receiverId)
+            .Where(i => i.Receiver.Id == userId)
             .ToListAsync();
     }
 
-    public async Task<Invitation?> GetInvitationByIdAsync(int id, string userId)
+    public async Task<List<Invitation>> GetAllSentInvitations(string userId)
     {
-        return await _context.Invitations.Include(i => i.Team)
-            .ThenInclude(t => t.Players)
+        return await _context.Invitations
+            .Include(i => i.Sender)
+            .Include(i => i.Receiver)
+            .Include(i => i.Team)
+            .Where(i => i.Sender.Id == userId)
+            .ToListAsync();
+    }
+
+    public async Task<Invitation?> GetInvitationByIdAsync(int id)
+    {
+        return await _context.Invitations
             .Where(i => i.Id == id)
-            .Where(i => i.Receiver.ApplicationUser.Id == userId)
             .SingleOrDefaultAsync();
     }
 

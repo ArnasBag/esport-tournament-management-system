@@ -3,6 +3,7 @@ using System;
 using ESTMS.API.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ESTMS.API.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230420194649_InvitationFix")]
+    partial class InvitationFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,6 +105,9 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("PlayerId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -120,6 +126,8 @@ namespace ESTMS.API.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
 
                     b.HasIndex("ReceiverId");
 
@@ -346,6 +354,10 @@ namespace ESTMS.API.DataAccess.Migrations
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Invitation", b =>
                 {
+                    b.HasOne("ESTMS.API.DataAccess.Entities.Player", null)
+                        .WithMany("Invitations")
+                        .HasForeignKey("PlayerId");
+
                     b.HasOne("ESTMS.API.DataAccess.Entities.ApplicationUser", "Receiver")
                         .WithMany("ReceivedInvitations")
                         .HasForeignKey("ReceiverId")
@@ -462,6 +474,11 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Navigation("ReceivedInvitations");
 
                     b.Navigation("SentInvitations");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Player", b =>
+                {
+                    b.Navigation("Invitations");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
