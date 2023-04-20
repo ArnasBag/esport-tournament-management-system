@@ -32,9 +32,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Tournament>()
             .HasMany(m => m.Matches)
             .WithOne(t => t.Tournament);
-
-        builder.Entity<Match>();
-
+        
         base.OnModelCreating(builder);
     }
 }
