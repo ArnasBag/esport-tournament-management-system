@@ -2,5 +2,5 @@
 
 public interface IUserIdProvider
 {
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 }
