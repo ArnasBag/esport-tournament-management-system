@@ -45,6 +45,10 @@ public class InvitationRepository : IInvitationRepository
     public async Task<Invitation?> GetInvitationByIdAsync(int id)
     {
         return await _context.Invitations
+            .Include(i => i.Sender)
+            .Include(i => i.Receiver)
+            .Include(i => i.Team)
+            .ThenInclude(t => t.Players)
             .Where(i => i.Id == id)
             .SingleOrDefaultAsync();
     }

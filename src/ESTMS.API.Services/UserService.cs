@@ -1,4 +1,5 @@
 ﻿using ESTMS.API.Core.Exceptions;
+using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -9,12 +10,17 @@ namespace ESTMS.API.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IPlayerRepository _playerRepository;
+    private readonly ITeamManagerRepository _teamManagerRepository;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
+    public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager,
+        IPlayerRepository playerRepository, ITeamManagerRepository teamManagerRepository)
     {
         _userRepository = userRepository;
         _userManager = userManager;
+        _playerRepository = playerRepository;
+        _teamManagerRepository = teamManagerRepository;
     }
 
     public async Task ChangeUserActivityAsync(string id, bool status)
@@ -43,8 +49,16 @@ public class UserService : IUserService
             throw new BadRequestException(string.Join(",", removeRoleResult.Errors.Select(e => e.Description)));
         }
 
-        //remove from player table or add if role is changed to player
-        //add to teammanager table if role is changed to teammanager
+        if(userRole.SingleOrDefault() == Roles.Player)
+        {
+            var player = await _playerRepository.GetPlayerByIdAsync(id);
+            await _playerRepository.RemovePlayerAsync(player);
+        }
+        else if(userRole.SingleOrDefault() == Roles.TeamManager)
+        {
+            var teamManager = await _userRepository.GetTeamManagerByUserIdAsync(id);
+            await _teamManagerRepository.RemoveAsync(teamManager);
+        }
 
         try
         {
@@ -53,6 +67,15 @@ public class UserService : IUserService
             if (!addRoleResult.Succeeded)
             {
                 throw new BadRequestException(string.Join(",", addRoleResult.Errors.Select(e => e.Description)));
+            }
+
+            if(role == Roles.Player)
+            {
+                await _userRepository.CreatePlayerAsync(new Player { ApplicationUser = user });
+            }
+            else if(role == Roles.TeamManager)
+            {
+                await _teamManagerRepository.CreateAsync(new TeamManager { ApplicationUser = user });
             }
         }
         catch(InvalidOperationException ex)

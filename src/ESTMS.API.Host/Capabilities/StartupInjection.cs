@@ -15,6 +15,7 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IUserRepository, UserRepository>()
                 .AddTransient<ITeamRepository, TeamRepository>()
                 .AddTransient<IInvitationRepository, InvitationRepository>()
+                .AddTransient<ITeamManagerRepository, TeamManagerRepository>()
                 .AddTransient<IInvitationService, InvitationService>()
                 .AddTransient<ITeamService, TeamService>()
                 .AddTransient<IUserService, UserService>()

@@ -5,6 +5,7 @@ using ESTMS.API.Host.Models;
 using ESTMS.API.Host.Models.Player;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;
@@ -74,9 +75,9 @@ public class PlayerController : ControllerBase
 
     [HttpPost("{id}/invitations")]
     [Authorize(Roles = Roles.TeamManager)]
-    public async Task<IActionResult> InvitePlayerToTeam(int id, CreateInvitationRequest request)
+    public async Task<IActionResult> InvitePlayerToTeam(string id, CreateInvitationRequest request)
     {
-        var invitation = await _invitationService.CreateInviteForPlayerAsync(request.UserId, id);
+        var invitation = await _invitationService.CreateInviteForPlayerAsync(id, request.TeamId);
 
         return Created("/test", _mapper.Map<InvitationResponse>(invitation));
     }

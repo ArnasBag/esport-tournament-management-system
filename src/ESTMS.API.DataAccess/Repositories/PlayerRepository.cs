@@ -41,4 +41,10 @@ public class PlayerRepository : IPlayerRepository
 
         return updatedPlayer;
     }
+
+    public async Task RemovePlayerAsync(Player player)
+    {
+        _context.Players.Remove(player);
+        await _context.SaveChangesAsync();
+    }
 }

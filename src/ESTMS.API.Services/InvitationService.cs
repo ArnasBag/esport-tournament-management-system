@@ -32,6 +32,11 @@ public class InvitationService : IInvitationService
             throw new BadRequestException("Invitation is already accepted");
         }
 
+        if(invitation.Receiver.Id != _userIdProvider.UserId!)
+        {
+            throw new BadRequestException("You did not receive this invitation");
+        }
+
         invitation.Status = status;
         invitation.UpdatedAt = DateTime.UtcNow;
 
@@ -62,6 +67,18 @@ public class InvitationService : IInvitationService
 
         var senderPlayerUser = await _userRepository.GetUserByIdAsync(_userIdProvider.UserId!);
         var receiverTeamManagerUser = await _userRepository.GetUserByIdAsync(team.TeamManager.ApplicationUser.Id);
+
+        var senderPlayer = await _userRepository.GetPlayerByUserIdAsync(senderPlayerUser.Id);
+
+        if(senderPlayer.Team != null)
+        {
+            if (senderPlayer.Team.Id == team.Id)
+            {
+                throw new BadRequestException("You are already part of this team.");
+            }
+
+            throw new BadRequestException("You are already part of a team.");
+        }
 
         var invitation = await _invitationRepository.CreateInvitationAsync(new Invitation
         {
