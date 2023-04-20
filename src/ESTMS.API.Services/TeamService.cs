@@ -69,4 +69,12 @@ public class TeamService : ITeamService
 
         return teamManager.Teams;
     }
+
+    public async Task<Team> GetTeamByTeamManagerId(string teamManagerUserId)
+    {
+        var team = await _teamRepository.GetTeamByTeamManagerUserId(teamManagerUserId)
+            ?? throw new NotFoundException("Team with this id was not found.");
+
+        return team;
+    }
 }

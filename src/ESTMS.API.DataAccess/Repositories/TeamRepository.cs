@@ -42,6 +42,17 @@ public class TeamRepository : ITeamRepository
             .SingleOrDefaultAsync();
     }
 
+    public async Task<Team?> GetTeamByTeamManagerUserId(string teamManagerUserId)
+    {
+        return await _context.Teams
+            .Include(t => t.Players)
+            .ThenInclude(p => p.ApplicationUser)
+            .Include(t => t.TeamManager)
+            .ThenInclude(t => t.ApplicationUser)
+            .Where(t => t.TeamManager.ApplicationUser.Id == teamManagerUserId)
+            .SingleOrDefaultAsync();
+    }
+
     public async Task<Team> UpdateTeamAsync(Team updatedTeam)
     {
         _context.Teams.Update(updatedTeam);

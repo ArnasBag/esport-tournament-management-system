@@ -8,5 +8,6 @@ public interface ITeamService
     Task DeactivateTeamAsync(int id);
     Task<Team> UpdateTeamAsync(int id, Team updatedTeam);
     Task<Team> GetTeamByIdAsync(int id);
+    Task<Team> GetTeamByTeamManagerId(string teamManagerUserId);
     Task<List<Team>> GetAllTeamsAsync(string? userId = null);
 }
