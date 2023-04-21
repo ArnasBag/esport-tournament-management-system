@@ -11,6 +11,7 @@ public class Tournament
     public Status Status { get; set; }
     public List<Team>? Teams { get; set; }
     public List<Match>? Matches { get; set; }
+    public TournamentManager Manager { get; set; }
 }
 
 public enum Status
