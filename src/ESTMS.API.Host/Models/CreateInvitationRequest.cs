@@ -2,6 +2,6 @@
 {
     public class CreateInvitationRequest
     {
-        public string UserId { get; set; }
+        public int TeamId{ get; set; }
     }
 }

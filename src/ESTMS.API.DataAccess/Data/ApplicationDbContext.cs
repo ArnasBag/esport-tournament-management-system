@@ -19,7 +19,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         builder.Entity<Invitation>()
             .HasOne(i => i.Receiver)
-            .WithMany(r => r.Invitations);
+            .WithMany(r => r.ReceivedInvitations);
+
+        builder.Entity<Invitation>()
+            .HasOne(i => i.Sender)
+            .WithMany(r => r.SentInvitations);
 
         builder.Entity<ApplicationUser>()
             .UseTptMappingStrategy();

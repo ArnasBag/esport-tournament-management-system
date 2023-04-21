@@ -6,8 +6,8 @@ public class Invitation
     public InvitationStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public Player Receiver { get; set; }
-    public TeamManager Sender { get; set; }
+    public ApplicationUser Receiver { get; set; }
+    public ApplicationUser Sender { get; set; }
     public Team Team { get; set; }
 }
 
