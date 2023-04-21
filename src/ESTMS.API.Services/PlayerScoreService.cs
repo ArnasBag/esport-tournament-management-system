@@ -27,6 +27,11 @@ public class PlayerScoreService : IPlayerScoreService
         var match = await _matchRepository.GetMatchByIdAsync(matchId)
             ?? throw new NotFoundException("Match with this id was not found.");
 
+        if(match.Status == Status.NotStarted)
+        {
+            throw new BadRequestException("This match has not been started yet.");
+        }
+
         var matchPlayers = match.Competitors.SelectMany(c => c.Players).ToList();
 
         if(!matchPlayers.Any(p => p.Id == player.Id))
