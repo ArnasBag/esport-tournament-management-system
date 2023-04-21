@@ -17,6 +17,8 @@ public class MatchRepository : IMatchRepository
     {
         return await _context.Matches
             .Include(m => m.PlayerScores)
+            .Include(m => m.Competitors)
+            .ThenInclude(m => m.Players)
             .Where(m => m.Id == id)
             .SingleOrDefaultAsync();
     }

@@ -13,6 +13,12 @@ public class PlayerScoreRepository : IPlayerScoreRepository
         _context = context;
     }
 
+    public async Task<PlayerScore> CreatePlayerScoreAsync(PlayerScore playerScore)
+    {
+        _context.PlayerScores.Add(playerScore);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<List<PlayerScore>> GetPlayerScoresByMatchIdAsync(int matchId)
     {
         return await _context.PlayerScores
