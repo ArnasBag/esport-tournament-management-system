@@ -14,6 +14,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<TournamentWinner> TournamentWinners { get; set; }
     public DbSet<Match> Matches { get; set; }
     public DbSet<MatchWinner> MatchWinners { get; set; }
+    public DbSet<PlayerScore> PlayerScores { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
