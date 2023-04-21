@@ -7,20 +7,41 @@ namespace ESTMS.API.Services;
 public class PlayerScoreService : IPlayerScoreService
 {
     private readonly IPlayerScoreRepository _playerScoreRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IMatchRepository _matchRepository;
 
-    public PlayerScoreService(IPlayerScoreRepository playerScoreRepository)
+    public PlayerScoreService(IPlayerScoreRepository playerScoreRepository,
+        IUserRepository userRepository,
+        IMatchRepository matchRepository)
     {
         _playerScoreRepository = playerScoreRepository;
+        _userRepository = userRepository;
+        _matchRepository = matchRepository;
     }
 
-    public async Task<PlayerScore> CreatePlayerScoreAsync(PlayerScore playerScore)
+    public async Task<PlayerScore> CreatePlayerScoreAsync(string userId, int matchId, PlayerScore playerScore)
     {
-        if(playerScore.Assists < 0 || playerScore.Deaths < 0 || playerScore.Kills < 0)
+        var player = await _userRepository.GetPlayerByUserIdAsync(userId)
+            ?? throw new NotFoundException("Player with this id was not found.");
+        
+        var match = await _matchRepository.GetMatchByIdAsync(matchId)
+            ?? throw new NotFoundException("Match with this id was not found.");
+
+        var matchPlayers = match.Competitors.SelectMany(c => c.Players).ToList();
+
+        if(!matchPlayers.Any(p => p.Id == player.Id))
+        {
+            throw new BadRequestException("This player is not part of this match.");
+        }
+
+        if (playerScore.Assists < 0 || playerScore.Deaths < 0 || playerScore.Kills < 0)
         {
             throw new BadRequestException("Cannot create a player score with such values.");
         }
 
-        await _playerScoreRepository.CreatePlayerScoreAsync(playerScore);
+        playerScore.Match = match;
+        playerScore.CreatedAt = DateTime.UtcNow;
+        await _playerScoreRepository.AssignPlayerScoreToPlayerAsync(player, playerScore);
 
         return playerScore;
     }
@@ -28,5 +49,12 @@ public class PlayerScoreService : IPlayerScoreService
     public Task<List<PlayerScore>> GetPlayerScoresByMatchIdAsync(int matchId)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<List<PlayerScore>> GetPlayerScoresByUserId(string userId)
+    {
+        var playerScores = await _playerScoreRepository.GetPlayerScoresByUserId(userId);
+
+        return playerScores;
     }
 }

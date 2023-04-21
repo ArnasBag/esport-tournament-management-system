@@ -39,6 +39,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Players
             .Include(p => p.ApplicationUser)
+            .Include(p => p.Scores)
             .SingleOrDefaultAsync(p => p.ApplicationUser.Id == userId);
     }
 

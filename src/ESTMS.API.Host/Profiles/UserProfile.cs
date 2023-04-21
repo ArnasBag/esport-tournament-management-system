@@ -37,5 +37,8 @@ public class UserProfile : Profile
 
         CreateMap<Team, PlayersTeamResponse>()
             .ForMember(dest => dest.TeamManager, opt => opt.MapFrom(src => src.TeamManager));
+
+        CreateMap<CreatePlayerScoreRequest, PlayerScore>().ReverseMap();
+        CreateMap<PlayerScore, PlayerScoreResponse>();
     }
 }

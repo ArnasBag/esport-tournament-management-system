@@ -1,6 +1,7 @@
 ﻿using ESTMS.API.DataAccess.Data;
 using ESTMS.API.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace ESTMS.API.DataAccess.Repositories;
 
@@ -13,9 +14,9 @@ public class PlayerScoreRepository : IPlayerScoreRepository
         _context = context;
     }
 
-    public async Task<PlayerScore> CreatePlayerScoreAsync(PlayerScore playerScore)
+    public async Task AssignPlayerScoreToPlayerAsync(Player player, PlayerScore playerScore)
     {
-        _context.PlayerScores.Add(playerScore);
+        player.Scores.Add(playerScore);
         await _context.SaveChangesAsync();
     }
 
@@ -24,6 +25,16 @@ public class PlayerScoreRepository : IPlayerScoreRepository
         return await _context.PlayerScores
             .Include(p => p.Match)
             .Where(p => p.Match.Id == matchId)
+            .ToListAsync();
+    }
+
+    public async Task<List<PlayerScore>> GetPlayerScoresByUserId(string userId)
+    {
+        return await _context.PlayerScores
+            .Include(p => p.Player)
+            .ThenInclude(p => p.ApplicationUser)
+            .Include(p => p.Match)
+            .Where(p => p.Player.ApplicationUser.Id == userId)
             .ToListAsync();
     }
 }
