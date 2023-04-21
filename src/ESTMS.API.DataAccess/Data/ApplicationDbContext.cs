@@ -44,7 +44,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasMany(m => m.Matches)
             .WithOne(t => t.Tournament);
 
-
         base.OnModelCreating(builder);
     }
 }
