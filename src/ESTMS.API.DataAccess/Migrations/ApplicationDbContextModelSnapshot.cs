@@ -667,17 +667,16 @@ namespace ESTMS.API.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Match", b =>
-                {
-                    b.Navigation("Winner");
-                });
-
-            
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("ReceivedInvitations");
 
                     b.Navigation("SentInvitations");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Match", b =>
+                {
+                    b.Navigation("Winner");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
