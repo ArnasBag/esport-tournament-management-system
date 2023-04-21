@@ -24,14 +24,17 @@ public class InvitationService : IInvitationService
 
     public async Task ChangeInvitationStatusAsync(int id, InvitationStatus status)
     {
-        var userId = _userIdProvider.UserId;
-
-        var invitation = await _invitationRepository.GetInvitationByIdAsync(id, userId)
+        var invitation = await _invitationRepository.GetInvitationByIdAsync(id)
             ?? throw new NotFoundException("Invitation with this id was not found.");
 
         if(invitation.Status == InvitationStatus.Accepted)
         {
             throw new BadRequestException("Invitation is already accepted");
+        }
+
+        if(invitation.Receiver.Id != _userIdProvider.UserId!)
+        {
+            throw new BadRequestException("You did not receive this invitation");
         }
 
         invitation.Status = status;
@@ -41,35 +44,46 @@ public class InvitationService : IInvitationService
 
         if (status == InvitationStatus.Accepted)
         {
-            var player = await _userRepository.GetPlayerByUserIdAsync(userId);
-            await _teamRepository.AssignPlayerToTeamAsync(invitation.Team, player);
+            var player = await _userRepository.GetPlayerByUserIdAsync(_userIdProvider.UserId!);
+
+            //team manager is the one who accepts invitation
+            if(player == null)
+            {
+                var playerToAssign = await _userRepository.GetPlayerByUserIdAsync(invitation.Sender.Id);
+                await _teamRepository.AssignPlayerToTeamAsync(invitation.Team, playerToAssign!);
+            }
+            //player is the one who accepts invitation
+            else
+            {
+                await _teamRepository.AssignPlayerToTeamAsync(invitation.Team, player!);
+            }
         }
     }
 
-    public async Task<Invitation> CreateInvitationAsync(int teamId, string receiverId)
+    public async Task<Invitation> CreateInviteForTeamAsync(int teamId)
     {
         var team = await _teamRepository.GetTeamByIdAsync(teamId)
-            ?? throw new NotFoundException();
+            ?? throw new NotFoundException("Team with this if was not found.");
 
-        var receiver = await _userRepository.GetPlayerByUserIdAsync(receiverId) 
-            ?? throw new NotFoundException();
+        var senderPlayerUser = await _userRepository.GetUserByIdAsync(_userIdProvider.UserId!);
+        var receiverTeamManagerUser = await _userRepository.GetUserByIdAsync(team.TeamManager.ApplicationUser.Id);
 
-        if(receiver.Team != null)
+        var senderPlayer = await _userRepository.GetPlayerByUserIdAsync(senderPlayerUser.Id);
+
+        if(senderPlayer.Team != null)
         {
-            throw new BadRequestException("Player is already part of a team.");
-        }
+            if (senderPlayer.Team.Id == team.Id)
+            {
+                throw new BadRequestException("You are already part of this team.");
+            }
 
-        var teamManagerUserId = _userIdProvider.UserId;
-
-        if(team.TeamManager.ApplicationUser.Id != teamManagerUserId)
-        {
-            throw new ForbiddenException("Cannot invite player to a team you don't have access to.");
+            throw new BadRequestException("You are already part of a team.");
         }
 
         var invitation = await _invitationRepository.CreateInvitationAsync(new Invitation
         {
-            Sender = team.TeamManager,
-            Receiver = receiver,
+            Sender = senderPlayerUser!,
+            Receiver = receiverTeamManagerUser!,
             Team = team,
             Status = InvitationStatus.Pending,
             CreatedAt = DateTime.UtcNow
@@ -78,8 +92,52 @@ public class InvitationService : IInvitationService
         return invitation;
     }
 
-    public async Task<List<Invitation>> GetAllInitationsAsync()
+    public async Task<Invitation> CreateInviteForPlayerAsync(string playerUserId, int teamId)
     {
-        return await _invitationRepository.GetAllInvitationsAsync(_userIdProvider.UserId!);
+        var team = await _teamRepository.GetTeamByIdAsync(teamId)
+            ?? throw new NotFoundException("Team with this id was not found.");
+
+        if (team.TeamManager.ApplicationUser.Id != _userIdProvider.UserId!)
+        {
+            throw new UnauthorizedAccessException("Cannot invite players to a team you do not manage.");
+        }
+
+        var playerUser = await _userRepository.GetUserByIdAsync(playerUserId)
+            ?? throw new NotFoundException("Player with this id was not found.");
+
+        var player = await _userRepository.GetPlayerByUserIdAsync(playerUserId);
+
+        if(player!.Team != null)
+        {
+            throw new BadRequestException("Player with this id is already part of a team.");
+        }
+
+        var invitation = await _invitationRepository.CreateInvitationAsync(new Invitation
+        {
+            Sender = team.TeamManager.ApplicationUser,
+            Receiver = playerUser,
+            Team = team,
+            Status = InvitationStatus.Pending,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        return invitation;
+    }
+
+    public async Task<List<Invitation>> GetAllInvitationsAsync(bool sent, bool received)
+    {
+        if (sent)
+        {
+            return await _invitationRepository.GetAllSentInvitations(_userIdProvider.UserId!);
+        }
+        else if (received)
+        {
+            return await _invitationRepository.GetAllReceivedInvitations(_userIdProvider.UserId!);
+
+        }
+        else
+        {
+            throw new BadRequestException("You must select either sent or received invitations.");
+        }
     }
 }
