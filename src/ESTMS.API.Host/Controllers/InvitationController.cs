@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ESTMS.API.Host.Controllers;
 
 [ApiController]
-[Authorize(Roles = Roles.Player)]
 [Route("invitations")]
 public class InvitationController : ControllerBase
 {
@@ -30,9 +29,9 @@ public class InvitationController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllInvitations()
+    public async Task<IActionResult> GetAllInvitationsAsync(bool sent, bool received)
     {
-        var invitations = await _invitationService.GetAllInitationsAsync();
+        var invitations = await _invitationService.GetAllInvitationsAsync(sent, received);
 
         return Ok(_mapper.Map<List<InvitationResponse>>(invitations));
     }

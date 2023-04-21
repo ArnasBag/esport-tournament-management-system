@@ -4,7 +4,8 @@ namespace ESTMS.API.Services;
 
 public interface IInvitationService
 {
-    Task<Invitation> CreateInvitationAsync(int teamId, string receiverId);
+    Task<Invitation> CreateInviteForTeamAsync(int teamId);
+    Task<Invitation> CreateInviteForPlayerAsync(string playerUserId, int teamId);
     Task ChangeInvitationStatusAsync(int id, InvitationStatus status);
-    Task<List<Invitation>> GetAllInitationsAsync();
+    Task<List<Invitation>> GetAllInvitationsAsync(bool sent, bool received);
 }

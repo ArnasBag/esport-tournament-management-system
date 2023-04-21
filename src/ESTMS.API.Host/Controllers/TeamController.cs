@@ -69,11 +69,13 @@ public class TeamController : ControllerBase
         return NoContent();
     }
 
+
+
     [HttpPost("{id}/invitations")]
-    [Authorize(Roles = Roles.TeamManager)]
-    public async Task<IActionResult> InvitePlayerToTeam(int id, CreateInvitationRequest request)
+    [Authorize(Roles = Roles.Player)]
+    public async Task<IActionResult> RequestTeamInvite(int id)
     {
-        var invitation = await _invitationService.CreateInvitationAsync(id, request.UserId);
+        var invitation = await _invitationService.CreateInviteForTeamAsync(id);
 
         return Created("/test", _mapper.Map<InvitationResponse>(invitation));
     }
