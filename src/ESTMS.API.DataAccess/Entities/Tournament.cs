@@ -5,7 +5,7 @@ public class Tournament
     public int Id { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public Team? WinnerTeam { get; set; }
+    public TournamentWinner? Winner { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
     public Status Status { get; set; }
