@@ -1,6 +1,7 @@
 ﻿using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace ESTMS.API.Services;
 
@@ -9,21 +10,26 @@ public class TeamService : ITeamService
     private readonly ITeamRepository _teamRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUserIdProvider _userIdProvider;
+    private readonly IFileUploader _fileUploader;
 
     public TeamService(ITeamRepository teamRepository,
         IUserRepository userRepository,
-        IUserIdProvider userIdProvider)
+        IUserIdProvider userIdProvider,
+        IFileUploader fileUploader)
     {
         _teamRepository = teamRepository;
         _userRepository = userRepository;
         _userIdProvider = userIdProvider;
+        _fileUploader = fileUploader;
     }
 
-    public async Task<Team> CreateTeamAsync(Team team)
+    public async Task<Team> CreateTeamAsync(Team team, IFormFile logo)
     {
         var manager = await _userRepository.GetTeamManagerByUserIdAsync(_userIdProvider.UserId!);
-     
+        var logoUrl = await _fileUploader.UploadFileAsync(logo);
+
         team.TeamManager = manager!;
+        team.LogoUrl = logoUrl;
 
         var createdTeam = await _teamRepository.CreateTeamAsync(team);
 

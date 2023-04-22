@@ -42,11 +42,11 @@ public class TeamController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = Roles.TeamManager)]
-    public async Task<IActionResult> CreateTeam(CreateTeamRequest request)
+    public async Task<IActionResult> CreateTeam([FromForm] CreateTeamRequest request)
     {
         var team = _mapper.Map<Team>(request);
 
-        var createdTeam = await _teamService.CreateTeamAsync(team);
+        var createdTeam = await _teamService.CreateTeamAsync(team, request.Logo);
 
         return Created("/test", _mapper.Map<TeamResponse>(createdTeam));
     }

@@ -1,10 +1,11 @@
 ﻿using ESTMS.API.DataAccess.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace ESTMS.API.Services;
 
 public interface ITeamService
 {
-    Task<Team> CreateTeamAsync(Team team);
+    Task<Team> CreateTeamAsync(Team team, IFormFile logo);
     Task DeactivateTeamAsync(int id);
     Task<Team> UpdateTeamAsync(int id, Team updatedTeam);
     Task<Team> GetTeamByIdAsync(int id);
