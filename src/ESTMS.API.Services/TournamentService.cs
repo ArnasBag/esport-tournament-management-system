@@ -7,15 +7,17 @@ namespace ESTMS.API.Services;
 public class TournamentService : ITournamentService
 {
     private readonly ITournamentRepository _tournamentRepository;
+    private readonly ITeamRepository _teamRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUserIdProvider _userIdProvider;
 
     public TournamentService(ITournamentRepository tournamentRepository, IUserRepository userRepository,
-        IUserIdProvider userIdProvider)
+        IUserIdProvider userIdProvider, ITeamRepository teamRepository)
     {
         _tournamentRepository = tournamentRepository;
         _userRepository = userRepository;
         _userIdProvider = userIdProvider;
+        _teamRepository = teamRepository;
     }
 
     public async Task<List<Tournament>> GetAllTournamentsAsync()
@@ -35,9 +37,10 @@ public class TournamentService : ITournamentService
 
     public async Task<Tournament> CreateTournamentAsync(Tournament tournament)
     {
-        //var tournamentManager = await _userRepository.GetTournamentManagerByUserIdAsync(_userIdProvider.UserId!);
+        var tournamentManager = await _userRepository.GetTournamentManagerByUserIdAsync(_userIdProvider.UserId!);
 
-        //tournament.Manager = tournamentManager!;
+        tournament.Manager = tournamentManager!;
+        tournament.Status = Status.NotStarted;
 
         var createdTournament = await _tournamentRepository.CreateTournamentAsync(tournament);
 
@@ -46,17 +49,70 @@ public class TournamentService : ITournamentService
 
     public async Task<Tournament> UpdateTournamentAsync(int id, Tournament updatedTournament)
     {
-        throw new NotImplementedException();
+        var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
+                         ?? throw new NotFoundException("Tournament with this id doesn't exist.");
+
+        tournament.Name = updatedTournament.Name;
+        tournament.Description = updatedTournament.Description;
+        tournament.StartDate = updatedTournament.StartDate;
+        tournament.EndDate = updatedTournament.EndDate;
+
+        return await _tournamentRepository.UpdateTournamentAsync(tournament);
     }
 
-    public async Task<Tournament> UpdateTournamentWinnerAsync(int id, TournamentWinner updatedWinner)
+    public async Task<Tournament> UpdateTournamentWinnerAsync(int id, int updatedWinner)
     {
-        throw new NotImplementedException();
+        var winnerTeam = await _teamRepository.GetTeamByIdAsync(updatedWinner) ??
+                         throw new NotFoundException("Team with this id doesn't exist.");
+
+        var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
+                         ?? throw new NotFoundException("Tournament with this id doesn't exist.");
+
+        if (!tournament.Teams.Any(t => t.Id == winnerTeam.Id))
+        {
+            throw new NotFoundException("Team with this id did not participate in this tournament");
+        }
+
+        tournament.Winner = new TournamentWinner
+        {
+            TournamentId = tournament.Id,
+            Tournament = tournament,
+            WinnerTeam = winnerTeam
+        };
+
+        return await _tournamentRepository.UpdateTournamentAsync(tournament);
     }
 
     public async Task<Tournament> UpdateTournamentStatusAsync(int id, Status updatedStatus)
     {
-        throw new NotImplementedException();
+        var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
+                         ?? throw new NotFoundException("Tournament with this id doesn't exist.");
+
+        Status status = tournament.Status;
+
+        switch (updatedStatus)
+        {
+            case Status.InProgress:
+                if (tournament.Teams.Count < 2)
+                    throw new BadRequestException("Tournament has too little teams to start.");
+                if (tournament.Matches.Count < 0)
+                    throw new BadRequestException("Tournament has no Matches.");
+                status = Status.InProgress;
+                break;
+
+            case Status.Done:
+                if (tournament.Matches.Any(m => m.Status != Status.Done))
+                    throw new BadRequestException("There are still matches in progress");
+                status = Status.Done;
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(updatedStatus), updatedStatus, null);
+        }
+
+        tournament.Status = status;
+
+        return await _tournamentRepository.UpdateTournamentAsync(tournament);
     }
 
     public async Task<Tournament> GetTournamentByTournamentManagerId(string id)

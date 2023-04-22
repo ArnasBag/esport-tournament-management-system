@@ -59,7 +59,7 @@ public class TournamentController : ControllerBase
     [HttpPut("{id}/winner")]
     public async Task<IActionResult> UpdateTournamentWinner(int id, UpdateTournamentWinnerRequest request)
     {
-        var updatedWinner = _mapper.Map<TournamentWinner>(request);
+        var updatedWinner = request.Id;
 
         var tournament = await _tournamentService.UpdateTournamentWinnerAsync(id, updatedWinner);
 
