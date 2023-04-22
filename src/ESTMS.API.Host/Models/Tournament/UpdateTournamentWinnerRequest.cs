@@ -2,5 +2,5 @@
 
 public class UpdateTournamentWinnerRequest
 {
-    
+    public int Id { get; set; }
 }
