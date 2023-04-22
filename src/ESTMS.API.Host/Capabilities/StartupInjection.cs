@@ -1,4 +1,5 @@
-﻿using ESTMS.API.DataAccess.Repositories;
+﻿using Azure.Storage.Blobs;
+using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.DataAccess.Settings;
 using ESTMS.API.Host.Profiles;
 using ESTMS.API.Services;
@@ -7,7 +8,8 @@ namespace ESTMS.API.Host.Capabilities
 {
     public static class StartupInjection
     {
-        public static IServiceCollection ConfigureInjection(this IServiceCollection services)
+        public static IServiceCollection ConfigureInjection(this IServiceCollection services, 
+            IConfiguration configuration)
         {
             return services
                 .AddTransient<IAuthService, AuthService>()
@@ -17,7 +19,8 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IInvitationRepository, InvitationRepository>()
                 .AddTransient<IMatchRepository, MatchRepository>()
                 .AddTransient<IPlayerScoreRepository, PlayerScoreRepository>()
-                .AddTransient<IFileUploader, LocalStorageFileUploader>()
+                //.AddTransient<IFileUploader, LocalStorageFileUploader>()
+                .AddTransient<IFileUploader, BlobStorageUploader>()
                 .AddTransient<IMatchService, MatchService>()
                 .AddTransient<ITeamManagerRepository, TeamManagerRepository>()
                 .AddTransient<IPlayerScoreService, PlayerScoreService>()
@@ -27,6 +30,9 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IPlayerService, PlayerService>()
                 .AddTransient<IPlayerRepository, PlayerRepository>()
                 .AddTransient<IUserIdProvider, UserIdProvider>()
+
+                .AddSingleton(x => new BlobServiceClient(configuration.GetConnectionString("AzureBlob")))
+
                 .AddHttpContextAccessor()
                 .AddAutoMapper(typeof(UserProfile).Assembly);
         }
