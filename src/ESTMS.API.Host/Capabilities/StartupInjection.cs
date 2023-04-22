@@ -28,6 +28,7 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IUserIdProvider, UserIdProvider>()
                 .AddTransient<ITournamentService, TournamentService>()
                 .AddTransient<ITournamentRepository, TournamentRepository>()
+                .AddTransient<ITournamentManagerRepository, TournamentManagerRepository>()
                 .AddHttpContextAccessor()
                 .AddAutoMapper(typeof(UserProfile).Assembly);
         }
