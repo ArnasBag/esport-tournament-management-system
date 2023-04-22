@@ -2,7 +2,7 @@
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.Host.Models;
 using ESTMS.API.Host.Models.Player;
-using Microsoft.AspNetCore.Identity;
+using ESTMS.API.Host.Models.Tournament;
 
 namespace ESTMS.API.Host.Profiles;
 
@@ -37,5 +37,14 @@ public class UserProfile : Profile
 
         CreateMap<Team, PlayersTeamResponse>()
             .ForMember(dest => dest.TeamManager, opt => opt.MapFrom(src => src.TeamManager));
+
+
+        CreateMap<Tournament, TournamentResponse>()
+            .ForMember(dest => dest.Winner, opt => opt.MapFrom(src => src.Winner))
+            .ForMember(dest => dest.Teams, opt => opt.MapFrom(src => src.Teams));
+
+
+        CreateMap<CreateTournamentRequest, Tournament>();
+
     }
 }
