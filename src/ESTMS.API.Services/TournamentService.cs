@@ -20,11 +20,17 @@ public class TournamentService : ITournamentService
         _teamRepository = teamRepository;
     }
 
-    public async Task<List<Tournament>> GetAllTournamentsAsync()
+    public async Task<List<Tournament>> GetAllTournamentsAsync(string? userId = null)
     {
-        var tournaments = await _tournamentRepository.GetAllTournamentsAsync();
+        if (userId is null)
+        {
+            return await _tournamentRepository.GetAllTournamentsAsync();
+        }
 
-        return tournaments;
+        var tournamentManager = await _userRepository.GetTournamentManagerByUserIdAsync(userId)
+                                ?? throw new NotFoundException("Tournament manager with this id does not exist.");
+
+        return tournamentManager.Tournaments;
     }
 
     public async Task<Tournament> GetTournamentByIdAsync(int id)

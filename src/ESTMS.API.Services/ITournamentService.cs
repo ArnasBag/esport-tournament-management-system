@@ -4,7 +4,7 @@ namespace ESTMS.API.Services;
 
 public interface ITournamentService
 {
-    Task<List<Tournament>> GetAllTournamentsAsync();
+    Task<List<Tournament>> GetAllTournamentsAsync(string? userId = null);
     Task<Tournament> GetTournamentByIdAsync(int id);
     Task<Tournament> CreateTournamentAsync(Tournament tournament);
     Task<Tournament> UpdateTournamentAsync(int id, Tournament updatedTournament);

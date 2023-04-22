@@ -21,19 +21,19 @@ public class TournamentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTournaments()
+    public async Task<IActionResult> GetTournaments(string? tournamentManagerId)
     {
-        var players = await _tournamentService.GetAllTournamentsAsync();
+        var tournaments = await _tournamentService.GetAllTournamentsAsync(tournamentManagerId);
 
-        return Ok(_mapper.Map<List<TournamentResponse>>(players));
+        return Ok(_mapper.Map<List<TournamentResponse>>(tournaments));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTournamentById(int id)
     {
-        var player = await _tournamentService.GetTournamentByIdAsync(id);
+        var tournaments = await _tournamentService.GetTournamentByIdAsync(id);
 
-        return Ok(_mapper.Map<TournamentResponse>(player));
+        return Ok(_mapper.Map<TournamentResponse>(tournaments));
     }
 
     [HttpPost]
@@ -41,9 +41,9 @@ public class TournamentController : ControllerBase
     {
         var tournament = _mapper.Map<Tournament>(request);
 
-        var player = await _tournamentService.CreateTournamentAsync(tournament);
+        var createdTournament = await _tournamentService.CreateTournamentAsync(tournament);
 
-        return Ok(_mapper.Map<TournamentResponse>(player));
+        return Ok(_mapper.Map<TournamentResponse>(createdTournament));
     }
 
     [HttpPut("{id}")]
