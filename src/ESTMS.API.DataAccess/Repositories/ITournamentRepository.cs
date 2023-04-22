@@ -9,4 +9,5 @@ public interface ITournamentRepository
     Task<Tournament> CreateTournamentAsync(Tournament tournament);
     Task<Tournament> UpdateTournamentAsync(Tournament updatedTournament);
     Task RemoveTournamentAsync(Tournament tournaments);
+    Task<Tournament?> GetTournamentByTournamentManagerId(string id);
 }

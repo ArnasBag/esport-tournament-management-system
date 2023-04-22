@@ -60,4 +60,16 @@ public class TournamentRepository : ITournamentRepository
         _context.Tournaments.Remove(tournaments);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<Tournament?> GetTournamentByTournamentManagerId(string id)
+    {
+        return await _context.Tournaments
+            .Include(t => t.Teams)
+            .ThenInclude(p => p.TeamManager)
+            .ThenInclude(u => u.ApplicationUser)
+            .Include(m => m.Matches)
+            .ThenInclude(c => c.Competitors)
+            .Where(x => x.Manager.ApplicationUser.Id == id)
+            .SingleOrDefaultAsync();
+    }
 }
