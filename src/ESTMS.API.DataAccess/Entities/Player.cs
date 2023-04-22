@@ -9,6 +9,7 @@ public class Player
     public string? AboutMeText { get; set; }
     public int? Points { get; set; }
     public Rank? Rank { get; set; }
+    public List<PlayerScore> Scores { get; set; }
 }
 
 public enum Rank

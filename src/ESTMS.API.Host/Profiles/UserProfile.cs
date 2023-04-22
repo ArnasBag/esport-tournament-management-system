@@ -46,5 +46,7 @@ public class UserProfile : Profile
 
         CreateMap<CreateTournamentRequest, Tournament>();
 
+        CreateMap<CreatePlayerScoreRequest, PlayerScore>().ReverseMap();
+        CreateMap<PlayerScore, PlayerScoreResponse>();
     }
 }

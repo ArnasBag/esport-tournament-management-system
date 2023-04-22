@@ -5,7 +5,6 @@ using ESTMS.API.Host.Models;
 using ESTMS.API.Host.Models.Player;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;
@@ -15,15 +14,17 @@ namespace ESTMS.API.Host.Controllers;
 public class PlayerController : ControllerBase
 {
     private readonly IPlayerService _playerService;
+    private readonly IPlayerScoreService _playerScoreService;
     private readonly IInvitationService _invitationService;
     private readonly IMapper _mapper;
 
-    public PlayerController(IPlayerService playerService, IMapper mapper, 
-        IInvitationService invitationService)
+    public PlayerController(IPlayerService playerService, IMapper mapper,
+        IInvitationService invitationService, IPlayerScoreService playerScoreService)
     {
         _playerService = playerService;
         _mapper = mapper;
         _invitationService = invitationService;
+        _playerScoreService = playerScoreService;
     }
 
     [HttpGet]
@@ -80,5 +81,21 @@ public class PlayerController : ControllerBase
         var invitation = await _invitationService.CreateInviteForPlayerAsync(id, request.TeamId);
 
         return Created("/test", _mapper.Map<InvitationResponse>(invitation));
+    }
+
+    [HttpPost("{id}/player-scores")]
+    public async Task<IActionResult> CreatePlayerScore(string id, CreatePlayerScoreRequest request)
+    {
+        var playerScore = await _playerScoreService.CreatePlayerScoreAsync(id, request.MatchId, _mapper.Map<PlayerScore>(request));
+
+        return Ok(_mapper.Map<CreatePlayerScoreRequest>(playerScore));
+    }
+
+    [HttpGet("{id}/player-scores")]
+    public async Task<IActionResult> GetPlayerScores(string id)
+    {
+        var playerScores = await _playerScoreService.GetPlayerScoresByUserId(id);
+
+        return Ok(_mapper.Map<List<PlayerScoreResponse>>(playerScores));
     }
 }
