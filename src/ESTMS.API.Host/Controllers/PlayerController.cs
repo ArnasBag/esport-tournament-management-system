@@ -98,4 +98,12 @@ public class PlayerController : ControllerBase
 
         return Ok(_mapper.Map<List<PlayerScoreResponse>>(playerScores));
     }
+
+    [HttpGet("{id}/kda")]
+    public async Task<IActionResult> GetPlayerKda(string id)
+    {
+        var kda = await _playerScoreService.GetPlayerKdaAsync(id);
+
+        return Ok(new KdaResponse { Kda = kda});
+    }
 }

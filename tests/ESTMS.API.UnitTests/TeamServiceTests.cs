@@ -45,7 +45,7 @@ public class TeamServiceTests
     {
         _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team());
 
-        await _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team());
+        await _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team(), It.IsAny<IFormFile>());
 
         _teamRepositoryMock.Verify(x => x.GetTeamByIdAsync(It.IsAny<int>()), Times.Once);
         _teamRepositoryMock.Verify(x => x.UpdateTeamAsync(It.IsAny<Team>()), Times.Once);
@@ -56,7 +56,7 @@ public class TeamServiceTests
     {
         _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Team));
 
-        Assert.ThrowsAsync<NotFoundException>(() => _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team()));
+        Assert.ThrowsAsync<NotFoundException>(() => _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team(), It.IsAny<IFormFile>()));
     }
 
     [Test]

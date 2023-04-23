@@ -44,11 +44,25 @@ public class PlayerScoreService : IPlayerScoreService
             throw new BadRequestException("Cannot create a player score with such values.");
         }
 
+        //check if player score for this match has been filled already
+
         playerScore.Match = match;
         playerScore.CreatedAt = DateTime.UtcNow;
         await _playerScoreRepository.AssignPlayerScoreToPlayerAsync(player, playerScore);
 
         return playerScore;
+    }
+
+    public async Task<double> GetPlayerKdaAsync(string userId)
+    {
+        var player = await _userRepository.GetPlayerByUserIdAsync(userId)
+            ?? throw new NotFoundException("Player with this id was not found.");
+
+        var kda = player.Scores.Average(ps => ps.Deaths == 0 ? 
+        ps.Kills + ps.Assists : 
+        (ps.Kills + ps.Assists) / (double) ps.Deaths);
+
+        return kda;
     }
 
     public Task<List<PlayerScore>> GetPlayerScoresByMatchIdAsync(int matchId)
