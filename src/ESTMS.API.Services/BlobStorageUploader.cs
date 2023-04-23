@@ -22,4 +22,11 @@ public class BlobStorageUploader : IFileUploader
 
         return filePath;
     }
+
+    public async Task DeleteFileAsync(string fileUrl)
+    {
+        var container = _blobServiceClient.GetBlobContainerClient("images");
+        var blob = container.GetBlobClient(fileUrl);
+        await blob.DeleteIfExistsAsync();
+    }
 }

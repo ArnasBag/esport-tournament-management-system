@@ -36,13 +36,20 @@ public class TeamService : ITeamService
         return createdTeam;
     }
 
-    public async Task<Team> UpdateTeamAsync(int id, Team updatedTeam)
+    public async Task<Team> UpdateTeamAsync(int id, Team updatedTeam, IFormFile logo)
     {
         var team = await _teamRepository.GetTeamByIdAsync(id) 
             ?? throw new NotFoundException("Team with this id doesn't exist.");
 
-        team.Name = updatedTeam.Name;
-        team.Description = updatedTeam.Description;
+        if(logo != null)
+        {
+            await _fileUploader.DeleteFileAsync(team.LogoUrl);
+            var newLogoUrl = await _fileUploader.UploadFileAsync(logo);
+            team.LogoUrl = newLogoUrl;
+        }
+
+        team.Name = updatedTeam.Name ?? team.Name;
+        team.Description = updatedTeam.Description ?? team.Description;
 
         return await _teamRepository.UpdateTeamAsync(team);
     }
@@ -53,6 +60,8 @@ public class TeamService : ITeamService
             ?? throw new NotFoundException("Team with this id doesn't exist.");
 
         team.Deleted = true;
+
+        team.Players.ForEach(p => p.Team = null);
 
         await _teamRepository.UpdateTeamAsync(team);
     }

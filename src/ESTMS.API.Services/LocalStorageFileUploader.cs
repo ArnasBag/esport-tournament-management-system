@@ -12,6 +12,11 @@ public class LocalStorageFileUploader : IFileUploader
         _hostEnvironment = hostEnvironment;
     }
 
+    public Task DeleteFileAsync(string fileUrl)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<string> UploadFileAsync(IFormFile file)
     {
         string uploadsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "uploads");

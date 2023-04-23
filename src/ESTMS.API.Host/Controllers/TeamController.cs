@@ -53,9 +53,9 @@ public class TeamController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize(Roles = Roles.TeamManager)]
-    public async Task<IActionResult> UpdateTeam(int id, UpdateTeamRequest request)
+    public async Task<IActionResult> UpdateTeam(int id, [FromForm] UpdateTeamRequest request)
     {
-        var team = await _teamService.UpdateTeamAsync(id, _mapper.Map<Team>(request));
+        var team = await _teamService.UpdateTeamAsync(id, _mapper.Map<Team>(request), request.Logo);
 
         return Ok(_mapper.Map<TeamResponse>(team));
     }
