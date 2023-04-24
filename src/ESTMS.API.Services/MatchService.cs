@@ -50,4 +50,29 @@ public class MatchService : IMatchService
         await _matchRepository.UpdateMatchAsync(match);
         return match;
     }
+
+    public async Task<Match> UpdateMatchWinnerAsync(int matchId, int winnerTeamId)
+    {
+        var match = await _matchRepository.GetMatchByIdAsync(matchId)
+                    ?? throw new NotFoundException("Match with this id was not found.");
+
+        var team = await _teamRepository.GetTeamByIdAsync(winnerTeamId)
+                   ?? throw new NotFoundException("Team with this id was not found.");
+
+        if (!match.Competitors.Exists(x => x.Id == winnerTeamId))
+            throw new BadRequestException("Team with this id did not participate in this match.");
+
+        var matchWinner = new MatchWinner
+        {
+            Match = match,
+            MatchId = match.Id,
+            WinnerTeam = team,
+            WinnerTeamId = winnerTeamId
+        };
+
+        match.Winner = matchWinner;
+
+        await _matchRepository.UpdateMatchAsync(match);
+        return match;
+    }
 }
