@@ -7,13 +7,16 @@ namespace ESTMS.API.Services;
 public class MatchService : IMatchService
 {
     private readonly IMatchRepository _matchRepository;
+    private readonly ITeamRepository _teamRepository;
     private readonly IPlayerScoreRepository _playerScoreRepository;
 
-    public MatchService(IMatchRepository matchRepository, 
-        IPlayerScoreRepository playerScoreRepository)
+    public MatchService(IMatchRepository matchRepository,
+        IPlayerScoreRepository playerScoreRepository,
+        ITeamRepository teamRepository)
     {
         _matchRepository = matchRepository;
         _playerScoreRepository = playerScoreRepository;
+        _teamRepository = teamRepository;
     }
 
     public Task GenerateMatchesAsync()
@@ -24,16 +27,21 @@ public class MatchService : IMatchService
     public async Task<Match> UpdateMatchStatusAsync(int matchId, Status matchStatus)
     {
         var match = await _matchRepository.GetMatchByIdAsync(matchId)
-            ?? throw new NotFoundException("Match with this id was not found.");
+                    ?? throw new NotFoundException("Match with this id was not found.");
 
-        if(matchStatus == Status.Done)
+        if (matchStatus == Status.Done)
         {
             var playerScores = await _playerScoreRepository.GetPlayerScoresByMatchIdAsync(matchId);
             var matchParticipants = match.Competitors.SelectMany(c => c.Players);
 
             if (playerScores.Count != matchParticipants.Count())
             {
-                throw new BadRequestException("You must fill all player scores before ending the match");
+                throw new BadRequestException("You must fill all player scores before ending the match.");
+            }
+
+            if (match.Winner is null)
+            {
+                throw new BadRequestException("You must assign winner team before ending the match.");
             }
         }
 
