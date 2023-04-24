@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ESTMS.API.Host.Models;
+using ESTMS.API.Host.Models.Tournament;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,10 +19,10 @@ public class TournamentManagerController : ControllerBase
     }
 
     [HttpGet("{id}/tournament")]
-    public async Task<IActionResult> GetTournamentManagerTeam(string id)
+    public async Task<IActionResult> GetTournamentManagerTournament(string id)
     {
         var tournament = await _tournamentService.GetTournamentByTournamentManagerId(id);
 
-        return Ok(_mapper.Map<TeamResponse>(tournament));
+        return Ok(_mapper.Map<TournamentResponse>(tournament));
     }
 }

@@ -13,4 +13,5 @@ public class TournamentResponse
     public Status Status { get; set; }
     public List<TeamResponse>? Teams { get; set; }
     public List<MatchResponse>? Matches { get; set; }
+    public TournamentManagerResponse Manager { get; set; }
 }
