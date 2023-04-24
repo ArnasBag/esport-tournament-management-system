@@ -9,20 +9,17 @@ public class MatchService : IMatchService
     private readonly IMatchRepository _matchRepository;
     private readonly IPlayerScoreRepository _playerScoreRepository;
     private readonly ITeamRepository _teamRepository;
-    private readonly IMmrCalculator _mmrCalculator;
-    private readonly IPlayerRepository _playerRepository;
+    private readonly ITeamService _teamService;
 
     public MatchService(IMatchRepository matchRepository,
         IPlayerScoreRepository playerScoreRepository,
         ITeamRepository teamRepository,
-        IMmrCalculator mmrCalculator,
-        IPlayerRepository playerRepository)
+        ITeamService teamService)
     {
         _matchRepository = matchRepository;
         _playerScoreRepository = playerScoreRepository;
         _teamRepository = teamRepository;
-        _mmrCalculator = mmrCalculator;
-        _playerRepository = playerRepository;
+        _teamService = teamService;
     }
 
     public Task GenerateMatchesAsync()
@@ -54,22 +51,7 @@ public class MatchService : IMatchService
             var losingTeam = await _teamRepository.GetTeamByIdAsync(
                 match.Competitors.SingleOrDefault(c => c.Id != winnerTeam!.Id)!.Id);
 
-            var losingTeamMmr = (int) losingTeam!.Players.Average(p => p.Mmr);
-            var winningTeamMmr = (int)winnerTeam!.Players.Average(p => p.Mmr);
-
-            foreach (var player in winnerTeam!.Players)
-            {
-                var matchPlayerScore = player.Scores.Single(s => s.Match.Id == match.Id);
-                player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, losingTeamMmr, matchPlayerScore, 1);
-                await _playerRepository.UpdatePlayerAsync(player);
-            }
-
-            foreach (var player in losingTeam!.Players)
-            {
-                var matchPlayerScore = player.Scores.Single(s => s.Match.Id == match.Id);
-                player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, winningTeamMmr, matchPlayerScore, 0);
-                await _playerRepository.UpdatePlayerAsync(player);
-            }
+            await _teamService.UpdateTeamPlayersMmrAsync(winnerTeam, losingTeam, match.Id);
         }
 
         match.Status = matchStatus;

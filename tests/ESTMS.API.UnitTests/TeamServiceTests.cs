@@ -14,6 +14,8 @@ public class TeamServiceTests
     private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IUserIdProvider> _userIdProviderMock;
     private Mock<IFileUploader> _fileUploaderMock;
+    private Mock<IMmrCalculator> _mmrCalculatorMock;
+    private Mock<IPlayerRepository> _playerRepositoryMock;
 
     private ITeamService _teamService;
 
@@ -24,9 +26,11 @@ public class TeamServiceTests
         _userRepositoryMock = new Mock<IUserRepository>();
         _userIdProviderMock = new Mock<IUserIdProvider>();
         _fileUploaderMock = new Mock<IFileUploader>();
+        _mmrCalculatorMock = new Mock<IMmrCalculator>();
+        _playerRepositoryMock = new Mock<IPlayerRepository>();
 
         _teamService = new TeamService(_teamRepositoryMock.Object, _userRepositoryMock.Object, 
-            _userIdProviderMock.Object, _fileUploaderMock.Object);
+            _userIdProviderMock.Object, _fileUploaderMock.Object, _mmrCalculatorMock.Object, _playerRepositoryMock.Object);
     }
 
     [Test]

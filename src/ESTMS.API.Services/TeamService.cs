@@ -11,16 +11,22 @@ public class TeamService : ITeamService
     private readonly IUserRepository _userRepository;
     private readonly IUserIdProvider _userIdProvider;
     private readonly IFileUploader _fileUploader;
+    private readonly IMmrCalculator _mmrCalculator;
+    private readonly IPlayerRepository _playerRepository;
 
     public TeamService(ITeamRepository teamRepository,
         IUserRepository userRepository,
         IUserIdProvider userIdProvider,
-        IFileUploader fileUploader)
+        IFileUploader fileUploader,
+        IMmrCalculator mmrCalculator,
+        IPlayerRepository playerRepository)
     {
         _teamRepository = teamRepository;
         _userRepository = userRepository;
         _userIdProvider = userIdProvider;
         _fileUploader = fileUploader;
+        _mmrCalculator = mmrCalculator;
+        _playerRepository = playerRepository;
     }
 
     public async Task<Team> CreateTeamAsync(Team team, IFormFile logo)
@@ -91,5 +97,25 @@ public class TeamService : ITeamService
             ?? throw new NotFoundException("Team with this id was not found.");
 
         return team;
+    }
+
+    public async Task UpdateTeamPlayersMmrAsync(Team winner, Team loser, int matchId)
+    {
+        var losingTeamMmr = (int)loser!.Players.Average(p => p.Mmr);
+        var winningTeamMmr = (int)winner!.Players.Average(p => p.Mmr);
+
+        foreach (var player in winner!.Players)
+        {
+            var matchPlayerScore = player.Scores.Single(s => s.Match.Id == matchId);
+            player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, losingTeamMmr, matchPlayerScore, 1);
+            await _playerRepository.UpdatePlayerAsync(player);
+        }
+
+        foreach (var player in loser!.Players)
+        {
+            var matchPlayerScore = player.Scores.Single(s => s.Match.Id == matchId);
+            player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, winningTeamMmr, matchPlayerScore, 0);
+            await _playerRepository.UpdatePlayerAsync(player);
+        }
     }
 }
