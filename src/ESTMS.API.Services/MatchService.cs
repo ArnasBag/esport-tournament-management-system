@@ -71,5 +71,7 @@ public class MatchService : IMatchService
         };
 
         await _matchRepository.UpdateMatchAsync(match);
+
+        return match;
     }
 }
