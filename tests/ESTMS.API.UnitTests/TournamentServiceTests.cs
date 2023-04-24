@@ -225,7 +225,14 @@ public class TournamentServiceTests
             Id = tournamentId,
             Status = Status.NotStarted,
             Matches = matches,
-            Teams = teams
+            Teams = teams,
+            Winner = new TournamentWinner
+            {
+                Id = team.Id,
+                Tournament = new Tournament(),
+                TournamentId = tournamentId,
+                WinnerTeam = team
+            }
         };
 
         _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(tournament);

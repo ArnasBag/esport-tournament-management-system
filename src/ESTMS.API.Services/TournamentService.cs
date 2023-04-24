@@ -101,14 +101,20 @@ public class TournamentService : ITournamentService
             case Status.InProgress:
                 if (tournament.Teams.Count < 2)
                     throw new BadRequestException("Tournament has too little teams to start.");
+
                 if (tournament.Matches.Count < 1)
                     throw new BadRequestException("Tournament has no Matches.");
+
                 status = Status.InProgress;
                 break;
 
             case Status.Done:
                 if (tournament.Matches.Any(m => m.Status != Status.Done))
                     throw new BadRequestException("There are still matches in progress");
+
+                if(tournament.Winner is null)
+                    throw new BadRequestException("Tournament winner is not set.");
+
                 status = Status.Done;
                 break;
 
