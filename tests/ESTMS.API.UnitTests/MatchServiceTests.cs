@@ -4,6 +4,7 @@ using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services;
 using Moq;
 using NUnit.Framework;
+using Match = ESTMS.API.DataAccess.Entities.Match;
 
 namespace ESTMS.API.UnitTests;
 
@@ -11,6 +12,7 @@ public class MatchServiceTests
 {
     private Mock<IMatchRepository> _matchRepositoryMock;
     private Mock<IPlayerScoreRepository> _playerScoreRepositoryMock;
+    private Mock<ITeamRepository> _teamRepositoryMock;
 
     private IMatchService _matchService;
 
@@ -19,16 +21,20 @@ public class MatchServiceTests
     {
         _matchRepositoryMock = new Mock<IMatchRepository>();
         _playerScoreRepositoryMock = new Mock<IPlayerScoreRepository>();
+        _teamRepositoryMock = new Mock<ITeamRepository>();
 
-        _matchService = new MatchService(_matchRepositoryMock.Object, _playerScoreRepositoryMock.Object);
+        _matchService = new MatchService(_matchRepositoryMock.Object, _playerScoreRepositoryMock.Object,
+            _teamRepositoryMock.Object);
     }
 
     [Test]
     public void UpdateMatchStatusAsync_MatchNotFound_ThrowsException()
     {
-        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(default(DataAccess.Entities.Match));
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(default(DataAccess.Entities.Match));
 
-        Assert.ThrowsAsync<NotFoundException>(() => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), It.IsAny<Status>()));
+        Assert.ThrowsAsync<NotFoundException>(
+            () => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), It.IsAny<Status>()));
     }
 
     [Test]
@@ -48,10 +54,36 @@ public class MatchServiceTests
                 }
             }
         });
-        _playerScoreRepositoryMock.Setup(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>())).ReturnsAsync(new List<PlayerScore>()
+        _playerScoreRepositoryMock.Setup(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>())).ReturnsAsync(
+            new List<PlayerScore>()
+            {
+                new PlayerScore()
+            });
+
+        Assert.ThrowsAsync<BadRequestException>(() => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done));
+    }
+
+    [Test]
+    public void UpdateMatchStatusAsync_MatchStatusDoneAndWinnerNotAssigned_ThrowsException()
+    {
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new DataAccess.Entities.Match
         {
-            new PlayerScore()
+            Competitors = new List<Team>()
+            {
+                new Team
+                {
+                    Players = new List<Player>()
+                    {
+                        new Player()
+                    }
+                }
+            }
         });
+        _playerScoreRepositoryMock.Setup(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>())).ReturnsAsync(
+            new List<PlayerScore>()
+            {
+                new PlayerScore()
+            });
 
         Assert.ThrowsAsync<BadRequestException>(() => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done));
     }
@@ -59,6 +91,7 @@ public class MatchServiceTests
     [Test]
     public async Task UpdateMatchStatusAsync_ValidData_Ok()
     {
+
         _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new DataAccess.Entities.Match
         {
             Competitors = new List<Team>()
@@ -70,12 +103,15 @@ public class MatchServiceTests
                         new Player(),
                     }
                 }
-            }
+            },
+            Winner = new MatchWinner()
         });
-        _playerScoreRepositoryMock.Setup(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>())).ReturnsAsync(new List<PlayerScore>()
-        {
-            new PlayerScore()
-        });
+
+        _playerScoreRepositoryMock.Setup(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>())).ReturnsAsync(
+            new List<PlayerScore>()
+            {
+                new PlayerScore()
+            });
 
         await _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done);
 
