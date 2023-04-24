@@ -19,6 +19,7 @@ public class MatchRepository : IMatchRepository
             .Include(m => m.PlayerScores)
             .Include(m => m.Competitors)
             .ThenInclude(m => m.Players)
+            .Include(m => m.Winner)
             .Where(m => m.Id == id)
             .SingleOrDefaultAsync();
     }

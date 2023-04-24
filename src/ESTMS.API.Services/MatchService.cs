@@ -64,6 +64,11 @@ public class MatchService : IMatchService
             throw new BadRequestException("This match already has a winner");
         }
 
+        if(match.Status != Status.InProgress)
+        {
+            throw new BadRequestException("Can only update match winner while the match is in progress");
+        }
+
         match.Winner = new MatchWinner
         {
             Match = match,
