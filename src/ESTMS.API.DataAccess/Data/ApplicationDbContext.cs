@@ -36,10 +36,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<Team>()
             .HasQueryFilter(t => !t.Deleted);
-
-        builder.Entity<Match>()
-            .HasMany(t => t.Competitors)
-            .WithMany(m => m.Matches);
         
         builder.Entity<Tournament>()
             .HasMany(m => m.Matches)

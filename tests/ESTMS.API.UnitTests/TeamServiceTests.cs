@@ -2,6 +2,7 @@
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
 
@@ -12,6 +13,7 @@ public class TeamServiceTests
     private Mock<ITeamRepository> _teamRepositoryMock;
     private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IUserIdProvider> _userIdProviderMock;
+    private Mock<IFileUploader> _fileUploaderMock;
 
     private ITeamService _teamService;
 
@@ -21,8 +23,10 @@ public class TeamServiceTests
         _teamRepositoryMock = new Mock<ITeamRepository>();
         _userRepositoryMock = new Mock<IUserRepository>();
         _userIdProviderMock = new Mock<IUserIdProvider>();
+        _fileUploaderMock = new Mock<IFileUploader>();
 
-        _teamService = new TeamService(_teamRepositoryMock.Object, _userRepositoryMock.Object, _userIdProviderMock.Object);
+        _teamService = new TeamService(_teamRepositoryMock.Object, _userRepositoryMock.Object, 
+            _userIdProviderMock.Object, _fileUploaderMock.Object);
     }
 
     [Test]
@@ -30,7 +34,7 @@ public class TeamServiceTests
     {
         _userRepositoryMock.Setup(x => x.GetTeamManagerByUserIdAsync(It.IsAny<string>())).ReturnsAsync(new TeamManager());
 
-        await _teamService.CreateTeamAsync(new Team());
+        await _teamService.CreateTeamAsync(new Team(), It.IsAny<IFormFile>());
 
         _userRepositoryMock.Verify(x => x.GetTeamManagerByUserIdAsync(It.IsAny<string>()), Times.Once);
         _teamRepositoryMock.Verify(x => x.CreateTeamAsync(It.IsAny<Team>()), Times.Once);
@@ -41,7 +45,7 @@ public class TeamServiceTests
     {
         _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team());
 
-        await _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team());
+        await _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team(), It.IsAny<IFormFile>());
 
         _teamRepositoryMock.Verify(x => x.GetTeamByIdAsync(It.IsAny<int>()), Times.Once);
         _teamRepositoryMock.Verify(x => x.UpdateTeamAsync(It.IsAny<Team>()), Times.Once);
@@ -52,7 +56,7 @@ public class TeamServiceTests
     {
         _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Team));
 
-        Assert.ThrowsAsync<NotFoundException>(() => _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team()));
+        Assert.ThrowsAsync<NotFoundException>(() => _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team(), It.IsAny<IFormFile>()));
     }
 
     [Test]

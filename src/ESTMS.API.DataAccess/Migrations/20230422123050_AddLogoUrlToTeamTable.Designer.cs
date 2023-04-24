@@ -3,6 +3,7 @@ using System;
 using ESTMS.API.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ESTMS.API.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230422123050_AddLogoUrlToTeamTable")]
+    partial class AddLogoUrlToTeamTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,7 +130,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Invitations", (string)null);
+                    b.ToTable("Invitations");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Match", b =>
@@ -154,7 +157,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TournamentId");
 
-                    b.ToTable("Matches", (string)null);
+                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.MatchWinner", b =>
@@ -178,7 +181,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("WinnerTeamId");
 
-                    b.ToTable("MatchWinners", (string)null);
+                    b.ToTable("MatchWinners");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Player", b =>
@@ -213,7 +216,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Players", (string)null);
+                    b.ToTable("Players");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.PlayerScore", b =>
@@ -248,7 +251,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("PlayerScores", (string)null);
+                    b.ToTable("PlayerScores");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
@@ -280,7 +283,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TeamManagerId");
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TeamManager", b =>
@@ -298,7 +301,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("TeamManagers", (string)null);
+                    b.ToTable("TeamManagers");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Tournament", b =>
@@ -315,9 +318,6 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -329,27 +329,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ManagerId");
-
                     b.ToTable("Tournaments");
-                });
-
-            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TournamentManager", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("TournamentManagers");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TournamentWinner", b =>
@@ -373,7 +353,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("WinnerTeamId");
 
-                    b.ToTable("TournamentWinners", (string)null);
+                    b.ToTable("TournamentWinners");
                 });
 
             modelBuilder.Entity("MatchTeam", b =>
@@ -388,7 +368,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("MatchesId");
 
-                    b.ToTable("MatchTeam", (string)null);
+                    b.ToTable("MatchTeam");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -535,7 +515,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TournamentsId");
 
-                    b.ToTable("TeamTournament", (string)null);
+                    b.ToTable("TeamTournament");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Invitation", b =>
@@ -641,26 +621,6 @@ namespace ESTMS.API.DataAccess.Migrations
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TeamManager", b =>
-                {
-                    b.HasOne("ESTMS.API.DataAccess.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Tournament", b =>
-                {
-                    b.HasOne("ESTMS.API.DataAccess.Entities.TournamentManager", "Manager")
-                        .WithMany("Tournaments")
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manager");
-                });
-
-            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TournamentManager", b =>
                 {
                     b.HasOne("ESTMS.API.DataAccess.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany()
@@ -801,11 +761,6 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Navigation("Matches");
 
                     b.Navigation("Winner");
-                });
-
-            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TournamentManager", b =>
-                {
-                    b.Navigation("Tournaments");
                 });
 #pragma warning restore 612, 618
         }

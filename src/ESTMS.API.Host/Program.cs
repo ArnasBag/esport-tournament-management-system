@@ -17,7 +17,7 @@ builder.Services
     .ConfigureAuthentication(builder.Configuration)
     .ConfigureAuthorization()
     .ConfigureDatabase()
-    .ConfigureInjection()
+    .ConfigureInjection(builder.Configuration)
     .ConfigureCors()
     .ConfigureOptions(builder.Configuration);
 
