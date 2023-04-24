@@ -9,14 +9,17 @@ public class PlayerScoreService : IPlayerScoreService
     private readonly IPlayerScoreRepository _playerScoreRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMatchRepository _matchRepository;
+    private readonly ITeamRepository _teamRepository;
 
     public PlayerScoreService(IPlayerScoreRepository playerScoreRepository,
         IUserRepository userRepository,
-        IMatchRepository matchRepository)
+        IMatchRepository matchRepository,
+        ITeamRepository teamRepository)
     {
         _playerScoreRepository = playerScoreRepository;
         _userRepository = userRepository;
         _matchRepository = matchRepository;
+        _teamRepository = teamRepository;
     }
 
     public async Task<PlayerScore> CreatePlayerScoreAsync(string userId, int matchId, PlayerScore playerScore)
@@ -65,6 +68,25 @@ public class PlayerScoreService : IPlayerScoreService
         return kda;
     }
 
+    public async Task<double> GetTeamKdaAsync(int id)
+    {
+        var team = await _teamRepository.GetTeamByIdAsync(id)
+            ?? throw new NotFoundException("Team with this id was not found.");
+
+        var teamPlayersScores = team.Players.SelectMany(p => p.Scores).ToList();
+
+        if (!teamPlayersScores.Any())
+        {
+            throw new BadRequestException("This team did not play any games yet.");
+        }
+
+        var kda = teamPlayersScores.Average(ps => ps.Deaths == 0 ?
+            ps.Kills + ps.Assists :
+            (ps.Kills + ps.Assists) / (double)ps.Deaths);
+
+        return kda;
+    }
+
     public Task<List<PlayerScore>> GetPlayerScoresByMatchIdAsync(int matchId)
     {
         throw new NotImplementedException();
@@ -75,5 +97,34 @@ public class PlayerScoreService : IPlayerScoreService
         var playerScores = await _playerScoreRepository.GetPlayerScoresByUserId(userId);
 
         return playerScores;
+    }
+
+    public async Task<List<DailyPlayerScore>> GetPlayerScoresByTeamId(int teamId, DateTime? from, DateTime? to)
+    {
+        var team = await _teamRepository.GetTeamByIdAsync(teamId) 
+            ?? throw new NotFoundException("Team with this id was not found.");
+
+        var playerScores = team.Players
+            .SelectMany(player => player.Scores)
+            .Where(s => s.CreatedAt >= from && s.CreatedAt <= to)
+            .ToList();
+
+        if (!playerScores.Any())
+        {
+            throw new BadRequestException("This team does not have any scores yet.");
+        }
+
+        var playerDailyScores = playerScores
+            .GroupBy(s => s.CreatedAt.Date)
+            .Select(g => new DailyPlayerScore
+            {
+                Date = g.Key,
+                TotalKills = g.Sum(s => s.Kills),
+                TotalAssists = g.Sum(s => s.Assists),
+                TotalDeaths = g.Sum(s => s.Deaths),
+            })
+            .ToList();
+        
+        return playerDailyScores;
     }
 }

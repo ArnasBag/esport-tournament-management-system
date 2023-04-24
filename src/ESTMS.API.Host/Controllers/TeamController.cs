@@ -14,14 +14,16 @@ public class TeamController : ControllerBase
 {
     private readonly ITeamService _teamService;
     private readonly IInvitationService _invitationService;
+    private readonly IPlayerScoreService _playerScoreService;
     private readonly IMapper _mapper;
 
     public TeamController(ITeamService teamService, IMapper mapper,
-        IInvitationService invitationService)
+        IInvitationService invitationService, IPlayerScoreService playerScoreService)
     {
         _teamService = teamService;
         _mapper = mapper;
         _invitationService = invitationService;
+        _playerScoreService = playerScoreService;
     }
 
     [HttpGet]
@@ -69,8 +71,6 @@ public class TeamController : ControllerBase
         return NoContent();
     }
 
-
-
     [HttpPost("{id}/invitations")]
     [Authorize(Roles = Roles.Player)]
     public async Task<IActionResult> RequestTeamInvite(int id)
@@ -78,5 +78,22 @@ public class TeamController : ControllerBase
         var invitation = await _invitationService.CreateInviteForTeamAsync(id);
 
         return Created("/test", _mapper.Map<InvitationResponse>(invitation));
+    }
+
+    [HttpGet("{id}/kda")]
+    public async Task<IActionResult> GetTeamKda(int id)
+    {
+        var kda = await _playerScoreService.GetTeamKdaAsync(id);
+
+        return Ok(new KdaResponse { Kda = kda});
+    }
+
+    [HttpGet("{id}/player-scores")]
+    public async Task<IActionResult> GetTeamPlayerScores(int id, [FromQuery] DateFilterQueryParams dateFilterQueryParams)
+    {
+        var playerScores = await _playerScoreService.GetPlayerScoresByTeamId(
+            id, dateFilterQueryParams.From, dateFilterQueryParams.To);
+
+        return Ok(playerScores);
     }
 }
