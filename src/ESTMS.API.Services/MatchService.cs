@@ -9,14 +9,20 @@ public class MatchService : IMatchService
     private readonly IMatchRepository _matchRepository;
     private readonly IPlayerScoreRepository _playerScoreRepository;
     private readonly ITeamRepository _teamRepository;
+    private readonly IMmrCalculator _mmrCalculator;
+    private readonly IPlayerRepository _playerRepository;
 
     public MatchService(IMatchRepository matchRepository,
         IPlayerScoreRepository playerScoreRepository,
-        ITeamRepository teamRepository)
+        ITeamRepository teamRepository,
+        IMmrCalculator mmrCalculator,
+        IPlayerRepository playerRepository)
     {
         _matchRepository = matchRepository;
         _playerScoreRepository = playerScoreRepository;
         _teamRepository = teamRepository;
+        _mmrCalculator = mmrCalculator;
+        _playerRepository = playerRepository;
     }
 
     public Task GenerateMatchesAsync()
@@ -37,6 +43,32 @@ public class MatchService : IMatchService
             if (playerScores.Count != matchParticipants.Count())
             {
                 throw new BadRequestException("You must fill all player scores before ending the match");
+            }
+
+            if(match.Winner == null)
+            {
+                throw new BadRequestException("Match must have a winner in order to end it.");
+            }
+
+            var winnerTeam = await _teamRepository.GetTeamByIdAsync(match.Winner.WinnerTeamId);
+            var losingTeam = await _teamRepository.GetTeamByIdAsync(
+                match.Competitors.SingleOrDefault(c => c.Id != winnerTeam!.Id)!.Id);
+
+            var losingTeamMmr = (int) losingTeam!.Players.Average(p => p.Mmr);
+            var winningTeamMmr = (int)winnerTeam!.Players.Average(p => p.Mmr);
+
+            foreach (var player in winnerTeam!.Players)
+            {
+                var matchPlayerScore = player.Scores.Single(s => s.Match.Id == match.Id);
+                player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, losingTeamMmr, matchPlayerScore, 1);
+                await _playerRepository.UpdatePlayerAsync(player);
+            }
+
+            foreach (var player in losingTeam!.Players)
+            {
+                var matchPlayerScore = player.Scores.Single(s => s.Match.Id == match.Id);
+                player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, winningTeamMmr, matchPlayerScore, 0);
+                await _playerRepository.UpdatePlayerAsync(player);
             }
         }
 
