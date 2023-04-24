@@ -7,7 +7,6 @@ namespace ESTMS.API.Services;
 public class MatchService : IMatchService
 {
     private readonly IMatchRepository _matchRepository;
-    private readonly ITeamRepository _teamRepository;
     private readonly IPlayerScoreRepository _playerScoreRepository;
     private readonly ITeamRepository _teamRepository;
     private readonly IMmrCalculator _mmrCalculator;
