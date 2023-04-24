@@ -44,6 +44,7 @@ public class UserProfile : Profile
         CreateMap<TeamResponse, ESTMS.API.Host.Models.Tournament.TeamResponse>();
         CreateMap<Team, ESTMS.API.Host.Models.Tournament.TeamResponse>();
         CreateMap<Match, MatchResponse>();
+        CreateMap<MatchWinner, MatchWinnerResponse>();
         CreateMap<Tournament, TournamentResponse>();
             //.ForMember(dest => dest.Winner, opt => opt.MapFrom(src => src.Winner))
             //.ForMember(dest => dest.Teams, opt => opt.MapFrom(src => src.Teams));
