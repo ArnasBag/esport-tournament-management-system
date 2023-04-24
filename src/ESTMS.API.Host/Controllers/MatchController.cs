@@ -23,6 +23,14 @@ public class MatchController : ControllerBase
     {
         var match = await _matchService.UpdateMatchStatusAsync(id, request.Status);
 
-        return Ok();
+        return Ok(_mapper.Map<MatchResponse>(match));
+    }
+
+    [HttpPut("{id}/winner")]
+    public async Task<IActionResult> UpdateMatchWinner(int id, MatchWinnerRequest request)
+    {
+        var match = await _matchService.UpdateMatchWinnerAsync(id, request.WinnerTeamId);
+
+        return Ok(_mapper.Map<MatchResponse>(match));
     }
 }
