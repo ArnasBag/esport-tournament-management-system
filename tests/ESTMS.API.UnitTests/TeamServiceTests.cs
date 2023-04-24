@@ -87,7 +87,7 @@ public class TeamServiceTests
     {
         _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team());
 
-        await _teamService.DeactivateTeamAsync(It.IsAny<int>());
+        await _teamService.GetTeamByIdAsync(It.IsAny<int>());
 
         _teamRepositoryMock.Verify(x => x.GetTeamByIdAsync(It.IsAny<int>()), Times.Once);
     }

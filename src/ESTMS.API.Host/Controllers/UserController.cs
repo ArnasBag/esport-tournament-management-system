@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ESTMS.API.Host.Controllers;
 
 [ApiController]
-[Authorize(Roles = Roles.Admin)]
 [Route("users")]
 [EnableCors("AllowVueFrontend")]
 public class UserController : ControllerBase
@@ -40,6 +39,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}/activation-status")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> ChangeUserActivationStatus(string id, [FromBody] ChangeUserActivationStatusRequest status)
     {
         await _userService.ChangeUserActivityAsync(id, status.ActivationStatus);
@@ -48,7 +48,8 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}/role")]
-    public async Task<IActionResult> ChageUserRole(string id, [FromBody] ChangeUserRoleRequest role)
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> ChangeUserRole(string id, [FromBody] ChangeUserRoleRequest role)
     {
         await _userService.ChangeUserRoleAsync(id, role.Role);
 

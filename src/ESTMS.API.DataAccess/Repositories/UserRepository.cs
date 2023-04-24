@@ -39,6 +39,7 @@ public class UserRepository : IUserRepository
     {
         return await _context.Players
             .Include(p => p.ApplicationUser)
+            .Include(p => p.Scores)
             .SingleOrDefaultAsync(p => p.ApplicationUser.Id == userId);
     }
 
@@ -47,6 +48,14 @@ public class UserRepository : IUserRepository
         return await _context.TeamManagers
             .Include(t => t.ApplicationUser)
             .Include(t => t.Teams)
+            .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
+    }
+
+    public async Task<TournamentManager?> GetTournamentManagerByUserIdAsync(string userId)
+    {
+        return await _context.TournamentManagers
+            .Include(t => t.ApplicationUser)
+            .Include(t => t.Tournaments)
             .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
     }
 }
