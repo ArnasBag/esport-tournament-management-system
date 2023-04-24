@@ -7,6 +7,7 @@ public class Player
     public ApplicationUser ApplicationUser { get; set; }
     public string? PicturePath { get; set; }
     public string? AboutMeText { get; set; }
+    public int Mmr { get; set; }
     public int? Points { get; set; }
     public Rank? Rank { get; set; }
     public List<PlayerScore> Scores { get; set; }

@@ -44,7 +44,8 @@ namespace ESTMS.API.Host.Capabilities
             IConfiguration configuration)
         {
             return services
-                .Configure<AuthSettings>(configuration.GetSection("Auth"));
+                .Configure<AuthSettings>(configuration.GetSection("Auth"))
+                .Configure<MmrSettings>(configuration.GetSection("MMR"));
         }
     }
 }
