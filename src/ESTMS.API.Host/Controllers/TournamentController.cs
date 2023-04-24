@@ -79,6 +79,8 @@ public class TournamentController : ControllerBase
     [HttpPut("{id}/bracket")]
     public async Task<IActionResult> CreateMatches(int id)
     {
-        return Ok(Task.FromResult(Empty));
+        var tournament = await _tournamentService.GenerateBracket(id);
+
+        return Ok(tournament);
     }
 }

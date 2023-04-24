@@ -112,7 +112,7 @@ public class TournamentService : ITournamentService
                 if (tournament.Matches.Any(m => m.Status != Status.Done))
                     throw new BadRequestException("There are still matches in progress");
 
-                if(tournament.Winner is null)
+                if (tournament.Winner is null)
                     throw new BadRequestException("Tournament winner is not set.");
 
                 status = Status.Done;
@@ -131,6 +131,32 @@ public class TournamentService : ITournamentService
     {
         var tournament = await _tournamentRepository.GetTournamentByTournamentManagerId(id)
                          ?? throw new NotFoundException("Tournament with this id was not found.");
+
+        return tournament;
+    }
+
+    public async Task<Tournament> GenerateBracket<TResult>(int id)
+    {
+        var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
+                         ?? throw new NotFoundException("Tournament with this id does not exist.");
+
+        if (tournament.Teams.Count < 2)
+            throw new BadRequestException("Cannot create bracket because tournament has less than 2 teams registered.");
+
+        //cannot create cuz its in progress || done
+        if (tournament.Status is Status.Done or Status.InProgress)
+            throw new BadRequestException("Cannot create bracket because tournament is started or has already finished.");
+
+
+        //cannot create cuz already has matches
+        if (tournament.Matches.Count > 0)
+            throw new BadRequestException("Cannot create bracket because tournament has already created matches.");
+
+
+        //List<Match> matches = Matchmake(tournament);
+
+        //matches - sorted teams by MMR rating.
+        //sort by date availability.
 
         return tournament;
     }
