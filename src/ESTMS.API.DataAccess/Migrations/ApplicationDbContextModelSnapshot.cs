@@ -127,7 +127,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Invitations", (string)null);
+                    b.ToTable("Invitations");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Match", b =>
@@ -154,7 +154,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TournamentId");
 
-                    b.ToTable("Matches", (string)null);
+                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.MatchWinner", b =>
@@ -178,7 +178,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("WinnerTeamId");
 
-                    b.ToTable("MatchWinners", (string)null);
+                    b.ToTable("MatchWinners");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Player", b =>
@@ -213,7 +213,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Players", (string)null);
+                    b.ToTable("Players");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.PlayerScore", b =>
@@ -248,7 +248,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("PlayerScores", (string)null);
+                    b.ToTable("PlayerScores");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
@@ -280,7 +280,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TeamManagerId");
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.TeamManager", b =>
@@ -298,7 +298,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("TeamManagers", (string)null);
+                    b.ToTable("TeamManagers");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Tournament", b =>
@@ -373,7 +373,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("WinnerTeamId");
 
-                    b.ToTable("TournamentWinners", (string)null);
+                    b.ToTable("TournamentWinners");
                 });
 
             modelBuilder.Entity("MatchTeam", b =>
@@ -388,7 +388,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("MatchesId");
 
-                    b.ToTable("MatchTeam", (string)null);
+                    b.ToTable("MatchTeam");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -535,7 +535,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
                     b.HasIndex("TournamentsId");
 
-                    b.ToTable("TeamTournament", (string)null);
+                    b.ToTable("TeamTournament");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Invitation", b =>

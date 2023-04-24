@@ -9,5 +9,5 @@ public class Match
     public Tournament Tournament { get; set; }
     public MatchWinner? Winner { get; set; }
     public List<Team> Competitors { get; set; }
-    public List<PlayerScore> PlayerScores { get; set; }
+    public List<PlayerScore>? PlayerScores { get; set; }
 }
