@@ -9,14 +9,21 @@ public class MatchService : IMatchService
     private readonly IMatchRepository _matchRepository;
     private readonly ITeamRepository _teamRepository;
     private readonly IPlayerScoreRepository _playerScoreRepository;
+    private readonly ITeamRepository _teamRepository;
+    private readonly IMmrCalculator _mmrCalculator;
+    private readonly IPlayerRepository _playerRepository;
 
     public MatchService(IMatchRepository matchRepository,
         IPlayerScoreRepository playerScoreRepository,
-        ITeamRepository teamRepository)
+        ITeamRepository teamRepository,
+        IMmrCalculator mmrCalculator,
+        IPlayerRepository playerRepository)
     {
         _matchRepository = matchRepository;
         _playerScoreRepository = playerScoreRepository;
         _teamRepository = teamRepository;
+        _mmrCalculator = mmrCalculator;
+        _playerRepository = playerRepository;
     }
 
     public Task GenerateMatchesAsync()
@@ -43,6 +50,32 @@ public class MatchService : IMatchService
             {
                 throw new BadRequestException("You must assign winner team before ending the match.");
             }
+
+            if(match.Winner == null)
+            {
+                throw new BadRequestException("Match must have a winner in order to end it.");
+            }
+
+            var winnerTeam = await _teamRepository.GetTeamByIdAsync(match.Winner.WinnerTeamId);
+            var losingTeam = await _teamRepository.GetTeamByIdAsync(
+                match.Competitors.SingleOrDefault(c => c.Id != winnerTeam!.Id)!.Id);
+
+            var losingTeamMmr = (int) losingTeam!.Players.Average(p => p.Mmr);
+            var winningTeamMmr = (int)winnerTeam!.Players.Average(p => p.Mmr);
+
+            foreach (var player in winnerTeam!.Players)
+            {
+                var matchPlayerScore = player.Scores.Single(s => s.Match.Id == match.Id);
+                player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, losingTeamMmr, matchPlayerScore, 1);
+                await _playerRepository.UpdatePlayerAsync(player);
+            }
+
+            foreach (var player in losingTeam!.Players)
+            {
+                var matchPlayerScore = player.Scores.Single(s => s.Match.Id == match.Id);
+                player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, winningTeamMmr, matchPlayerScore, 0);
+                await _playerRepository.UpdatePlayerAsync(player);
+            }
         }
 
         match.Status = matchStatus;
@@ -51,29 +84,37 @@ public class MatchService : IMatchService
         return match;
     }
 
-    //TODO: write unit tests
     public async Task<Match> UpdateMatchWinnerAsync(int matchId, int winnerTeamId)
     {
         var match = await _matchRepository.GetMatchByIdAsync(matchId)
-                    ?? throw new NotFoundException("Match with this id was not found.");
+            ?? throw new NotFoundException("Match with this id was not found.");
 
         var team = await _teamRepository.GetTeamByIdAsync(winnerTeamId)
-                   ?? throw new NotFoundException("Team with this id was not found.");
+            ?? throw new NotFoundException("Team with this id was not found.");
 
-        if (!match.Competitors.Exists(x => x.Id == winnerTeamId))
-            throw new BadRequestException("Team with this id did not participate in this match.");
+        if(!match.Competitors.Any(c => c.Id == team.Id))
+        {
+            throw new BadRequestException("This team did not play in this match.");
+        }
 
-        var matchWinner = new MatchWinner
+        if(match.Winner != null)
+        {
+            throw new BadRequestException("This match already has a winner");
+        }
+
+        if(match.Status != Status.InProgress)
+        {
+            throw new BadRequestException("Can only update match winner while the match is in progress");
+        }
+
+        match.Winner = new MatchWinner
         {
             Match = match,
-            MatchId = match.Id,
             WinnerTeam = team,
-            WinnerTeamId = winnerTeamId
         };
 
-        match.Winner = matchWinner;
-
         await _matchRepository.UpdateMatchAsync(match);
+
         return match;
     }
 }

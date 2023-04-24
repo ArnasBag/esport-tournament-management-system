@@ -32,6 +32,7 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IUserIdProvider, UserIdProvider>()
 
                 .AddSingleton(x => new BlobServiceClient(configuration.GetConnectionString("AzureBlob")))
+                .AddSingleton<IMmrCalculator, EloRatingCalculator>()
 
                 .AddTransient<ITournamentService, TournamentService>()
                 .AddTransient<ITournamentRepository, TournamentRepository>()
@@ -44,7 +45,8 @@ namespace ESTMS.API.Host.Capabilities
             IConfiguration configuration)
         {
             return services
-                .Configure<AuthSettings>(configuration.GetSection("Auth"));
+                .Configure<AuthSettings>(configuration.GetSection("Auth"))
+                .Configure<MmrSettings>(configuration.GetSection("MMR"));
         }
     }
 }

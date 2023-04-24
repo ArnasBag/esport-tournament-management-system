@@ -59,5 +59,6 @@ public class UserProfile : Profile
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.ApplicationUser));
 
         CreateMap<Match, MatchResponse>();
+        CreateMap<MatchWinner, MatchWinnerResponse>();
     }
 }

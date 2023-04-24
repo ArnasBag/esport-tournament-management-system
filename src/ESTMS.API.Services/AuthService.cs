@@ -2,7 +2,9 @@
 using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
+using ESTMS.API.DataAccess.Settings;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace ESTMS.API.Services;
 
@@ -11,14 +13,17 @@ public class AuthService : IAuthService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenProvider _tokenProvider;
     private readonly IUserRepository _userRepository;
+    private readonly IOptionsMonitor<MmrSettings> _mmrSettings;
 
-    public AuthService(UserManager<ApplicationUser> userManager, 
-        ITokenProvider tokenProvider, 
-        IUserRepository userRepository)
+    public AuthService(UserManager<ApplicationUser> userManager,
+        ITokenProvider tokenProvider,
+        IUserRepository userRepository,
+        IOptionsMonitor<MmrSettings> mmrSettings)
     {
         _userManager = userManager;
         _tokenProvider = tokenProvider;
         _userRepository = userRepository;
+        _mmrSettings = mmrSettings;
     }
 
     public async Task<(ApplicationUser, string?)> GetMeAsync(string id)
@@ -63,7 +68,8 @@ public class AuthService : IAuthService
         await _userManager.AddToRoleAsync(user!, Roles.Player);
         await _userRepository.CreatePlayerAsync(new Player 
         { 
-            ApplicationUser = user!
+            ApplicationUser = user!,
+            Mmr = _mmrSettings.CurrentValue.IntialRating
         });
     }
 }
