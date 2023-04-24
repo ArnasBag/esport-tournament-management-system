@@ -224,7 +224,14 @@ public class TournamentServiceTests
         {
             Id = tournamentId,
             Status = Status.NotStarted,
-            Matches = matches,
+            Rounds = new List<Round>
+            {
+                new Round
+                {
+                    Matches = matches
+                }
+
+            },
             Teams = teams,
             Winner = new TournamentWinner
             {
@@ -286,7 +293,7 @@ public class TournamentServiceTests
             Id = 1,
             Status = Status.NotStarted,
             Teams = teams,
-            Matches = new List<Match>()
+            Rounds = new List<Round>()
         };
 
         _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(tournament);
@@ -317,7 +324,7 @@ public class TournamentServiceTests
         {
             Id = 1,
             Status = Status.NotStarted,
-            Matches = matches,
+            Rounds = new List<Round> { new Round { Matches = matches } },
         };
 
         _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(tournament);

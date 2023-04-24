@@ -94,6 +94,8 @@ public class TournamentService : ITournamentService
         var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
                          ?? throw new NotFoundException("Tournament with this id doesn't exist.");
 
+        var rounds = tournament.Rounds ?? throw new BadRequestException("Tournament has no rounds.");
+
         Status status = tournament.Status;
 
         switch (updatedStatus)
@@ -102,18 +104,23 @@ public class TournamentService : ITournamentService
                 if (tournament.Teams.Count < 2)
                     throw new BadRequestException("Tournament has too little teams to start.");
 
-                if (tournament.Matches.Count < 1)
+                if (rounds.First().Matches.Count < 1)
                     throw new BadRequestException("Tournament has no Matches.");
 
                 status = Status.InProgress;
                 break;
 
             case Status.Done:
-                if (tournament.Matches.Any(m => m.Status != Status.Done))
-                    throw new BadRequestException("There are still matches in progress");
-
                 if (tournament.Winner is null)
-                    throw new BadRequestException("Tournament winner is not set.");
+                    throw new BadRequestException("Cannot finish the tournament. Tournament winner is not set.");
+
+                foreach (var round in rounds)
+                {
+                    if (round.Matches.Exists(match => match.Status != Status.Done))
+                    {
+                        throw new BadRequestException("Cannot finish the tournament. Some matches were not played.");
+                    }
+                }
 
                 status = Status.Done;
                 break;
@@ -149,8 +156,6 @@ public class TournamentService : ITournamentService
 
 
         //cannot create cuz already has matches
-        if (tournament.Matches.Count > 0)
-            throw new BadRequestException("Cannot create bracket because tournament has already created matches.");
 
 
         //List<Match> matches = Matchmake(tournament);

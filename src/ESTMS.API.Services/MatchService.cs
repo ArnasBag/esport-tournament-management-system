@@ -50,11 +50,6 @@ public class MatchService : IMatchService
                 throw new BadRequestException("You must assign winner team before ending the match.");
             }
 
-            if(match.Winner == null)
-            {
-                throw new BadRequestException("Match must have a winner in order to end it.");
-            }
-
             var winnerTeam = await _teamRepository.GetTeamByIdAsync(match.Winner.WinnerTeamId);
             var losingTeam = await _teamRepository.GetTeamByIdAsync(
                 match.Competitors.SingleOrDefault(c => c.Id != winnerTeam!.Id)!.Id);
