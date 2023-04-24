@@ -22,6 +22,8 @@ public class TournamentRepository : ITournamentRepository
             .ThenInclude(m => m.TeamManager)
             .Include(m => m.Matches)
             .ThenInclude(c => c.Competitors)
+            .Include(m => m.Manager)
+            .ThenInclude(u => u.ApplicationUser)
             .Where(t => t.Id == id)
             .SingleOrDefaultAsync();
     }
@@ -35,6 +37,8 @@ public class TournamentRepository : ITournamentRepository
             .ThenInclude(m => m.TeamManager)
             .Include(m => m.Matches)
             .ThenInclude(c => c.Competitors)
+            .Include(m => m.Manager)
+            .ThenInclude(u => u.ApplicationUser)
             .ToListAsync();
     }
 
@@ -69,6 +73,7 @@ public class TournamentRepository : ITournamentRepository
             .ThenInclude(u => u.ApplicationUser)
             .Include(m => m.Matches)
             .ThenInclude(c => c.Competitors)
+            .Include(w => w.Winner)
             .Where(x => x.Manager.ApplicationUser.Id == id)
             .SingleOrDefaultAsync();
     }
