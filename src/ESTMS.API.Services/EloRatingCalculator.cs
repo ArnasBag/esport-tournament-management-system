@@ -8,16 +8,7 @@ public class EloRatingCalculator : IMmrCalculator
     {
         var expectedOutcome = 1 / (1 + Math.Pow(10, ((opponentTeamMmr - player.Mmr) / 400)));
 
-        var kFactor = 32;
-
-        if (player.Scores.Count > 30)
-        {
-            kFactor = 10;
-        }
-        else
-        {
-            kFactor = 16;
-        }
+        var kFactor = 20;
 
         var newMmr = (int)(player.Mmr + kFactor * (matchOutcome - expectedOutcome));
 

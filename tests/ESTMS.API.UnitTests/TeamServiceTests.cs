@@ -131,4 +131,63 @@ public class TeamServiceTests
 
         Assert.ThrowsAsync<NotFoundException>(() => _teamService.GetAllTeamsAsync(nonNullUserId));
     }
+
+    [Test]
+    public async Task UpdateTeamPlayersMmrAsync_ShouldRecalculateMmrForAllPlayersInWinnerAndLoserTeams()
+    {
+        var matchId = 1;
+        var winner = new Team 
+        { 
+            Id = 1, 
+            Players = new List<Player> 
+            { 
+                new Player 
+                { 
+                    Id = 1,
+                    Mmr = 1000,
+                    Scores = new List<PlayerScore> 
+                    { 
+                        new PlayerScore 
+                        { 
+                            Match = new DataAccess.Entities.Match 
+                            { 
+                                Id = matchId 
+                            } 
+                        }
+                    } 
+                } 
+            } 
+        };
+        var loser = new Team 
+        { 
+            Id = 2, 
+            Players = new List<Player> 
+            {
+                new Player { 
+                    Id = 2, 
+                    Mmr = 900, 
+                    Scores = new List<PlayerScore> 
+                    { 
+                        new PlayerScore 
+                        { 
+                            Match = new DataAccess.Entities.Match 
+                            { 
+                                Id = matchId 
+                            } 
+                        } 
+                    } 
+                } 
+            } 
+        };
+        _mmrCalculatorMock.Setup(x => x.RecalculatePlayerMmr(
+            It.IsAny<Player>(), It.IsAny<int>(), It.IsAny<PlayerScore>(), It.IsAny<int>()))
+            .Returns((Player player, int opponentAverageMmr, PlayerScore playerScore, int result) => player.Mmr + 25);
+
+        await _teamService.UpdateTeamPlayersMmrAsync(winner, loser, matchId);
+
+        _playerRepositoryMock.Verify(x => x.UpdatePlayerAsync(It.IsAny<Player>()), Times.Exactly(2));
+
+        Assert.That(winner.Players.Single().Mmr, Is.EqualTo(1025));
+        Assert.That(loser.Players.Single().Mmr, Is.EqualTo(925));
+    }
 }

@@ -324,7 +324,6 @@ public class InvitationServiceTests
             () => _invitationService.GetAllInvitationsAsync(false, false));
     }
 
-
     [Test]
     public async Task GetAllInvitationsAsync_SentTrueCallsGetAllSentInvitations_ThrowsException()
     {
@@ -332,7 +331,6 @@ public class InvitationServiceTests
 
         _invitationRepositoryMock.Verify(x => x.GetAllSentInvitations(It.IsAny<string>()), Times.Once);
     }
-
 
     [Test]
     public async Task GetAllInvitationsAsync_ReceivedTrueCallsGetAllReceivedInvitations_ThrowsException()

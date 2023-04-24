@@ -61,6 +61,11 @@ public class PlayerScoreService : IPlayerScoreService
         var player = await _userRepository.GetPlayerByUserIdAsync(userId)
             ?? throw new NotFoundException("Player with this id was not found.");
 
+        if (!player.Scores.Any())
+        {
+            throw new BadRequestException("This player does not have any scores yet.");
+        }
+
         var kda = player.Scores.Average(ps => ps.Deaths == 0 ? 
         ps.Kills + ps.Assists : 
         (ps.Kills + ps.Assists) / (double) ps.Deaths);
@@ -73,12 +78,12 @@ public class PlayerScoreService : IPlayerScoreService
         var team = await _teamRepository.GetTeamByIdAsync(id)
             ?? throw new NotFoundException("Team with this id was not found.");
 
-        var teamPlayersScores = team.Players.SelectMany(p => p.Scores).ToList();
-
-        if (!teamPlayersScores.Any())
+        if (team.Players.All(p => p.Scores == null))
         {
             throw new BadRequestException("This team did not play any games yet.");
         }
+
+        var teamPlayersScores = team.Players.SelectMany(p => p.Scores).ToList();
 
         var kda = teamPlayersScores.Average(ps => ps.Deaths == 0 ?
             ps.Kills + ps.Assists :
