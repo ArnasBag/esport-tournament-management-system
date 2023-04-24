@@ -3,6 +3,8 @@ using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.Host.Models;
 using ESTMS.API.Host.Models.Player;
 using ESTMS.API.Host.Models.Tournament;
+using TeamResponse = ESTMS.API.Host.Models.TeamResponse;
+
 
 namespace ESTMS.API.Host.Profiles;
 
@@ -38,16 +40,20 @@ public class UserProfile : Profile
         CreateMap<Team, PlayersTeamResponse>()
             .ForMember(dest => dest.TeamManager, opt => opt.MapFrom(src => src.TeamManager));
 
-
-        CreateMap<Tournament, TournamentResponse>()
-            .ForMember(dest => dest.Winner, opt => opt.MapFrom(src => src.Winner))
-            .ForMember(dest => dest.Teams, opt => opt.MapFrom(src => src.Teams));
-
+        CreateMap<TournamentWinner, TournamentWinnerResponse>();
+        CreateMap<TeamResponse, ESTMS.API.Host.Models.Tournament.TeamResponse>();
+        CreateMap<Team, ESTMS.API.Host.Models.Tournament.TeamResponse>();
+        CreateMap<Match, MatchResponse>();
+        CreateMap<Tournament, TournamentResponse>();
+            //.ForMember(dest => dest.Winner, opt => opt.MapFrom(src => src.Winner))
+            //.ForMember(dest => dest.Teams, opt => opt.MapFrom(src => src.Teams));
 
         CreateMap<CreateTournamentRequest, Tournament>();
         CreateMap<UpdateTournamentRequest, Tournament>();
 
         CreateMap<CreatePlayerScoreRequest, PlayerScore>().ReverseMap();
         CreateMap<PlayerScore, PlayerScoreResponse>();
+
+        CreateMap<Match, MatchResponse>();
     }
 }
