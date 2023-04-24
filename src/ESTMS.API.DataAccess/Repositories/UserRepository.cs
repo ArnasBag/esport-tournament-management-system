@@ -50,4 +50,12 @@ public class UserRepository : IUserRepository
             .Include(t => t.Teams)
             .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
     }
+
+    public async Task<TournamentManager?> GetTournamentManagerByUserIdAsync(string userId)
+    {
+        return await _context.TournamentManagers
+            .Include(t => t.ApplicationUser)
+            .Include(t => t.Tournaments)
+            .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
+    }
 }

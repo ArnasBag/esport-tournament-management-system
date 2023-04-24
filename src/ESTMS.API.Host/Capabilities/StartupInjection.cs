@@ -33,6 +33,9 @@ namespace ESTMS.API.Host.Capabilities
 
                 .AddSingleton(x => new BlobServiceClient(configuration.GetConnectionString("AzureBlob")))
 
+                .AddTransient<ITournamentService, TournamentService>()
+                .AddTransient<ITournamentRepository, TournamentRepository>()
+                .AddTransient<ITournamentManagerRepository, TournamentManagerRepository>()
                 .AddHttpContextAccessor()
                 .AddAutoMapper(typeof(UserProfile).Assembly);
         }
