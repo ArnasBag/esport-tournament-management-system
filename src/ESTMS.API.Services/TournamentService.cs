@@ -147,22 +147,72 @@ public class TournamentService : ITournamentService
         var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
                          ?? throw new NotFoundException("Tournament with this id does not exist.");
 
-        if (tournament.Teams.Count < 2)
+        var teamsCount = tournament.Teams.Count;
+
+        if (teamsCount < 2)
             throw new BadRequestException("Cannot create bracket because tournament has less than 2 teams registered.");
 
         //cannot create cuz its in progress || done
         if (tournament.Status is Status.Done or Status.InProgress)
-            throw new BadRequestException("Cannot create bracket because tournament is started or has already finished.");
+            throw new BadRequestException(
+                "Cannot create bracket because tournament is started or has already finished.");
 
 
-        //cannot create cuz already has matches
+        if (!IsTournamentPerfect(teamsCount))
+        {
+            throw new BadRequestException("Cannot create bracket because team count is not a perfect power of 2.");
+        }
 
+        //1st round should be match made by Team MMR
+        //calculate team MMR
+
+        var competitors = tournament.Teams.OrderBy(t => t.Id).ToList();
+
+        //var roundsCount = (int)Math.Log2(teamsCount);
+
+        //var rounds = new List<Round>(new Round[roundsCount]);
+
+        var firstRound = new Round
+        {
+            Matches = new List<Match>()
+        };
+
+        var matchCount = teamsCount / 2;
+
+        //firstRound.Matches = new List<Match>(new Match[matchCount]);
+
+        for (var i = 0; i < matchCount; i++)
+        {
+            var match = new Match
+            {
+                Status = Status.NotStarted,
+                Competitors = new List<Team>()
+            };
+
+            match.Competitors.Add(competitors[i * 2]);
+            match.Competitors.Add(competitors[i * 2 + 1]);
+
+            firstRound.Matches.Add(match);
+        }
+
+        tournament.Rounds = new List<Round> { firstRound };
+        tournament.Status = Status.InProgress;
+
+        return await _tournamentRepository.UpdateTournamentAsync(tournament);
+        // #1 update DB with tournament
+        // #2 set tournament status to 'InProgress'
+        // #3
+
+        //Assign competitors to matches in the first round
 
         //List<Match> matches = Matchmake(tournament);
 
         //matches - sorted teams by MMR rating.
         //sort by date availability.
+    }
 
-        return tournament;
+    private bool IsTournamentPerfect(int teamCount)
+    {
+        return (teamCount != 0) && ((teamCount & (teamCount - 1)) == 0);
     }
 }

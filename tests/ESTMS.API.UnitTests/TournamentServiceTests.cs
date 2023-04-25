@@ -1,4 +1,5 @@
-﻿using ESTMS.API.Core.Exceptions;
+﻿using AutoFixture;
+using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services;
@@ -11,12 +12,20 @@ namespace ESTMS.API.UnitTests;
 [TestFixture]
 public class TournamentServiceTests
 {
+
+    private static Fixture Fixture;
     private Mock<ITeamRepository> _teamRepositoryMock;
     private Mock<ITournamentRepository> _tournamentRepositoryMock;
     private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IUserIdProvider> _userIdProviderMock;
 
     private ITournamentService _tournamentService;
+
+    static TournamentServiceTests()
+    {
+        Fixture = new Fixture();
+        Fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+    }
 
     [SetUp]
     public void Setup()
@@ -67,7 +76,8 @@ public class TournamentServiceTests
     [Test]
     public void GetTournamentByIdAsync_TournamentNotFound_ThrowsException()
     {
-        _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Tournament));
+        _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(default(Tournament));
 
         Assert.ThrowsAsync<NotFoundException>(() => _tournamentService.GetTournamentByIdAsync(It.IsAny<int>()));
     }
@@ -96,7 +106,8 @@ public class TournamentServiceTests
     [Test]
     public void UpdateTournamentAsync_TournamentNotFound_ThrowsException()
     {
-        _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Tournament));
+        _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(default(Tournament));
 
         Assert.ThrowsAsync<NotFoundException>(() =>
             _tournamentService.UpdateTournamentAsync(It.IsAny<int>(), new Tournament()));
@@ -146,7 +157,8 @@ public class TournamentServiceTests
     {
         _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Team));
 
-        _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Tournament));
+        _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(default(Tournament));
 
         Assert.ThrowsAsync<NotFoundException>(() =>
             _tournamentService.UpdateTournamentWinnerAsync(It.IsAny<int>(), It.IsAny<int>()));
@@ -230,7 +242,6 @@ public class TournamentServiceTests
                 {
                     Matches = matches
                 }
-
             },
             Teams = teams,
             Winner = new TournamentWinner
@@ -335,5 +346,21 @@ public class TournamentServiceTests
         Assert.That(ex.Message, Is.EqualTo("There are still matches in progress"));
 
         _tournamentRepositoryMock.Verify(x => x.GetTournamentByIdAsync(1), Times.Once);
+    }
+
+    [Test]
+    public void GenerateBrackets_ValidData_Ok()
+    {
+        var sequenceNumber = 1;
+        Fixture.Customize<Team>(c => c.With(team => team.Id, () => sequenceNumber++));
+
+        var teams = Fixture.CreateMany<Team>(32).ToList();
+
+        _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(new Tournament
+        {
+            Teams = teams
+        });
+
+        _tournamentService.GenerateBracket(It.IsAny<int>());
     }
 }
