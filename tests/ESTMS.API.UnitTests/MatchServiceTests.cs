@@ -4,7 +4,6 @@ using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services;
 using Moq;
 using NUnit.Framework;
-using Match = ESTMS.API.DataAccess.Entities.Match;
 
 namespace ESTMS.API.UnitTests;
 
@@ -13,6 +12,8 @@ public class MatchServiceTests
     private Mock<IMatchRepository> _matchRepositoryMock;
     private Mock<IPlayerScoreRepository> _playerScoreRepositoryMock;
     private Mock<ITeamRepository> _teamRepositoryMock;
+    private Mock<IMmrCalculator> _mmrCalculatorMock;
+    private Mock<IPlayerRepository> _playerRepositoryMock;
 
     private IMatchService _matchService;
 
@@ -22,9 +23,11 @@ public class MatchServiceTests
         _matchRepositoryMock = new Mock<IMatchRepository>();
         _playerScoreRepositoryMock = new Mock<IPlayerScoreRepository>();
         _teamRepositoryMock = new Mock<ITeamRepository>();
+        _mmrCalculatorMock = new Mock<IMmrCalculator>();
+        _playerRepositoryMock = new Mock<IPlayerRepository>();
 
         _matchService = new MatchService(_matchRepositoryMock.Object, _playerScoreRepositoryMock.Object,
-            _teamRepositoryMock.Object);
+            _teamRepositoryMock.Object, _mmrCalculatorMock.Object, _playerRepositoryMock.Object);
     }
 
     [Test]

@@ -1,8 +1,10 @@
 ﻿using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
+using ESTMS.API.DataAccess.Settings;
 using ESTMS.API.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 
@@ -28,7 +30,9 @@ public class AuthServiceTests
         _tokenProviderMock = new Mock<ITokenProvider>();
         _userRepositoryMock = new Mock<IUserRepository>();
 
-        _authService = new AuthService(_userManagerMock.Object, _tokenProviderMock.Object, _userRepositoryMock.Object);
+        var mmrSettings = new Mock<IOptionsMonitor<MmrSettings>>();
+
+        _authService = new AuthService(_userManagerMock.Object, _tokenProviderMock.Object, _userRepositoryMock.Object, mmrSettings.Object);
     }
 
     [Test]
