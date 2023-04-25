@@ -142,7 +142,7 @@ public class TournamentService : ITournamentService
         return tournament;
     }
 
-    public async Task<Tournament> GenerateBracket<TResult>(int id)
+    public async Task<Tournament> GenerateBracket(int id)
     {
         var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
                          ?? throw new NotFoundException("Tournament with this id does not exist.");

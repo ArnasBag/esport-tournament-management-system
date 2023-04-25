@@ -1,4 +1,4 @@
-﻿using ESTMS.API.Core.Exceptions;
+using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.DataAccess.Settings;
