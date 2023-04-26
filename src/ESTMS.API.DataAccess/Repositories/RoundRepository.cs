@@ -21,7 +21,6 @@ public class RoundRepository : IRoundRepository
             .ThenInclude(c => c.Competitors)
             .Include(m => m.Matches)
             .ThenInclude(w => w.Winner)
-            .ThenInclude(x => x.WinnerTeamId)
             .Where(r => r.Id == roundId)
             .SingleOrDefaultAsync();
     }
