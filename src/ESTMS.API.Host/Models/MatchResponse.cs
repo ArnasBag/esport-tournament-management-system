@@ -8,5 +8,6 @@ public class MatchResponse
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public Status Status { get; set; }
+    public int RoundId { get; set; }
     public MatchWinnerResponse? Winner { get; set; }
 }
