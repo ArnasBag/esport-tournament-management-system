@@ -161,8 +161,6 @@ public class TournamentService : ITournamentService
             throw new BadRequestException("Cannot create bracket because team count is not a perfect power of 2.");
         }
 
-        //calculate team MMR
-
         var competitors = new List<Tuple<int, Team>>();
 
         foreach (var team in tournament.Teams)
@@ -197,8 +195,6 @@ public class TournamentService : ITournamentService
         tournament.Status = Status.InProgress;
 
         return await _tournamentRepository.UpdateTournamentAsync(tournament);
-
-        //sort by date availability.
     }
 
     private static bool IsTournamentPerfect(int teamCount)
