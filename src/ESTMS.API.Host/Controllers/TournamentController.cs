@@ -81,4 +81,18 @@ public class TournamentController : ControllerBase
     {
         return Ok(Task.FromResult(Empty));
     }
+
+    [HttpPost("{id}/tournament-teams")]
+    public async Task<IActionResult> JoinTournament(int id, JoinTournamentRequest request)
+    {
+        await _tournamentService.JoinTournamentAsync(id, request.TeamId);
+        return Ok();
+    }
+
+    [HttpDelete("{id}/tournament-teams")]
+    public async Task<IActionResult> LeaveTournament(int id, LeaveTournamentRequest request)
+    {
+        await _tournamentService.LeaveTournamentAsync(id, request.TeamId);
+        return Ok();
+    }
 }

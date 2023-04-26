@@ -27,6 +27,24 @@ public class MatchService : IMatchService
         throw new NotImplementedException();
     }
 
+    public async Task<Match> GetMatchByIdAsync(int matchId)
+    {
+        var match = await _matchRepository.GetMatchByIdAsync(matchId)
+            ?? throw new NotFoundException("Match with this id was not found.");
+
+        return match;
+    }
+
+    public async Task<List<PlayerScore>> GetMatchPlayerScores(int matchId)
+    {
+        var match = await _matchRepository.GetMatchByIdAsync(matchId)
+            ?? throw new NotFoundException("Match with this id was not found.");
+
+        var playerScores = await _playerScoreRepository.GetPlayerScoresByMatchIdAsync(matchId);
+
+        return playerScores;
+    }
+
     public async Task<Match> UpdateMatchStatusAsync(int matchId, Status matchStatus)
     {
         var match = await _matchRepository.GetMatchByIdAsync(matchId)

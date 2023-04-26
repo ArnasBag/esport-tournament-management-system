@@ -331,7 +331,7 @@ public class PlayerScoreServiceTests
         _teamRepositoryMock.Setup(r => r.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Team));
 
         Assert.ThrowsAsync<NotFoundException>(
-            () => _playerScoreService.GetPlayerScoresByTeamId(It.IsAny<int>(), null, null));
+            () => _playerScoreService.GetPlayerScoresByTeamId(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()));
     }
 
     [Test]
@@ -341,7 +341,7 @@ public class PlayerScoreServiceTests
         var team = new Team { Id = teamId, Players = new List<Player>() };
         _teamRepositoryMock.Setup(r => r.GetTeamByIdAsync(teamId)).ReturnsAsync(team);
 
-        Assert.ThrowsAsync<BadRequestException>(() => _playerScoreService.GetPlayerScoresByTeamId(teamId, null, null));
+        Assert.ThrowsAsync<BadRequestException>(() => _playerScoreService.GetPlayerScoresByTeamId(teamId, It.IsAny<DateTime>(), It.IsAny<DateTime>()));
     }
 
     [Test]

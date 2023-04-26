@@ -58,6 +58,7 @@ public class UserRepository : IUserRepository
         return await _context.TournamentManagers
             .Include(t => t.ApplicationUser)
             .Include(t => t.Tournaments)
+            .ThenInclude(t => t.Teams)
             .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
     }
 }

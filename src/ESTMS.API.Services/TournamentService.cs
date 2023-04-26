@@ -134,4 +134,55 @@ public class TournamentService : ITournamentService
 
         return tournament;
     }
+
+    public async Task JoinTournamentAsync(int tournamentId, int teamId)
+    {
+        var tournament = await _tournamentRepository.GetTournamentByIdAsync(tournamentId)
+            ?? throw new NotFoundException("Tournament with this id was not found.");
+
+        var team = await _teamRepository.GetTeamByIdAsync(teamId)
+            ?? throw new NotFoundException("Team with this id was not found.");
+
+        if(team.Players.Count < 5)
+        {
+            throw new BadRequestException("Your team must have 5 players before joing a tournament.");
+        }
+
+        if(tournament.Status != Status.NotStarted)
+        {
+            throw new BadRequestException("Tournament has already started");
+        }
+
+        if(tournament.Teams.Any(x => x.Id == teamId))
+        {
+            throw new BadRequestException("You are already part of this tournament");
+        }
+
+        tournament.Teams.Add(team);
+
+        await _tournamentRepository.UpdateTournamentAsync(tournament);
+    }
+
+    public async Task LeaveTournamentAsync(int tournamentId, int teamId)
+    {
+        var tournament = await _tournamentRepository.GetTournamentByIdAsync(tournamentId)
+            ?? throw new NotFoundException("Tournament with this id was not found.");
+
+        var team = await _teamRepository.GetTeamByIdAsync(teamId)
+            ?? throw new NotFoundException("Team with this id was not found.");
+
+        if(tournament.Status != Status.NotStarted)
+        {
+            throw new BadRequestException("Tournament has already started");
+        }
+
+        if(!tournament.Teams.Any(t => t.Id == teamId))
+        {
+            throw new BadRequestException("You are not part of this tournament.");
+        }
+
+        tournament.Teams.Remove(team);
+
+        await _tournamentRepository.UpdateTournamentAsync(tournament);
+    }
 }

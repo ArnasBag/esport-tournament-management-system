@@ -111,7 +111,7 @@ public class PlayerScoreService : IPlayerScoreService
 
         var playerScores = team.Players
             .SelectMany(player => player.Scores)
-            .Where(s => s.CreatedAt >= from && s.CreatedAt <= to)
+            .Where(s => s.CreatedAt.Date >= from.Date && s.CreatedAt.Date <= to.Date)
             .ToList();
 
         if (!playerScores.Any())
