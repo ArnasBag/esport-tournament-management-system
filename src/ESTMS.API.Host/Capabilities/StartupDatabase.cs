@@ -8,7 +8,7 @@ namespace ESTMS.API.Host.Capabilities
         public static IServiceCollection ConfigureDatabase(this IServiceCollection services)
         {
             return services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql("Host=localhost;Port=5432;Database=estms;Username=estms;Password=estms",
+                options.UseNpgsql("Host=localhost;Port=5433;Database=estms;Username=root;Password=root",
                     options => options.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
         }
     }
