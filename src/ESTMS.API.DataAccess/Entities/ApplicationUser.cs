@@ -7,5 +7,6 @@ public class ApplicationUser : IdentityUser
     public bool Active { get; set; } = true;
     public List<Invitation> SentInvitations { get; set; }
     public List<Invitation> ReceivedInvitations{ get; set; }
+    public DateTime CreatedAt { get; set; }
 
 }

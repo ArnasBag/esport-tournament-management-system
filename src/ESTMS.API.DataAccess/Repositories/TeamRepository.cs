@@ -40,6 +40,7 @@ public class TeamRepository : ITeamRepository
             .ThenInclude(p => p.Scores)
             .Include(t => t.Players)
             .ThenInclude(p => p.ApplicationUser)
+            .Include(t => t.Matches)
             .Where(t => t.Id == id)
             .SingleOrDefaultAsync();
     }
@@ -51,6 +52,8 @@ public class TeamRepository : ITeamRepository
             .ThenInclude(p => p.ApplicationUser)
             .Include(t => t.TeamManager)
             .ThenInclude(t => t.ApplicationUser)
+            .Include(t => t.Matches)
+            .ThenInclude(m => m.Winner)
             .Where(t => t.TeamManager.ApplicationUser.Id == teamManagerUserId)
             .SingleOrDefaultAsync();
     }

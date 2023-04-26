@@ -39,6 +39,8 @@ public class UserRepository : IUserRepository
     {
         return await _context.Players
             .Include(p => p.ApplicationUser)
+            .ThenInclude(u => u.ReceivedInvitations)
+            .ThenInclude(i => i.Sender)
             .Include(p => p.Scores)
             .SingleOrDefaultAsync(p => p.ApplicationUser.Id == userId);
     }

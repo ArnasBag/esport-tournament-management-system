@@ -13,6 +13,7 @@ public class UserProfile : Profile
     public UserProfile()
     {
         CreateMap<ApplicationUser, UserResponse>().ReverseMap();
+        CreateMap<ApplicationUserWithRole, UserResponse>().ReverseMap();
         CreateMap<TeamManager, UserResponse>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ApplicationUser.Id))
             .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.ApplicationUser.UserName))

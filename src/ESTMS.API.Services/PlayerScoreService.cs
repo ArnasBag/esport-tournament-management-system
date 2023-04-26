@@ -104,7 +104,7 @@ public class PlayerScoreService : IPlayerScoreService
         return playerScores;
     }
 
-    public async Task<List<DailyPlayerScore>> GetPlayerScoresByTeamId(int teamId, DateTime? from, DateTime? to)
+    public async Task<List<DailyPlayerScore>> GetPlayerScoresByTeamId(int teamId, DateTime from, DateTime to)
     {
         var team = await _teamRepository.GetTeamByIdAsync(teamId) 
             ?? throw new NotFoundException("Team with this id was not found.");
@@ -129,7 +129,25 @@ public class PlayerScoreService : IPlayerScoreService
                 TotalDeaths = g.Sum(s => s.Deaths),
             })
             .ToList();
-        
-        return playerDailyScores;
+
+        var allDates = Enumerable.Range(0, (to - from).Days + 1)
+            .Select(i => from.AddDays(i).Date)
+            .ToList();
+
+        var result = allDates
+            .GroupJoin(
+                playerDailyScores,
+                d => d,
+                c => c.Date,
+                (d, c) => new DailyPlayerScore
+                {
+                    Date = d,
+                    TotalKills = c.Sum(x => x.TotalKills),
+                    TotalDeaths = c.Sum(x => x.TotalDeaths),
+                    TotalAssists = c.Sum(x => x.TotalAssists)
+                })
+            .ToList();
+
+        return result;
     }
 }

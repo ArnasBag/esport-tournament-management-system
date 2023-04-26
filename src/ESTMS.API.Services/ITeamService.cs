@@ -10,6 +10,7 @@ public interface ITeamService
     Task<Team> UpdateTeamAsync(int id, Team updatedTeam, IFormFile logo);
     Task UpdateTeamPlayersMmrAsync(Team winner, Team loser, int matchId);
     Task<Team> GetTeamByIdAsync(int id);
+    Task<List<Team>> GetAllTeamsAsync();
     Task<Team> GetTeamByTeamManagerId(string teamManagerUserId);
     Task<List<Team>> GetAllTeamsAsync(string? userId = null);
 }

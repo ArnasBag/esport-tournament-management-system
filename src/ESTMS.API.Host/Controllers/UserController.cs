@@ -30,6 +30,14 @@ public class UserController : ControllerBase
         return Ok(_mapper.Map<UserResponse>(user));
     }
 
+    [HttpGet("count")]
+    public async Task<IActionResult> GetCreatedUserCountByDay(DateTime from, DateTime to)
+    {
+        var userDailyCount = await _userService.GetDailyCreatedUsersAsync(from, to);
+
+        return Ok(userDailyCount);
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {

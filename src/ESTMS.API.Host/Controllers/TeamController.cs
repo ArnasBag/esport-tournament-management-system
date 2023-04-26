@@ -27,9 +27,9 @@ public class TeamController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTeams(string? teamManagerId)
+    public async Task<IActionResult> GetAllTeams()
     {
-        var teams = await _teamService.GetAllTeamsAsync(teamManagerId);
+        var teams = await _teamService.GetAllTeamsAsync();
 
         return Ok(_mapper.Map<List<TeamResponse>>(teams));
     }

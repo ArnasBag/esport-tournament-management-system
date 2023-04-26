@@ -112,6 +112,11 @@ public class InvitationService : IInvitationService
             throw new BadRequestException("Player with this id is already part of a team.");
         }
 
+        if(player.ApplicationUser.ReceivedInvitations.Any(x => x.Sender.Id == team.TeamManager.ApplicationUser.Id))
+        {
+            throw new BadRequestException("You already sent an invitation to this player.");
+        }
+
         var invitation = await _invitationRepository.CreateInvitationAsync(new Invitation
         {
             Sender = team.TeamManager.ApplicationUser,

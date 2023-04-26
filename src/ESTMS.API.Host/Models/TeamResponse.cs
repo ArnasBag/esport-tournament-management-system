@@ -8,4 +8,5 @@ public class TeamResponse
     public string LogoUrl { get; set; } = string.Empty;
     public UserResponse TeamManager { get; set; } = new();
     public List<UserResponse> Players { get; set; } = new();
+    public List<MatchResponse> Matches { get; set; } = new();
 }

@@ -98,6 +98,40 @@ public class UserService : IUserService
         transaction.Complete();
     }
 
+    public async Task<List<DailyUserCreatedCount>> GetDailyCreatedUsersAsync(DateTime from, DateTime to)
+    {
+        var users = await _userRepository.GetUsersAsync();
+
+        var filteredUsers = users.Where(u => u.CreatedAt >= from && u.CreatedAt <= to).ToList();
+
+        var dailyCreatedUserCount = filteredUsers
+            .GroupBy(u => u.CreatedAt.Date)
+            .Select(u => new DailyUserCreatedCount
+            {
+                Date = u.Key,
+                TotalCreatedUsers = u.Count()
+            })
+            .ToList();
+
+        var allDates = Enumerable.Range(0, (to - from).Days + 1)
+            .Select(i => from.AddDays(i).Date)
+            .ToList();
+
+        var result = allDates
+            .GroupJoin(
+                dailyCreatedUserCount,
+                d => d,
+                c => c.Date,
+                (d, c) => new DailyUserCreatedCount
+                {
+                    Date = d,
+                    TotalCreatedUsers = c.Sum(x => x.TotalCreatedUsers)
+                })
+            .ToList();
+
+        return result;
+    }
+
     public async Task<ApplicationUser> GetUserByIdAsync(string id)
     {
         var user = await _userRepository.GetUserByIdAsync(id)
@@ -106,10 +140,25 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<List<ApplicationUser>> GetUsersAsync()
+    public async Task<List<ApplicationUserWithRole>> GetUsersAsync()
     {
         var users = await _userRepository.GetUsersAsync();
+        var usersWithRole = new List<ApplicationUserWithRole>();
 
-        return users;
+        foreach (var user in users)
+        {
+            var userRole = await _userManager.GetRolesAsync(user);
+
+            usersWithRole.Add(new()
+            {
+                Role = userRole.Single(),
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Active = user.Active
+            });
+        }
+    
+        return usersWithRole;
     }
 }

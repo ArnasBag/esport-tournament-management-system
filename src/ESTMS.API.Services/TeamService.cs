@@ -91,6 +91,13 @@ public class TeamService : ITeamService
         return teamManager.Teams;
     }
 
+    public async Task<List<Team>> GetAllTeamsAsync()
+    {
+        var teams = await _teamRepository.GetAllTeamsAsync();
+
+        return teams;
+    }
+
     public async Task<Team> GetTeamByTeamManagerId(string teamManagerUserId)
     {
         var team = await _teamRepository.GetTeamByTeamManagerUserId(teamManagerUserId)
