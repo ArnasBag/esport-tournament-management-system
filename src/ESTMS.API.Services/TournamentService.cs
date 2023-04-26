@@ -108,6 +108,9 @@ public class TournamentService : ITournamentService
         switch (updatedStatus)
         {
             case Status.InProgress:
+                if (tournament.Status == Status.InProgress)
+                    throw new BadRequestException("Tournament is already in progress.");
+
                 if (tournament.Teams.Count < 2)
                     throw new BadRequestException("Tournament has too little teams to start.");
 
@@ -115,9 +118,13 @@ public class TournamentService : ITournamentService
                     throw new BadRequestException("Tournament has no Matches.");
 
                 status = Status.InProgress;
+                tournament.StartDate = DateTime.UtcNow;
                 break;
 
             case Status.Done:
+                if (tournament.Status == Status.Done)
+                    throw new BadRequestException("Tournament is already finished.");
+
                 if (tournament.Winner is null)
                     throw new BadRequestException("Cannot finish the tournament. Tournament winner is not set.");
 
@@ -130,6 +137,7 @@ public class TournamentService : ITournamentService
                 }
 
                 status = Status.Done;
+                tournament.EndDate = DateTime.UtcNow;
                 break;
 
             default:
@@ -149,19 +157,19 @@ public class TournamentService : ITournamentService
         return tournament;
     }
 
-    public async Task<Tournament> GenerateBracket(int id)
+    public async Task<Tournament> CreateBracket(int id)
     {
         var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
                          ?? throw new NotFoundException("Tournament with this id does not exist.");
 
         var teamsCount = tournament.Teams.Count;
 
-        if (teamsCount < 2)
-            throw new BadRequestException("Cannot create bracket because tournament has less than 2 teams registered.");
-
         if (tournament.Status is Status.Done or Status.InProgress)
             throw new BadRequestException(
                 "Cannot create bracket because tournament is started or has already finished.");
+
+        if (teamsCount < 2)
+            throw new BadRequestException("Cannot create bracket because tournament has less than 2 teams registered.");
 
         if (!IsTournamentPerfect(teamsCount))
         {
@@ -184,11 +192,14 @@ public class TournamentService : ITournamentService
 
         var matchCount = teamsCount / 2;
 
+        var startDate = DateTime.UtcNow.AddDays(10);
+
         for (var i = 0; i < matchCount; i++)
         {
             var match = new Match
             {
                 Status = Status.NotStarted,
+                StartDate = startDate,
                 Competitors = new List<Team>()
             };
 
@@ -199,9 +210,12 @@ public class TournamentService : ITournamentService
         }
 
         tournament.Rounds = new List<Round> { firstRound };
-        tournament.Status = Status.InProgress;
+        
+        tournament = await _tournamentRepository.UpdateTournamentAsync(tournament);
 
-        return await _tournamentRepository.UpdateTournamentAsync(tournament);
+        tournament = await UpdateTournamentStatusAsync(tournament.Id, Status.InProgress);
+
+        return tournament;
     }
 
     private static bool IsTournamentPerfect(int teamCount)
@@ -237,11 +251,13 @@ public class TournamentService : ITournamentService
             return tournament;
         }
 
-        var winners = round.Matches.OrderBy(m => m.Id).Select(w => w.Winner.WinnerTeamId).ToList();
+        var winners = round.Matches.OrderBy(match => match.Id).Select(match => match.Winner.WinnerTeamId).ToList();
 
         if (winners.Count == 1)
         {
-            return await UpdateTournamentWinnerAsync(tournament.Id, winners.First());
+            await UpdateTournamentWinnerAsync(tournament.Id, winners.First());
+
+            return await UpdateTournamentStatusAsync(tournament.Id, Status.Done);
         }
 
         var competitors = new List<Team>();
@@ -258,11 +274,14 @@ public class TournamentService : ITournamentService
 
         var matchCount = winners.Count / 2;
 
+        var startDate = DateTime.UtcNow.AddDays(5);
+
         for (var i = 0; i < matchCount; i++)
         {
             var match = new Match
             {
                 Status = Status.NotStarted,
+                StartDate = startDate,
                 Competitors = new List<Team>()
             };
 
