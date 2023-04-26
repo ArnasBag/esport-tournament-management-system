@@ -111,7 +111,7 @@ public class TournamentService : ITournamentService
                 if (tournament.Status == Status.InProgress)
                     throw new BadRequestException("Tournament is already in progress.");
 
-                if (tournament.Teams.Count < 2)
+                if (tournament.Teams.Count == tournament.MaxTeamCount)
                     throw new BadRequestException("Tournament has too little teams to start.");
 
                 if (rounds.First().Matches.Count < 1)
@@ -210,7 +210,7 @@ public class TournamentService : ITournamentService
         }
 
         tournament.Rounds = new List<Round> { firstRound };
-        
+
         tournament = await _tournamentRepository.UpdateTournamentAsync(tournament);
 
         tournament = await UpdateTournamentStatusAsync(tournament.Id, Status.InProgress);

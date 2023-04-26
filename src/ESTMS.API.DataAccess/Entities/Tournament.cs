@@ -12,6 +12,7 @@ public class Tournament
     public List<Team>? Teams { get; set; }
     public List<Round> Rounds { get; set; }
     public TournamentManager Manager { get; set; }
+    public int MaxTeamCount { get; set; }
 }
 
 public enum Status

@@ -339,6 +339,9 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Property<int>("ManagerId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("MaxTeamCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
