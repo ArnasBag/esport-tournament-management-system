@@ -1,6 +1,4 @@
-﻿using ESTMS.API.Host.Models.Tournament;
-
-namespace ESTMS.API.Host.Models;
+﻿namespace ESTMS.API.Host.Models;
 
 public class RoundResponse
 {
