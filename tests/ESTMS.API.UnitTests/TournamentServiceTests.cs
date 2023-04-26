@@ -363,6 +363,6 @@ public class TournamentServiceTests
             Teams = teams
         });
 
-        _tournamentService.GenerateBracket(It.IsAny<int>());
+        _tournamentService.CreateBracket(It.IsAny<int>());
     }
 }
