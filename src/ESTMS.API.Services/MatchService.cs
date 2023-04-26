@@ -62,7 +62,6 @@ public class MatchService : IMatchService
 
             foreach (var player in winnerTeam!.Players)
             {
-                var playersScores = player.Scores;
                 var matchPlayerScore = player.Scores.Single(s => s.Match.Id == match.Id);
                 player.Mmr = _mmrCalculator.RecalculatePlayerMmr(player, losingTeamMmr, matchPlayerScore, 1);
                 await _playerRepository.UpdatePlayerAsync(player);
