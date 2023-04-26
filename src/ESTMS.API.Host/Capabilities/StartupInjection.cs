@@ -21,6 +21,7 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<IPlayerScoreRepository, PlayerScoreRepository>()
                 //.AddTransient<IFileUploader, LocalStorageFileUploader>()
                 .AddTransient<IFileUploader, BlobStorageUploader>()
+                .AddTransient<IRoundRepository, RoundRepository>()
                 .AddTransient<IMatchService, MatchService>()
                 .AddTransient<ITeamManagerRepository, TeamManagerRepository>()
                 .AddTransient<IPlayerScoreService, PlayerScoreService>()
