@@ -14,6 +14,7 @@ public class MatchServiceTests
     private Mock<ITeamRepository> _teamRepositoryMock;
     private Mock<IMmrCalculator> _mmrCalculatorMock;
     private Mock<IPlayerRepository> _playerRepositoryMock;
+    private Mock<ITournamentService> _tournamentServiceMock;
 
     private IMatchService _matchService;
 
@@ -25,9 +26,11 @@ public class MatchServiceTests
         _teamRepositoryMock = new Mock<ITeamRepository>();
         _mmrCalculatorMock = new Mock<IMmrCalculator>();
         _playerRepositoryMock = new Mock<IPlayerRepository>();
+        _tournamentServiceMock = new Mock<ITournamentService>();
 
         _matchService = new MatchService(_matchRepositoryMock.Object, _playerScoreRepositoryMock.Object,
-            _teamRepositoryMock.Object, _mmrCalculatorMock.Object, _playerRepositoryMock.Object);
+            _teamRepositoryMock.Object, _mmrCalculatorMock.Object, _playerRepositoryMock.Object,
+            _tournamentServiceMock.Object);
     }
 
     [Test]
@@ -63,7 +66,8 @@ public class MatchServiceTests
                 new PlayerScore()
             });
 
-        Assert.ThrowsAsync<BadRequestException>(() => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done));
+        Assert.ThrowsAsync<BadRequestException>(
+            () => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done));
     }
 
     [Test]
@@ -88,13 +92,13 @@ public class MatchServiceTests
                 new PlayerScore()
             });
 
-        Assert.ThrowsAsync<BadRequestException>(() => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done));
+        Assert.ThrowsAsync<BadRequestException>(
+            () => _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done));
     }
 
     [Test]
     public async Task UpdateMatchStatusAsync_ValidData_Ok()
     {
-
         _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new DataAccess.Entities.Match
         {
             Competitors = new List<Team>()
