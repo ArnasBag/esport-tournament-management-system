@@ -168,8 +168,8 @@ public class TournamentService : ITournamentService
             throw new BadRequestException(
                 "Cannot create bracket because tournament is started or has already finished.");
 
-        if (teamsCount < 2)
-            throw new BadRequestException("Cannot create bracket because tournament has less than 2 teams registered.");
+        if (teamsCount != tournament.MaxTeamCount)
+            throw new BadRequestException("Cannot create bracket because tournament has not enough teams registered.");
 
         if (!IsTournamentPerfect(teamsCount))
         {

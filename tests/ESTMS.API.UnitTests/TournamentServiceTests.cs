@@ -351,18 +351,24 @@ public class TournamentServiceTests
     }
 
     [Test]
-    public void GenerateBrackets_ValidData_Ok()
+    public async Task CreateBrackets_ValidData_Ok()
     {
+        var teamCount = 16;
         var sequenceNumber = 1;
         Fixture.Customize<Team>(c => c.With(team => team.Id, () => sequenceNumber++));
 
-        var teams = Fixture.CreateMany<Team>(32).ToList();
+        var teams = Fixture.CreateMany<Team>(teamCount).ToList();
 
         _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(new Tournament
         {
             Teams = teams
         });
 
-        _tournamentService.CreateBracket(It.IsAny<int>());
+        _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Team));
+
+        var actualTournament = await _tournamentService.CreateBracket(It.IsAny<int>());
+
+        Assert.That(actualTournament.Rounds[0].Matches.Count, Is.EqualTo(teamCount/2));
+        Assert.That(actualTournament.Status, Is.EqualTo(Status.InProgress));
     }
 }
