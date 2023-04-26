@@ -50,6 +50,11 @@ public class TournamentService : ITournamentService
 
     public async Task<Tournament> CreateTournamentAsync(Tournament tournament)
     {
+        if (!IsTournamentPerfect(tournament.MaxTeamCount))
+        {
+            throw new BadRequestException("Cannot tournament because max team count is not a perfect power of 2.");
+        }
+
         var tournamentManager = await _userRepository.GetTournamentManagerByUserIdAsync(_userIdProvider.UserId!);
 
         tournament.Manager = tournamentManager!;
@@ -111,7 +116,7 @@ public class TournamentService : ITournamentService
                 if (tournament.Status == Status.InProgress)
                     throw new BadRequestException("Tournament is already in progress.");
 
-                if (tournament.Teams.Count == tournament.MaxTeamCount)
+                if (tournament.Teams.Count != tournament.MaxTeamCount)
                     throw new BadRequestException("Tournament has too little teams to start.");
 
                 if (rounds.First().Matches.Count < 1)
@@ -170,11 +175,6 @@ public class TournamentService : ITournamentService
 
         if (teamsCount != tournament.MaxTeamCount)
             throw new BadRequestException("Cannot create bracket because tournament has not enough teams registered.");
-
-        if (!IsTournamentPerfect(teamsCount))
-        {
-            throw new BadRequestException("Cannot create bracket because team count is not a perfect power of 2.");
-        }
 
         var competitors = new List<Tuple<int, Team>>();
 
