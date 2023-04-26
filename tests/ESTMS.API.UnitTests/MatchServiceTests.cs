@@ -1,14 +1,18 @@
-﻿using ESTMS.API.Core.Exceptions;
+﻿using AutoFixture;
+using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services;
 using Moq;
 using NUnit.Framework;
+using Match = ESTMS.API.DataAccess.Entities.Match;
 
 namespace ESTMS.API.UnitTests;
 
 public class MatchServiceTests
 {
+    private static Fixture Fixture;
+
     private Mock<IMatchRepository> _matchRepositoryMock;
     private Mock<IPlayerScoreRepository> _playerScoreRepositoryMock;
     private Mock<ITeamRepository> _teamRepositoryMock;
@@ -17,6 +21,12 @@ public class MatchServiceTests
     private Mock<ITournamentService> _tournamentServiceMock;
 
     private IMatchService _matchService;
+
+    static MatchServiceTests()
+    {
+        Fixture = new Fixture();
+        Fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+    }
 
     [SetUp]
     public void Setup()
@@ -99,26 +109,100 @@ public class MatchServiceTests
     [Test]
     public async Task UpdateMatchStatusAsync_ValidData_Ok()
     {
-        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new DataAccess.Entities.Match
+        var team1 = new Team
         {
-            Competitors = new List<Team>()
+            Id = 1,
+            Players = new List<Player>
             {
-                new Team
+                new Player
                 {
-                    Players = new List<Player>()
+                    Mmr = 10,
+                    Scores = new List<PlayerScore>()
                     {
-                        new Player(),
+                        new PlayerScore
+                        {
+                            Match = new Match
+                            {
+                                Id = 1
+                            }
+                        }
                     }
                 }
+            }
+        };
+
+        var team2 = new Team
+        {
+            Id = 2,
+            Players = new List<Player>
+            {
+                new Player
+                {
+                    Mmr = 10,
+                    Scores = new List<PlayerScore>()
+                    {
+                        new PlayerScore
+                        {
+                            Match = new Match
+                            {
+                                Id = 1
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var match = new Match
+        {
+            Id = 1,
+            Round = new Round
+            {
+                Id = 1
             },
-            Winner = new MatchWinner()
-        });
+            Competitors = new List<Team>
+            {
+                team1,
+                team2
+            },
+            Winner = new MatchWinner
+            {
+                WinnerTeamId = 1
+            }
+        };
+
+        var score = new PlayerScore()
+        {
+            Match = new Match()
+            {
+                Id = 1
+            }
+        };
+
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(match);
 
         _playerScoreRepositoryMock.Setup(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>())).ReturnsAsync(
             new List<PlayerScore>()
             {
+                new PlayerScore(),
                 new PlayerScore()
             });
+
+        _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team
+        {
+            Id = 1,
+            Players = new List<Player>
+            {
+                new Player
+                {
+                    Mmr = 10,
+                    Scores = new List<PlayerScore>
+                    {
+                        score
+                    }
+                }
+            }
+        });
 
         await _matchService.UpdateMatchStatusAsync(It.IsAny<int>(), Status.Done);
 
