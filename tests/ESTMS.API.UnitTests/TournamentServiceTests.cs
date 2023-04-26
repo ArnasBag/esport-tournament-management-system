@@ -12,12 +12,12 @@ namespace ESTMS.API.UnitTests;
 [TestFixture]
 public class TournamentServiceTests
 {
-
     private static Fixture Fixture;
     private Mock<ITeamRepository> _teamRepositoryMock;
     private Mock<ITournamentRepository> _tournamentRepositoryMock;
     private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IUserIdProvider> _userIdProviderMock;
+    private Mock<IRoundRepository> _roundRepositoryMock;
 
     private ITournamentService _tournamentService;
 
@@ -34,9 +34,11 @@ public class TournamentServiceTests
         _teamRepositoryMock = new Mock<ITeamRepository>();
         _userRepositoryMock = new Mock<IUserRepository>();
         _userIdProviderMock = new Mock<IUserIdProvider>();
+        _roundRepositoryMock = new Mock<IRoundRepository>();
 
         _tournamentService = new TournamentService(_tournamentRepositoryMock.Object,
-            _userRepositoryMock.Object, _userIdProviderMock.Object, _teamRepositoryMock.Object);
+            _userRepositoryMock.Object, _userIdProviderMock.Object, _teamRepositoryMock.Object,
+            _roundRepositoryMock.Object);
     }
 
     [Test]
