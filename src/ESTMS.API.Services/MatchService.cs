@@ -11,18 +11,21 @@ public class MatchService : IMatchService
     private readonly ITeamRepository _teamRepository;
     private readonly IMmrCalculator _mmrCalculator;
     private readonly IPlayerRepository _playerRepository;
+    private readonly ITournamentService _tournamentService;
 
     public MatchService(IMatchRepository matchRepository,
         IPlayerScoreRepository playerScoreRepository,
         ITeamRepository teamRepository,
         IMmrCalculator mmrCalculator,
-        IPlayerRepository playerRepository)
+        IPlayerRepository playerRepository,
+        ITournamentService tournamentService)
     {
         _matchRepository = matchRepository;
         _playerScoreRepository = playerScoreRepository;
         _teamRepository = teamRepository;
         _mmrCalculator = mmrCalculator;
         _playerRepository = playerRepository;
+        _tournamentService = tournamentService;
     }
 
     public Task GenerateMatchesAsync()
@@ -54,7 +57,7 @@ public class MatchService : IMatchService
             var losingTeam = await _teamRepository.GetTeamByIdAsync(
                 match.Competitors.SingleOrDefault(c => c.Id != winnerTeam!.Id)!.Id);
 
-            var losingTeamMmr = (int) losingTeam!.Players.Average(p => p.Mmr);
+            var losingTeamMmr = (int)losingTeam!.Players.Average(p => p.Mmr);
             var winningTeamMmr = (int)winnerTeam!.Players.Average(p => p.Mmr);
 
             foreach (var player in winnerTeam!.Players)
@@ -75,28 +78,31 @@ public class MatchService : IMatchService
         match.Status = matchStatus;
 
         await _matchRepository.UpdateMatchAsync(match);
+
+        await _tournamentService.UpdateTournamentBracket(match.Round.Id);
+
         return match;
     }
 
     public async Task<Match> UpdateMatchWinnerAsync(int matchId, int winnerTeamId)
     {
         var match = await _matchRepository.GetMatchByIdAsync(matchId)
-            ?? throw new NotFoundException("Match with this id was not found.");
+                    ?? throw new NotFoundException("Match with this id was not found.");
 
         var team = await _teamRepository.GetTeamByIdAsync(winnerTeamId)
-            ?? throw new NotFoundException("Team with this id was not found.");
+                   ?? throw new NotFoundException("Team with this id was not found.");
 
-        if(!match.Competitors.Any(c => c.Id == team.Id))
+        if (!match.Competitors.Any(c => c.Id == team.Id))
         {
             throw new BadRequestException("This team did not play in this match.");
         }
 
-        if(match.Winner != null)
+        if (match.Winner != null)
         {
             throw new BadRequestException("This match already has a winner");
         }
 
-        if(match.Status != Status.InProgress)
+        if (match.Status != Status.InProgress)
         {
             throw new BadRequestException("Can only update match winner while the match is in progress");
         }

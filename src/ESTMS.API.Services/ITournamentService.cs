@@ -12,4 +12,5 @@ public interface ITournamentService
     Task<Tournament> UpdateTournamentStatusAsync(int id, Status updatedStatus);
     Task<Tournament> GetTournamentByTournamentManagerId(string id);
     Task<Tournament> GenerateBracket(int id);
+    Task<Tournament> UpdateTournamentBracket(int roundId);
 }

@@ -10,14 +10,21 @@ public class TournamentService : ITournamentService
     private readonly ITeamRepository _teamRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUserIdProvider _userIdProvider;
+    private readonly IRoundRepository _roundRepository;
 
-    public TournamentService(ITournamentRepository tournamentRepository, IUserRepository userRepository,
-        IUserIdProvider userIdProvider, ITeamRepository teamRepository)
+    public TournamentService
+    (
+        ITournamentRepository tournamentRepository,
+        IUserRepository userRepository,
+        IUserIdProvider userIdProvider,
+        ITeamRepository teamRepository,
+        IRoundRepository roundRepository)
     {
         _tournamentRepository = tournamentRepository;
         _userRepository = userRepository;
         _userIdProvider = userIdProvider;
         _teamRepository = teamRepository;
+        _roundRepository = roundRepository;
     }
 
     public async Task<List<Tournament>> GetAllTournamentsAsync(string? userId = null)
@@ -205,7 +212,7 @@ public class TournamentService : ITournamentService
     private async Task<int> CalculateTeamMmr(int teamId)
     {
         var team = await _teamRepository.GetTeamByIdAsync(teamId)
-            ?? throw new NotFoundException("Team with this id doesn't exist.");
+                   ?? throw new NotFoundException("Team with this id doesn't exist.");
 
         var sum = 0;
 
@@ -217,5 +224,56 @@ public class TournamentService : ITournamentService
         var teamMmr = sum / team.Players.Count;
 
         return teamMmr;
+    }
+
+    public async Task<Tournament> UpdateTournamentBracket(int roundId)
+    {
+        var round = await _roundRepository.GetRoundByIdAsync(roundId);
+
+        var tournament = await _tournamentRepository.GetTournamentByIdAsync(round.Tournament.Id);
+
+        if (round.Matches.Any(m => m.Status != Status.Done))
+        {
+            return tournament;
+        }
+
+        var winners = round.Matches.OrderBy(m => m.Id).Select(w => w.Winner.WinnerTeamId).ToList();
+
+        if (winners.Count == 1)
+        {
+            return await UpdateTournamentWinnerAsync(tournament.Id, winners.First());
+        }
+
+        var competitors = new List<Team>();
+
+        foreach (var winner in winners)
+        {
+            competitors.Add(await _teamRepository.GetTeamByIdAsync(winner));
+        }
+
+        var nextRound = new Round
+        {
+            Matches = new List<Match>()
+        };
+
+        var matchCount = winners.Count / 2;
+
+        for (var i = 0; i < matchCount; i++)
+        {
+            var match = new Match
+            {
+                Status = Status.NotStarted,
+                Competitors = new List<Team>()
+            };
+
+            match.Competitors.Add(competitors[i * 2]);
+            match.Competitors.Add(competitors[i * 2 + 1]);
+
+            nextRound.Matches.Add(match);
+        }
+
+        tournament.Rounds.Add(nextRound);
+
+        return await _tournamentRepository.UpdateTournamentAsync(tournament);
     }
 }
