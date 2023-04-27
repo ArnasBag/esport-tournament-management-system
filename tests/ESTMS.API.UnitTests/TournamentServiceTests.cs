@@ -462,13 +462,10 @@ public class TournamentServiceTests
                 {
                     new Round()
                     {
-                        Matches = new List<Match>(new Match[4])
+                        Matches = new List<Match>(new Match[teamCount / 2])
                     }
                 }
             });
-
-        //_tournamentServiceMock.Setup(x => x.UpdateTournamentStatusAsync(It.IsAny<int>(), It.IsAny<Status>()))
-        //    .ReturnsAsync(new Tournament());
 
         var actualTournament = await _tournamentService.CreateBracket(It.IsAny<int>());
 
