@@ -76,7 +76,7 @@ public class TournamentController : ControllerBase
         return Ok(_mapper.Map<TournamentResponse>(tournament));
     }
 
-    [HttpPut("{id}/bracket")]
+    [HttpPost("{id}/bracket")]
     public async Task<IActionResult> CreateMatches(int id)
     {
         var tournament = await _tournamentService.CreateBracket(id);
