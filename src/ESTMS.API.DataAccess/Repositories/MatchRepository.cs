@@ -25,9 +25,12 @@ public class MatchRepository : IMatchRepository
             .SingleOrDefaultAsync();
     }
 
-    public async Task UpdateMatchAsync(Match match)
+    public async Task<Match> UpdateMatchAsync(Match match)
     {
         _context.Matches.Update(match);
+
         await _context.SaveChangesAsync();
+
+        return match;
     }
 }

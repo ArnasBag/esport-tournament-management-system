@@ -44,6 +44,28 @@ public class MatchServiceTests
     }
 
     [Test]
+    public void GetMatchById_ValidData_Ok()
+    {
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new Match());
+
+        _matchService.GetMatchByIdAsync(It.IsAny<int>());
+
+        _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
+    }
+
+    [Test]
+    public void GetMatchById_MatchDoesExist_ThrowsException()
+    {
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Match));
+
+        var ex = Assert.ThrowsAsync<NotFoundException>(() => _matchService.GetMatchByIdAsync(It.IsAny<int>()));
+
+        Assert.That(ex.Message, Is.EqualTo("Match with this id doesn't exist."));
+
+        _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
+    }
+
+    [Test]
     public void UpdateMatchStatusAsync_MatchNotFound_ThrowsException()
     {
         _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>()))
@@ -209,5 +231,74 @@ public class MatchServiceTests
         _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
         _playerScoreRepositoryMock.Verify(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>()), Times.Once);
         _matchRepositoryMock.Verify(x => x.UpdateMatchAsync(It.IsAny<DataAccess.Entities.Match>()), Times.Once);
+    }
+
+    [Test]
+    public async Task UpdateMatchDate_ValidData_Ok()
+    {
+        var match = new Match
+        {
+            Status = Status.NotStarted
+        };
+
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(match);
+
+        _matchService.UpdateMatchDateAsync(It.IsAny<int>(), new Match
+        {
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        });
+
+        _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
+        _matchRepositoryMock.Verify(x => x.UpdateMatchAsync(It.IsAny<Match>()), Times.Once);
+    }
+
+    [Test]
+    public async Task UpdateMatchDate_MatchNotFound_ThrowsException()
+    {
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Match));
+
+        var ex = Assert.ThrowsAsync<NotFoundException>(() =>
+            _matchService.UpdateMatchDateAsync(It.IsAny<int>(), It.IsAny<Match>()));
+
+        Assert.That(ex.Message, Is.EqualTo("Match with this id was not found."));
+
+        _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
+    }
+
+    [Test]
+    public async Task UpdateMatchDate_MatchDone_ThrowsException()
+    {
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new Match
+        {
+            Status = Status.Done
+        });
+
+        var ex = Assert.ThrowsAsync<BadRequestException>(() =>
+            _matchService.UpdateMatchDateAsync(It.IsAny<int>(), It.IsAny<Match>()));
+
+        Assert.That(ex.Message, Is.EqualTo("Match is started or has already finished"));
+
+        _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
+    }
+
+    [Test]
+    public async Task UpdateMatchDate_StartDateExceedsEndDate_ThrowsException()
+    {
+        _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new Match
+        {
+            Status = Status.NotStarted
+        });
+
+        var ex = Assert.ThrowsAsync<BadRequestException>(() =>
+            _matchService.UpdateMatchDateAsync(It.IsAny<int>(), new Match
+            {
+                StartDate = DateTime.MaxValue,
+                EndDate = DateTime.MinValue
+            }));
+
+        Assert.That(ex.Message, Is.EqualTo("Match start date cannot exceed end date."));
+
+        _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
     }
 }

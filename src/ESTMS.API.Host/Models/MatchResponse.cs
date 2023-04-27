@@ -10,4 +10,5 @@ public class MatchResponse
     public Status Status { get; set; }
     public int RoundId { get; set; }
     public MatchWinnerResponse? Winner { get; set; }
+    public List<TeamResponse> Competitors { get; set; }
 }

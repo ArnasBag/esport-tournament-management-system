@@ -117,4 +117,27 @@ public class MatchService : IMatchService
 
         return match;
     }
+
+    public async Task<Match> UpdateMatchDateAsync(int id, Match updatedMatch)
+    {
+        var match = await _matchRepository.GetMatchByIdAsync(id) 
+            ?? throw new NotFoundException("Match with this id was not found.");
+
+        if (match.Status is Status.InProgress or Status.Done)
+            throw new BadRequestException("Match is started or has already finished");
+
+        if (updatedMatch.StartDate > updatedMatch.EndDate)
+            throw new BadRequestException("Match start date cannot exceed end date.");
+
+        match.StartDate = updatedMatch.StartDate;
+        match.EndDate = updatedMatch.EndDate;
+
+        return await _matchRepository.UpdateMatchAsync(match);
+    }
+
+    public async Task<Match> GetMatchByIdAsync(int id)
+    {
+        return await _matchRepository.GetMatchByIdAsync(id) ??
+               throw new NotFoundException("Match with this id doesn't exist.");
+    }
 }

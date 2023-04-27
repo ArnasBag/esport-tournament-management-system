@@ -58,6 +58,8 @@ public class UserProfile : Profile
         CreateMap<Match, MatchResponse>()
             .ForMember(dest => dest.RoundId, opt => opt.MapFrom(src => src.Round.Id));
 
+        CreateMap<UpdateMatchDateRequest, Match>();
+
         CreateMap<MatchWinner, MatchWinnerResponse>();
 
         CreateMap<Round, RoundResponse>()
