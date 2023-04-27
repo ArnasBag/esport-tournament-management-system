@@ -13,6 +13,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Tournament> Tournaments { get; set; }
     public DbSet<TournamentWinner> TournamentWinners { get; set; }
     public DbSet<TournamentManager> TournamentManagers { get; set; }
+    public DbSet<Round> Rounds { get; set; }
     public DbSet<Match> Matches { get; set; }
     public DbSet<MatchWinner> MatchWinners { get; set; }
     public DbSet<PlayerScore> PlayerScores { get; set; }
@@ -38,8 +39,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasQueryFilter(t => !t.Deleted);
         
         builder.Entity<Tournament>()
-            .HasMany(m => m.Matches)
+            .HasMany(m => m.Rounds)
             .WithOne(t => t.Tournament);
+
+        builder.Entity<Round>()
+            .HasMany(m => m.Matches)
+            .WithOne(r => r.Round);
 
         base.OnModelCreating(builder);
     }

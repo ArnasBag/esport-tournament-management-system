@@ -21,13 +21,17 @@ public class MatchRepository : IMatchRepository
             .ThenInclude(m => m.Players)
             .ThenInclude(p => p.ApplicationUser)
             .Include(m => m.Winner)
+            .Include(r => r.Round)
             .Where(m => m.Id == id)
             .SingleOrDefaultAsync();
     }
 
-    public async Task UpdateMatchAsync(Match match)
+    public async Task<Match> UpdateMatchAsync(Match match)
     {
         _context.Matches.Update(match);
+
         await _context.SaveChangesAsync();
+
+        return match;
     }
 }

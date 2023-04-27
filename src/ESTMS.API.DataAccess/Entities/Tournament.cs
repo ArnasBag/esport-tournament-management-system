@@ -10,8 +10,9 @@ public class Tournament
     public string? Description { get; set; }
     public Status Status { get; set; }
     public List<Team>? Teams { get; set; }
-    public List<Match>? Matches { get; set; }
+    public List<Round> Rounds { get; set; }
     public TournamentManager Manager { get; set; }
+    public int MaxTeamCount { get; set; }
 }
 
 public enum Status

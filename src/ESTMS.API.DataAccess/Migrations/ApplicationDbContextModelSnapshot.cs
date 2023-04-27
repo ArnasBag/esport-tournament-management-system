@@ -144,18 +144,18 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("RoundId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int>("TournamentId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TournamentId");
+                    b.HasIndex("RoundId");
 
                     b.ToTable("Matches");
                 });
@@ -257,6 +257,24 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.ToTable("PlayerScores");
                 });
 
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Round", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("TournamentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TournamentId");
+
+                    b.ToTable("Rounds");
+                });
+
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
                 {
                     b.Property<int>("Id")
@@ -322,6 +340,9 @@ namespace ESTMS.API.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ManagerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxTeamCount")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -573,13 +594,13 @@ namespace ESTMS.API.DataAccess.Migrations
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Match", b =>
                 {
-                    b.HasOne("ESTMS.API.DataAccess.Entities.Tournament", "Tournament")
+                    b.HasOne("ESTMS.API.DataAccess.Entities.Round", "Round")
                         .WithMany("Matches")
-                        .HasForeignKey("TournamentId")
+                        .HasForeignKey("RoundId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Tournament");
+                    b.Navigation("Round");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.MatchWinner", b =>
@@ -633,6 +654,17 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Navigation("Match");
 
                     b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Round", b =>
+                {
+                    b.HasOne("ESTMS.API.DataAccess.Entities.Tournament", "Tournament")
+                        .WithMany("Rounds")
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tournament");
                 });
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
@@ -792,6 +824,11 @@ namespace ESTMS.API.DataAccess.Migrations
                     b.Navigation("Scores");
                 });
 
+            modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Round", b =>
+                {
+                    b.Navigation("Matches");
+                });
+
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Team", b =>
                 {
                     b.Navigation("Players");
@@ -804,7 +841,7 @@ namespace ESTMS.API.DataAccess.Migrations
 
             modelBuilder.Entity("ESTMS.API.DataAccess.Entities.Tournament", b =>
                 {
-                    b.Navigation("Matches");
+                    b.Navigation("Rounds");
 
                     b.Navigation("Winner");
                 });
