@@ -12,12 +12,10 @@ public class MatchService : IMatchService
     private readonly IMmrCalculator _mmrCalculator;
     private readonly IPlayerRepository _playerRepository;
     private readonly ITournamentService _tournamentService;
-    private readonly ITeamService _teamService;
 
     public MatchService(IMatchRepository matchRepository,
         IPlayerScoreRepository playerScoreRepository,
         ITeamRepository teamRepository,
-        ITeamService teamService)
         IMmrCalculator mmrCalculator,
         IPlayerRepository playerRepository,
         ITournamentService tournamentService)
@@ -28,7 +26,6 @@ public class MatchService : IMatchService
         _mmrCalculator = mmrCalculator;
         _playerRepository = playerRepository;
         _tournamentService = tournamentService;
-        _teamService = teamService;
     }
 
     public Task GenerateMatchesAsync()
@@ -141,7 +138,7 @@ public class MatchService : IMatchService
 
     public async Task<Match> UpdateMatchDateAsync(int id, Match updatedMatch)
     {
-        var match = await _matchRepository.GetMatchByIdAsync(id) 
+        var match = await _matchRepository.GetMatchByIdAsync(id)
             ?? throw new NotFoundException("Match with this id was not found.");
 
         if (match.Status is Status.InProgress or Status.Done)
@@ -154,11 +151,5 @@ public class MatchService : IMatchService
         match.EndDate = updatedMatch.EndDate;
 
         return await _matchRepository.UpdateMatchAsync(match);
-    }
-
-    public async Task<Match> GetMatchByIdAsync(int id)
-    {
-        return await _matchRepository.GetMatchByIdAsync(id) ??
-               throw new NotFoundException("Match with this id doesn't exist.");
     }
 }

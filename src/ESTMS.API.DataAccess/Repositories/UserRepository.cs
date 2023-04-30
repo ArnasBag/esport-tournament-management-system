@@ -42,6 +42,7 @@ public class UserRepository : IUserRepository
             .ThenInclude(u => u.ReceivedInvitations)
             .ThenInclude(i => i.Sender)
             .Include(p => p.Scores)
+            .Include(p => p.Team)
             .SingleOrDefaultAsync(p => p.ApplicationUser.Id == userId);
     }
 

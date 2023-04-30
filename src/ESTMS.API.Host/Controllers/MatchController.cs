@@ -27,6 +27,14 @@ public class MatchController : ControllerBase
         return Ok(_mapper.Map<MatchResponse>(match));
     }
 
+    [HttpGet("{id}/player-scores")]
+    public async Task<IActionResult> GetMatchPlayerScores(int id)
+    {
+        var playerScores = await _matchService.GetMatchPlayerScores(id);
+
+        return Ok(_mapper.Map<List<PlayerScoreResponse>>(playerScores));
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateMatchStatus(int id, MatchStatusRequest request)
     {

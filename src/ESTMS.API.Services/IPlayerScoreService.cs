@@ -5,7 +5,7 @@ namespace ESTMS.API.Services;
 public interface IPlayerScoreService
 {
     Task<List<PlayerScore>> GetPlayerScoresByMatchIdAsync(int matchId);
-    Task<List<PlayerScore>> GetPlayerScoresByUserId(string userId);
+    Task<List<DailyPlayerScore>> GetPlayerScoresByUserId(string userId, DateTime from, DateTime to);
     Task<List<DailyPlayerScore>> GetPlayerScoresByTeamId(int teamId, DateTime from, DateTime to);
     Task<PlayerScore> CreatePlayerScoreAsync(string userId, int matchId, PlayerScore playerScore);
     Task<double> GetPlayerKdaAsync(string userId);

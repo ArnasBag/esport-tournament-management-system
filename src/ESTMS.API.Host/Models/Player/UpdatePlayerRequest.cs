@@ -2,7 +2,7 @@
 
 public class UpdatePlayerRequest
 {
-    public PlayersUserInfo UserInfo { get; set; }
-    public string PicturePath { get; set; }
-    public string AboutMeText { get; set; }
+    public PlayersUserInfo? UserInfo { get; set; }
+    public string? AboutMeText { get; set; }
+    public IFormFile? ProfilePicture { get; set; }
 }

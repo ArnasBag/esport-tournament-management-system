@@ -34,4 +34,13 @@ public class MatchRepository : IMatchRepository
 
         return match;
     }
+
+    public async Task<List<Match>> GetPlayerWonMatchesAsync(string id)
+    {
+        return await _context.Matches
+            .Include(m => m.Winner)
+            .ThenInclude(w => w.WinnerTeam)
+            .Where(m => m.Winner.WinnerTeam.Players.Any(p => p.ApplicationUser.Id == id))
+            .ToListAsync();
+    }
 }

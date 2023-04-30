@@ -6,4 +6,5 @@ public interface IMatchRepository
 {
     Task<Match> UpdateMatchAsync(Match match);
     Task<Match?> GetMatchByIdAsync(int id);
+    Task<List<Match>> GetPlayerWonMatchesAsync(string id);
 }

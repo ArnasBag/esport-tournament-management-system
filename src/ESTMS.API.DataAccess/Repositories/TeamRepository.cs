@@ -43,6 +43,7 @@ public class TeamRepository : ITeamRepository
             .Include(t => t.Players)
             .ThenInclude(p => p.ApplicationUser)
             .Include(t => t.Matches)
+            .ThenInclude(m => m.Winner)
             .Where(t => t.Id == id)
             .SingleOrDefaultAsync();
     }

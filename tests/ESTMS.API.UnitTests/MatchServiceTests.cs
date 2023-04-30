@@ -242,7 +242,6 @@ public class MatchServiceTests
         _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
         _playerScoreRepositoryMock.Verify(x => x.GetPlayerScoresByMatchIdAsync(It.IsAny<int>()), Times.Once);
         _teamRepositoryMock.Verify(x => x.GetTeamByIdAsync(It.IsAny<int>()), Times.Exactly(2));
-        _teamServiceMock.Verify(x => x.UpdateTeamPlayersMmrAsync(It.IsAny<Team>(), It.IsAny<Team>(), It.IsAny<int>()), Times.Once);
         _matchRepositoryMock.Verify(x => x.UpdateMatchAsync(It.IsAny<DataAccess.Entities.Match>()), Times.Once);
     }
 
@@ -375,7 +374,7 @@ public class MatchServiceTests
 
         _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(match);
 
-        _matchService.UpdateMatchDateAsync(It.IsAny<int>(), new Match
+        await _matchService.UpdateMatchDateAsync(It.IsAny<int>(), new Match
         {
             StartDate = DateTime.MinValue,
             EndDate = DateTime.MaxValue
@@ -386,7 +385,7 @@ public class MatchServiceTests
     }
 
     [Test]
-    public async Task UpdateMatchDate_MatchNotFound_ThrowsException()
+    public void UpdateMatchDate_MatchNotFound_ThrowsException()
     {
         _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Match));
 
@@ -399,7 +398,7 @@ public class MatchServiceTests
     }
 
     [Test]
-    public async Task UpdateMatchDate_MatchDone_ThrowsException()
+    public void UpdateMatchDate_MatchDone_ThrowsException()
     {
         _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new Match
         {
@@ -415,7 +414,7 @@ public class MatchServiceTests
     }
 
     [Test]
-    public async Task UpdateMatchDate_StartDateExceedsEndDate_ThrowsException()
+    public void UpdateMatchDate_StartDateExceedsEndDate_ThrowsException()
     {
         _matchRepositoryMock.Setup(x => x.GetMatchByIdAsync(It.IsAny<int>())).ReturnsAsync(new Match
         {

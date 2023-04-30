@@ -97,11 +97,44 @@ public class PlayerScoreService : IPlayerScoreService
         throw new NotImplementedException();
     }
 
-    public async Task<List<PlayerScore>> GetPlayerScoresByUserId(string userId)
+    public async Task<List<DailyPlayerScore>> GetPlayerScoresByUserId(string userId, DateTime from, DateTime to)
     {
         var playerScores = await _playerScoreRepository.GetPlayerScoresByUserId(userId);
 
-        return playerScores;
+        var filteredPlayerScores = playerScores
+            .Where(s => s.CreatedAt.Date >= from.Date && s.CreatedAt.Date <= to.Date)
+            .ToList();
+
+        var playerDailyScores = filteredPlayerScores
+            .GroupBy(s => s.CreatedAt.Date)
+            .Select(g => new DailyPlayerScore 
+            {
+                Date = g.Key,
+                TotalKills = g.Sum(s => s.Kills),
+                TotalAssists = g.Sum(s => s.Assists),
+                TotalDeaths = g.Sum(s => s.Deaths),
+            })
+            .ToList();
+
+        var allDates = Enumerable.Range(0, (to - from).Days + 1)
+            .Select(i => from.AddDays(i).Date)
+            .ToList();
+
+        var result = allDates
+            .GroupJoin(
+                playerDailyScores,
+                d => d,
+                c => c.Date,
+                (d, c) => new DailyPlayerScore
+                {
+                    Date = d,
+                    TotalKills = c.Sum(x => x.TotalKills),
+                    TotalDeaths = c.Sum(x => x.TotalDeaths),
+                    TotalAssists = c.Sum(x => x.TotalAssists)
+                })
+            .ToList();
+
+        return result;
     }
 
     public async Task<List<DailyPlayerScore>> GetPlayerScoresByTeamId(int teamId, DateTime from, DateTime to)
@@ -113,11 +146,6 @@ public class PlayerScoreService : IPlayerScoreService
             .SelectMany(player => player.Scores)
             .Where(s => s.CreatedAt.Date >= from.Date && s.CreatedAt.Date <= to.Date)
             .ToList();
-
-        if (!playerScores.Any())
-        {
-            throw new BadRequestException("This team does not have any scores yet.");
-        }
 
         var playerDailyScores = playerScores
             .GroupBy(s => s.CreatedAt.Date)

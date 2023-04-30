@@ -37,6 +37,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<Team>()
             .HasQueryFilter(t => !t.Deleted);
+
+        builder.Entity<MatchWinner>()
+            .Ignore(mw => mw.Match);
         
         builder.Entity<Tournament>()
             .HasMany(m => m.Rounds)

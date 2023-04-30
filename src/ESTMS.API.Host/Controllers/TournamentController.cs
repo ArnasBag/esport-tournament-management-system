@@ -12,12 +12,15 @@ namespace ESTMS.API.Host.Controllers;
 public class TournamentController : ControllerBase
 {
     private readonly ITournamentService _tournamentService;
+    private readonly IRoundService _roundService;
     private readonly IMapper _mapper;
 
-    public TournamentController(ITournamentService tournamentService, IMapper mapper)
+    public TournamentController(ITournamentService tournamentService, 
+        IMapper mapper, IRoundService roundService)
     {
         _tournamentService = tournamentService;
         _mapper = mapper;
+        _roundService = roundService;
     }
 
     [HttpGet]
@@ -34,6 +37,14 @@ public class TournamentController : ControllerBase
         var tournaments = await _tournamentService.GetTournamentByIdAsync(id);
 
         return Ok(_mapper.Map<TournamentResponse>(tournaments));
+    }
+
+    [HttpGet("{id}/rounds")]
+    public async Task<IActionResult> GetTournamentRounds(int id)
+    {
+        var rounds = await _roundService.GetTournamentRounds(id);
+
+        return Ok(_mapper.Map<List<RoundResponse>>(rounds));
     }
 
     [HttpPost]
