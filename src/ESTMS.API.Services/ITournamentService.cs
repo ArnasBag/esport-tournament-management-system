@@ -11,4 +11,8 @@ public interface ITournamentService
     Task<Tournament> UpdateTournamentWinnerAsync(int id, int updatedWinner);
     Task<Tournament> UpdateTournamentStatusAsync(int id, Status updatedStatus);
     Task<Tournament> GetTournamentByTournamentManagerId(string id);
+    Task JoinTournamentAsync(int tournamentId, int teamId);
+    Task LeaveTournamentAsync(int tournamentId, int teamId);
+    Task<Tournament> CreateBracket(int id);
+    Task<Tournament> UpdateTournamentBracket(int roundId);
 }

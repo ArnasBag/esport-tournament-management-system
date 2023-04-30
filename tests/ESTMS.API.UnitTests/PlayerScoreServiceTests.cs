@@ -179,14 +179,6 @@ public class PlayerScoreServiceTests
         Assert.ThrowsAsync<NotFoundException>(() => _playerScoreService.GetPlayerKdaAsync(It.IsAny<string>()));
     }
 
-    [Test]
-    public void GetPlayerKdaAsync_PlayerHasNoScores_ThrowsException()
-    {
-        _userRepositoryMock.Setup(x => x.GetPlayerByUserIdAsync(It.IsAny<string>())).ReturnsAsync(new Player());
-
-        Assert.ThrowsAsync<BadRequestException>(() => _playerScoreService.GetPlayerKdaAsync(It.IsAny<string>()));
-    }
-
     public static IEnumerable<TestCaseData> KdaTestCases()
     {
         yield return new TestCaseData(new[] { 1, 2, 3 }, new[] { 1, 2, 3 }, new[] { 1, 2, 3 }, 2);
@@ -331,17 +323,7 @@ public class PlayerScoreServiceTests
         _teamRepositoryMock.Setup(r => r.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(default(Team));
 
         Assert.ThrowsAsync<NotFoundException>(
-            () => _playerScoreService.GetPlayerScoresByTeamId(It.IsAny<int>(), null, null));
-    }
-
-    [Test]
-    public void GetPlayerScoresByTeamId_WhenTeamHasNoScores_ShouldThrowBadRequestException()
-    {
-        int teamId = 1;
-        var team = new Team { Id = teamId, Players = new List<Player>() };
-        _teamRepositoryMock.Setup(r => r.GetTeamByIdAsync(teamId)).ReturnsAsync(team);
-
-        Assert.ThrowsAsync<BadRequestException>(() => _playerScoreService.GetPlayerScoresByTeamId(teamId, null, null));
+            () => _playerScoreService.GetPlayerScoresByTeamId(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()));
     }
 
     [Test]

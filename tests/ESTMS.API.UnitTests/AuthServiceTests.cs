@@ -1,4 +1,4 @@
-﻿using ESTMS.API.Core.Exceptions;
+using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.DataAccess.Settings;
@@ -33,10 +33,11 @@ public class AuthServiceTests
         _userRepositoryMock = new Mock<IUserRepository>();
         _mmrSettingsMock = new Mock<IOptionsMonitor<MmrSettings>>();
 
-        _mmrSettingsMock.Setup(x => x.CurrentValue.IntialRating).Returns(1000);
+        var options = new Mock<IOptionsMonitor<MmrSettings>>();
+        options.Setup(x => x.CurrentValue).Returns(new MmrSettings());
 
-        _authService = new AuthService(_userManagerMock.Object, _tokenProviderMock.Object, 
-            _userRepositoryMock.Object, _mmrSettingsMock.Object);
+        _authService = new AuthService(_userManagerMock.Object, _tokenProviderMock.Object, _userRepositoryMock.Object,
+            options.Object);
     }
 
     [Test]
@@ -77,7 +78,7 @@ public class AuthServiceTests
     public async Task RegisterUserAsync_CorrectInput_AllDependenciesCalled()
     {
         _userManagerMock.Setup(x => x.CreateAsync(
-            It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+                It.IsAny<ApplicationUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
 
         await _authService.RegisterUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>());
@@ -90,9 +91,10 @@ public class AuthServiceTests
     public void RegisterUserAsync_UserAlreadyExists_ThrowsException()
     {
         _userManagerMock.Setup(x => x.CreateAsync(
-            It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+                It.IsAny<ApplicationUser>(), It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Failed());
 
-        Assert.ThrowsAsync<BadRequestException>(() => _authService.RegisterUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+        Assert.ThrowsAsync<BadRequestException>(() =>
+            _authService.RegisterUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
     }
 }

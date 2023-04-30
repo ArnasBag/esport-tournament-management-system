@@ -2,9 +2,10 @@
 {
     public class PlayerScoreResponse
     {
-        public int TotalKills { get; set; }
-        public int TotalDeaths { get; set; }
-        public int TotalAssists { get; set; }
-        public DateTime Date { get; set; }
+        public int Kills { get; set; }
+        public int Deaths { get; set; }
+        public int Assists { get; set; }
+        public MatchResponse Match { get; set; }
+        public UserResponse Player { get; set; }
     }
 }

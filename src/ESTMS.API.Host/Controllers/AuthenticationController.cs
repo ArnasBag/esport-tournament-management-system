@@ -30,7 +30,6 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        Thread.Sleep(500);
         var accessToken = await _authService.LoginUserAsync(request.Email, request.Password);
 
         return Ok(accessToken);

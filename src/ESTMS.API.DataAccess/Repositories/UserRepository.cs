@@ -42,6 +42,7 @@ public class UserRepository : IUserRepository
             .ThenInclude(u => u.ReceivedInvitations)
             .ThenInclude(i => i.Sender)
             .Include(p => p.Scores)
+            .Include(p => p.Team)
             .SingleOrDefaultAsync(p => p.ApplicationUser.Id == userId);
     }
 
@@ -58,6 +59,7 @@ public class UserRepository : IUserRepository
         return await _context.TournamentManagers
             .Include(t => t.ApplicationUser)
             .Include(t => t.Tournaments)
+            .ThenInclude(t => t.Teams)
             .SingleOrDefaultAsync(t => t.ApplicationUser.Id == userId);
     }
 }

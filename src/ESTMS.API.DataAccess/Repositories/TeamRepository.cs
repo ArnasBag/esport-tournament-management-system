@@ -34,13 +34,16 @@ public class TeamRepository : ITeamRepository
 
     public async Task<Team?> GetTeamByIdAsync(int id)
     {
-        return await _context.Teams.Include(t => t.TeamManager)
+        return await _context.Teams
+            .Include(t => t.TeamManager)
             .ThenInclude(m => m.ApplicationUser)
             .Include(t => t.Players)
             .ThenInclude(p => p.Scores)
+            .ThenInclude(m => m.Match)
             .Include(t => t.Players)
             .ThenInclude(p => p.ApplicationUser)
             .Include(t => t.Matches)
+            .ThenInclude(m => m.Winner)
             .Where(t => t.Id == id)
             .SingleOrDefaultAsync();
     }

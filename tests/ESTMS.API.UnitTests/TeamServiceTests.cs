@@ -74,7 +74,21 @@ public class TeamServiceTests
     [Test]
     public async Task DeactivateTeamAsync_ValidData_Ok()
     {
-        _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team());
+        _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team
+        {
+            Id = 1,
+            Players = new List<Player>
+            {
+                new Player
+                {
+                    Team = new Team{Id = 1}
+                },
+                new Player
+                {
+                    Team = new Team{Id = 1}
+                }
+            }
+        });
 
         await _teamService.DeactivateTeamAsync(It.IsAny<int>());
 

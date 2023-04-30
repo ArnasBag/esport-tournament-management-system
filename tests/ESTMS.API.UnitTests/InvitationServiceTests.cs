@@ -307,7 +307,22 @@ public class InvitationServiceTests
         });
         _userIdProviderMock.Setup(x => x.UserId).Returns(teamManagerUserId);
         _userRepositoryMock.Setup(x => x.GetUserByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
-        _userRepositoryMock.Setup(x => x.GetPlayerByUserIdAsync(It.IsAny<string>())).ReturnsAsync(new Player());
+        _userRepositoryMock.Setup(x => x.GetPlayerByUserIdAsync(It.IsAny<string>())).ReturnsAsync(new Player
+        {
+            ApplicationUser = new ApplicationUser
+            {
+                ReceivedInvitations = new()
+                {
+                    new Invitation
+                    {
+                        Sender = new ApplicationUser
+                        {
+                            Id = "aa"
+                        }
+                    }
+                }
+            }
+        });
 
         await _invitationService.CreateInviteForPlayerAsync(It.IsAny<string>(), It.IsAny<int>());
 

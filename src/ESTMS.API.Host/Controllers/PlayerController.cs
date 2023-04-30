@@ -44,7 +44,7 @@ public class PlayerController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdatePlayer(string id, UpdatePlayerRequest request)
+    public async Task<IActionResult> UpdatePlayer(string id, [FromForm] UpdatePlayerRequest request)
     {
         //TODO
         // Auto mapper has problems mapping to inherit class properties
@@ -55,12 +55,13 @@ public class PlayerController : ControllerBase
             {
                 UserName = request.UserInfo.Username,
                 NormalizedUserName = request.UserInfo.Username.ToUpper(),
+                FirstName = request.UserInfo.FirstName,
+                LastName = request.UserInfo.LastName
             },
-            PicturePath = request.PicturePath,
             AboutMeText = request.AboutMeText,
         };
 
-        var player = await _playerService.UpdatePlayerAsync(id, updatedPlayer);
+        var player = await _playerService.UpdatePlayerAsync(id, updatedPlayer, request.ProfilePicture);
 
         return Ok(_mapper.Map<PlayerResponse>(player));
     }
@@ -92,11 +93,12 @@ public class PlayerController : ControllerBase
     }
 
     [HttpGet("{id}/player-scores")]
-    public async Task<IActionResult> GetPlayerScores(string id)
+    public async Task<IActionResult> GetPlayerScores(string id, [FromQuery] DateFilterQueryParams dateFilterQueryParams)
     {
-        var playerScores = await _playerScoreService.GetPlayerScoresByUserId(id);
+        var playerScores = await _playerScoreService.GetPlayerScoresByUserId(id, 
+            dateFilterQueryParams.From, dateFilterQueryParams.To);
 
-        return Ok(_mapper.Map<List<PlayerScoreResponse>>(playerScores));
+        return Ok(playerScores);
     }
 
     [HttpGet("{id}/kda")]
@@ -105,5 +107,13 @@ public class PlayerController : ControllerBase
         var kda = await _playerScoreService.GetPlayerKdaAsync(id);
 
         return Ok(new KdaResponse { Kda = kda});
+    }
+
+    [HttpGet("{id}/matches")]
+    public async Task<IActionResult> GetPlayerMatches(string id)
+    {
+        var matches = await _playerService.GetPlayerWonMatches(id);
+
+        return Ok(_mapper.Map<List<MatchResponse>>(matches));
     }
 }

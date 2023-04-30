@@ -12,12 +12,15 @@ namespace ESTMS.API.Host.Controllers;
 public class TournamentController : ControllerBase
 {
     private readonly ITournamentService _tournamentService;
+    private readonly IRoundService _roundService;
     private readonly IMapper _mapper;
 
-    public TournamentController(ITournamentService tournamentService, IMapper mapper)
+    public TournamentController(ITournamentService tournamentService, 
+        IMapper mapper, IRoundService roundService)
     {
         _tournamentService = tournamentService;
         _mapper = mapper;
+        _roundService = roundService;
     }
 
     [HttpGet]
@@ -34,6 +37,14 @@ public class TournamentController : ControllerBase
         var tournaments = await _tournamentService.GetTournamentByIdAsync(id);
 
         return Ok(_mapper.Map<TournamentResponse>(tournaments));
+    }
+
+    [HttpGet("{id}/rounds")]
+    public async Task<IActionResult> GetTournamentRounds(int id)
+    {
+        var rounds = await _roundService.GetTournamentRounds(id);
+
+        return Ok(_mapper.Map<List<RoundResponse>>(rounds));
     }
 
     [HttpPost]
@@ -79,6 +90,22 @@ public class TournamentController : ControllerBase
     [HttpPut("{id}/bracket")]
     public async Task<IActionResult> CreateMatches(int id)
     {
-        return Ok(Task.FromResult(Empty));
+        var tournament = await _tournamentService.CreateBracket(id);
+
+        return Ok(_mapper.Map<TournamentResponse>(tournament));
+    }
+
+    [HttpPost("{id}/tournament-teams")]
+    public async Task<IActionResult> JoinTournament(int id, JoinTournamentRequest request)
+    {
+        await _tournamentService.JoinTournamentAsync(id, request.TeamId);
+        return Ok();
+    }
+
+    [HttpDelete("{id}/tournament-teams")]
+    public async Task<IActionResult> LeaveTournament(int id, LeaveTournamentRequest request)
+    {
+        await _tournamentService.LeaveTournamentAsync(id, request.TeamId);
+        return Ok();
     }
 }
