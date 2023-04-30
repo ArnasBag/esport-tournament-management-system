@@ -5,10 +5,10 @@ namespace ESTMS.API.Host.Capabilities
 {
     public static class StartupDatabase
     {
-        public static IServiceCollection ConfigureDatabase(this IServiceCollection services)
+        public static IServiceCollection ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             return services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql("Host=localhost;Port=5432;Database=estms;Username=estms;Password=estms",
+                options.UseNpgsql(configuration.GetConnectionString("AZURE_POSTGRESQL_CONNECTIONSTRING"),
                     options => options.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
         }
     }

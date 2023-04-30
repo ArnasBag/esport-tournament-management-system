@@ -16,7 +16,7 @@ builder.Services
     .AddSwaggerGen(options => options.UseInlineDefinitionsForEnums())
     .ConfigureAuthentication(builder.Configuration)
     .ConfigureAuthorization()
-    .ConfigureDatabase()
+    .ConfigureDatabase(builder.Configuration)
     .ConfigureInjection(builder.Configuration)
     .ConfigureCors()
     .ConfigureOptions(builder.Configuration);
