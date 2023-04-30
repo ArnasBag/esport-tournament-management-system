@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using ESTMS.API.DataAccess.Data;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.DataAccess.Settings;
 using ESTMS.API.Host.Profiles;
@@ -40,7 +41,9 @@ namespace ESTMS.API.Host.Capabilities
                 .AddTransient<ITournamentRepository, TournamentRepository>()
                 .AddTransient<ITournamentManagerRepository, TournamentManagerRepository>()
                 .AddHttpContextAccessor()
-                .AddAutoMapper(typeof(UserProfile).Assembly);
+                .AddAutoMapper(typeof(UserProfile).Assembly)
+
+                .AddScoped<ApplicationDbSeeder>();      
         }
 
         public static IServiceCollection ConfigureOptions(this IServiceCollection services, 

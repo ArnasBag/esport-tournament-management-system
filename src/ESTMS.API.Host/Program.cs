@@ -1,3 +1,4 @@
+using ESTMS.API.DataAccess.Data;
 using ESTMS.API.Host.Capabilities;
 using ESTMS.API.Host.Middleware;
 using System.Text.Json.Serialization;
@@ -23,6 +24,8 @@ builder.Services
 
 var app = builder.Build();
 
+await SeedData();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -38,3 +41,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+async Task SeedData()
+{
+    using var scope = app.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<ApplicationDbSeeder>();
+    await seeder.SeedAsync();
+}

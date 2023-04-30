@@ -56,7 +56,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}/role")]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> ChangeUserRole(string id, [FromBody] ChangeUserRoleRequest role)
     {
         await _userService.ChangeUserRoleAsync(id, role.Role);
