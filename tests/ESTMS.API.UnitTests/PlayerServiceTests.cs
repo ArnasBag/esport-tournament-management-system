@@ -13,12 +13,16 @@ public class PlayerServiceTests
     private IPlayerService _playerService;
 
     private Mock<IPlayerRepository> _playerRepositoryMock;
+    private Mock<IMatchRepository> _matchRepositoryMock;
+    private Mock<IFileUploader> _fileUploaderMock;
 
     [SetUp]
     public void Setup()
     {
         _playerRepositoryMock = new Mock<IPlayerRepository>();
-        _playerService = new PlayerService(_playerRepositoryMock.Object);
+        _matchRepositoryMock = new Mock<IMatchRepository>();
+        _fileUploaderMock = new Mock<IFileUploader>();
+        _playerService = new PlayerService(_playerRepositoryMock.Object, _fileUploaderMock.Object, _matchRepositoryMock.Object);
     }
 
     [Test]

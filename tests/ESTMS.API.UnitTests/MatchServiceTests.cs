@@ -60,7 +60,7 @@ public class MatchServiceTests
 
         var ex = Assert.ThrowsAsync<NotFoundException>(() => _matchService.GetMatchByIdAsync(It.IsAny<int>()));
 
-        Assert.That(ex.Message, Is.EqualTo("Match with this id doesn't exist."));
+        Assert.That(ex.Message, Is.EqualTo("Match with this id was not found."));
 
         _matchRepositoryMock.Verify(x => x.GetMatchByIdAsync(It.IsAny<int>()), Times.Once);
     }
