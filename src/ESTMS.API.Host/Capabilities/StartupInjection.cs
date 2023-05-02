@@ -3,7 +3,13 @@ using ESTMS.API.DataAccess.Data;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.DataAccess.Settings;
 using ESTMS.API.Host.Profiles;
-using ESTMS.API.Services;
+using ESTMS.API.Services.Auth;
+using ESTMS.API.Services.Files;
+using ESTMS.API.Services.Matches;
+using ESTMS.API.Services.Players;
+using ESTMS.API.Services.Teams;
+using ESTMS.API.Services.Tournaments;
+using ESTMS.API.Services.Users;
 
 namespace ESTMS.API.Host.Capabilities
 {
