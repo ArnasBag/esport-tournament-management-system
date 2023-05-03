@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using ESTMS.API.Host.Models;
-using ESTMS.API.Services;
+using ESTMS.API.Host.Models.Teams;
+using ESTMS.API.Services.Teams;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;

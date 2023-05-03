@@ -2,7 +2,7 @@ using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.DataAccess.Settings;
-using ESTMS.API.Services;
+using ESTMS.API.Services.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;

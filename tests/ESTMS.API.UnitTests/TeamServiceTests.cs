@@ -1,7 +1,10 @@
 ﻿using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
-using ESTMS.API.Services;
+using ESTMS.API.Services.Auth;
+using ESTMS.API.Services.Files;
+using ESTMS.API.Services.Matches;
+using ESTMS.API.Services.Teams;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
@@ -16,6 +19,7 @@ public class TeamServiceTests
     private Mock<IFileUploader> _fileUploaderMock;
     private Mock<IMmrCalculator> _mmrCalculatorMock;
     private Mock<IPlayerRepository> _playerRepositoryMock;
+    private Mock<IFormFile> _fileMock;
 
     private ITeamService _teamService;
 
@@ -28,6 +32,7 @@ public class TeamServiceTests
         _fileUploaderMock = new Mock<IFileUploader>();
         _mmrCalculatorMock = new Mock<IMmrCalculator>();
         _playerRepositoryMock = new Mock<IPlayerRepository>();
+        _fileMock = new Mock<IFormFile>();
 
         _teamService = new TeamService(_teamRepositoryMock.Object, _userRepositoryMock.Object, 
             _userIdProviderMock.Object, _fileUploaderMock.Object, _mmrCalculatorMock.Object, _playerRepositoryMock.Object);
@@ -45,14 +50,29 @@ public class TeamServiceTests
     }
 
     [Test]
+    public async Task UpdateTeamAsync_LogoIsNull_Ok()
+    {
+        _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team());
+
+        await _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team(), null);
+
+        _teamRepositoryMock.Verify(x => x.GetTeamByIdAsync(It.IsAny<int>()), Times.Once);
+        _teamRepositoryMock.Verify(x => x.UpdateTeamAsync(It.IsAny<Team>()), Times.Once);
+        _fileUploaderMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+        _fileUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<IFormFile>()), Times.Never);
+    }
+
+    [Test]
     public async Task UpdateTeamAsync_ValidData_Ok()
     {
         _teamRepositoryMock.Setup(x => x.GetTeamByIdAsync(It.IsAny<int>())).ReturnsAsync(new Team());
 
-        await _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team(), It.IsAny<IFormFile>());
+        await _teamService.UpdateTeamAsync(It.IsAny<int>(), new Team(), _fileMock.Object);
 
         _teamRepositoryMock.Verify(x => x.GetTeamByIdAsync(It.IsAny<int>()), Times.Once);
         _teamRepositoryMock.Verify(x => x.UpdateTeamAsync(It.IsAny<Team>()), Times.Once);
+        _fileUploaderMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Once);
+        _fileUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<IFormFile>()), Times.Once);
     }
 
     [Test]
@@ -203,5 +223,23 @@ public class TeamServiceTests
 
         Assert.That(winner.Players.Single().Mmr, Is.EqualTo(1025));
         Assert.That(loser.Players.Single().Mmr, Is.EqualTo(925));
+    }
+
+    [Test]
+    public void GetTeamByTeamManagerId_TeamNotFound_ThrowsException()
+    {
+        _teamRepositoryMock.Setup(x => x.GetTeamByTeamManagerUserId(It.IsAny<string>())).ReturnsAsync(default(Team));
+
+        Assert.ThrowsAsync<NotFoundException>(() => _teamService.GetTeamByTeamManagerId(It.IsAny<string>()));
+    }
+
+    [Test]
+    public async Task GetTeamByTeamManagerId_ValidData_Ok()
+    {
+        _teamRepositoryMock.Setup(x => x.GetTeamByTeamManagerUserId(It.IsAny<string>())).ReturnsAsync(new Team());
+
+        await _teamService.GetTeamByTeamManagerId(It.IsAny<string>());
+
+        _teamRepositoryMock.Verify(x => x.GetTeamByTeamManagerUserId(It.IsAny<string>()), Times.Once);
     }
 }

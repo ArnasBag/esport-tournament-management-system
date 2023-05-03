@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using ESTMS.API.DataAccess.Entities;
-using ESTMS.API.Host.Models;
+using ESTMS.API.Host.Models.Matches;
 using ESTMS.API.Host.Models.Player;
+using ESTMS.API.Host.Models.Players;
+using ESTMS.API.Host.Models.Teams;
 using ESTMS.API.Host.Models.Tournament;
-using TeamResponse = ESTMS.API.Host.Models.TeamResponse;
+using ESTMS.API.Host.Models.Tournaments;
+using ESTMS.API.Host.Models.Users;
+using TeamResponse = ESTMS.API.Host.Models.Teams.TeamResponse;
 
 
 namespace ESTMS.API.Host.Profiles;

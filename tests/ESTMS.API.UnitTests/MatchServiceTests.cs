@@ -2,7 +2,8 @@
 using ESTMS.API.Core.Exceptions;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
-using ESTMS.API.Services;
+using ESTMS.API.Services.Matches;
+using ESTMS.API.Services.Tournaments;
 using Moq;
 using NUnit.Framework;
 using Match = ESTMS.API.DataAccess.Entities.Match;

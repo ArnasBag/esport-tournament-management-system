@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using ESTMS.API.DataAccess.Entities;
-using ESTMS.API.Host.Models;
 using ESTMS.API.Host.Models.Tournament;
-using ESTMS.API.Services;
+using ESTMS.API.Host.Models.Tournaments;
+using ESTMS.API.Services.Tournaments;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;

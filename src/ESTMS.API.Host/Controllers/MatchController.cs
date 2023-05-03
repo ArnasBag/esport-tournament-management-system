@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using ESTMS.API.DataAccess.Entities;
-using ESTMS.API.Host.Models;
-using ESTMS.API.Services;
+using ESTMS.API.Host.Models.Matches;
+using ESTMS.API.Host.Models.Players;
+using ESTMS.API.Services.Matches;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESTMS.API.Host.Controllers;

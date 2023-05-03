@@ -8,7 +8,8 @@
             {
                 options.AddPolicy("AllowVueFrontend", builder =>
                 {
-                    builder.WithOrigins("https://betterteamwins.netlify.app")
+                    builder.WithOrigins("*")
+                    //builder.WithOrigins("https://betterteamwins.netlify.app")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 });

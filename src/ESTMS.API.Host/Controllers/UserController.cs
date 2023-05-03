@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ESTMS.API.DataAccess.Constants;
-using ESTMS.API.Host.Models;
-using ESTMS.API.Services;
+using ESTMS.API.Host.Models.Users;
+using ESTMS.API.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
