@@ -177,11 +177,6 @@ public class TournamentService : ITournamentService
         var team = await _teamRepository.GetTeamByIdAsync(teamId)
             ?? throw new NotFoundException("Team with this id was not found.");
 
-        if (team.Players.Count < 5)
-        {
-            throw new BadRequestException("Your team must have 5 players before joing a tournament.");
-        }
-
         if (tournament.Status != Status.NotStarted)
         {
             throw new BadRequestException("Tournament has already started");
