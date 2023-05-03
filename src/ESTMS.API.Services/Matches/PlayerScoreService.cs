@@ -63,7 +63,7 @@ public class PlayerScoreService : IPlayerScoreService
 
         if (!player.Scores.Any())
         {
-            throw new BadRequestException("This player does not have any scores yet.");
+            return 0;
         }
 
         var kda = player.Scores.Average(ps => ps.Deaths == 0 ?
@@ -92,16 +92,12 @@ public class PlayerScoreService : IPlayerScoreService
         return kda;
     }
 
-    public Task<List<PlayerScore>> GetPlayerScoresByMatchIdAsync(int matchId)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<List<DailyPlayerScore>> GetPlayerScoresByUserId(string userId, DateTime from, DateTime to)
     {
-        var playerScores = await _playerScoreRepository.GetPlayerScoresByUserId(userId);
+        var player = await _userRepository.GetPlayerByUserIdAsync(userId)
+            ?? throw new NotFoundException("Player with this id was not found.");
 
-        var filteredPlayerScores = playerScores
+        var filteredPlayerScores = player.Scores
             .Where(s => s.CreatedAt.Date >= from.Date && s.CreatedAt.Date <= to.Date)
             .ToList();
 

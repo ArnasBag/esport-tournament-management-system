@@ -3,6 +3,7 @@ using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services.Files;
 using ESTMS.API.Services.Players;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
 
@@ -16,6 +17,7 @@ public class PlayerServiceTests
     private Mock<IPlayerRepository> _playerRepositoryMock;
     private Mock<IMatchRepository> _matchRepositoryMock;
     private Mock<IFileUploader> _fileUploaderMock;
+    private Mock<IFormFile> _fileMock;
 
     [SetUp]
     public void Setup()
@@ -23,6 +25,8 @@ public class PlayerServiceTests
         _playerRepositoryMock = new Mock<IPlayerRepository>();
         _matchRepositoryMock = new Mock<IMatchRepository>();
         _fileUploaderMock = new Mock<IFileUploader>();
+        _fileMock = new Mock<IFormFile>();
+
         _playerService = new PlayerService(_playerRepositoryMock.Object, _fileUploaderMock.Object, _matchRepositoryMock.Object);
     }
 
@@ -45,6 +49,14 @@ public class PlayerServiceTests
             await _playerService.GetPlayerByIdAsync(It.IsAny<string>()));
 
         Assert.That(result.Message, Is.EqualTo("Player with this id doesn't exist."));
+    }
+
+    [Test]
+    public async Task GetAllPlayersAsync_ValidData_Ok()
+    {
+        await _playerService.GetAllPlayersAsync();
+
+        _playerRepositoryMock.Verify(x => x.GetAllPlayersAsync(), Times.Once);
     }
 
     [Test]
@@ -112,5 +124,52 @@ public class PlayerServiceTests
         _playerRepositoryMock.Verify(x => x.UpdatePlayerAsync(player), Times.Exactly(2));
 
         Assert.That(actualPlayer.Points, Is.EqualTo(expectedPlayer.Points));
+    }
+
+    [Test]
+    public void UpdatePlayerAsync_PlayerNotFound_ThrowsException()
+    {
+        _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(It.IsAny<string>())).ReturnsAsync(default(Player));
+
+        Assert.ThrowsAsync<NotFoundException>(
+            () => _playerService.UpdatePlayerAsync(It.IsAny<string>(), It.IsAny<Player>(), It.IsAny<IFormFile>()));
+    }
+
+    [Test]
+    public async Task UpdatePlayerAsync_ProfilePictureIsNull_UpdatesPlayerOnly()
+    {
+        _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(It.IsAny<string>())).ReturnsAsync(new Player
+        {
+            ApplicationUser = new()
+        });
+
+        await _playerService.UpdatePlayerAsync(It.IsAny<string>(), new Player
+        {
+            ApplicationUser = new()
+        }, null);
+
+        _playerRepositoryMock.Verify(x => x.GetPlayerByIdAsync(It.IsAny<string>()), Times.Once);
+        _playerRepositoryMock.Verify(x => x.UpdatePlayerAsync(It.IsAny<Player>()), Times.Once);
+        _fileUploaderMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Never);
+        _fileUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<IFormFile>()), Times.Never);
+    }
+
+    [Test]
+    public async Task UpdatePlayerAsync_ProfilePictureIsNotNull_UpdatesPlayer()
+    {
+        _playerRepositoryMock.Setup(x => x.GetPlayerByIdAsync(It.IsAny<string>())).ReturnsAsync(new Player
+        {
+            ApplicationUser = new()
+        });
+
+        await _playerService.UpdatePlayerAsync(It.IsAny<string>(), new Player
+        {
+            ApplicationUser = new()
+        }, _fileMock.Object);
+
+        _playerRepositoryMock.Verify(x => x.GetPlayerByIdAsync(It.IsAny<string>()), Times.Once);
+        _playerRepositoryMock.Verify(x => x.UpdatePlayerAsync(It.IsAny<Player>()), Times.Once);
+        _fileUploaderMock.Verify(x => x.DeleteFileAsync(It.IsAny<string>()), Times.Once);
+        _fileUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<IFormFile>()), Times.Once);
     }
 }
