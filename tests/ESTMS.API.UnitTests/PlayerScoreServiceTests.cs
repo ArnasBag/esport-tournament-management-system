@@ -3,6 +3,7 @@ using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
 using ESTMS.API.Services;
+using ESTMS.API.Services.Matches;
 using Moq;
 using NUnit.Framework;
 using static System.Formats.Asn1.AsnWriter;
@@ -179,7 +180,7 @@ public class PlayerScoreServiceTests
         Assert.ThrowsAsync<NotFoundException>(() => _playerScoreService.GetPlayerKdaAsync(It.IsAny<string>()));
     }
 
-    public static IEnumerable<TestCaseData> KdaTestCases()
+    private static IEnumerable<TestCaseData> KdaTestCases()
     {
         yield return new TestCaseData(new[] { 1, 2, 3 }, new[] { 1, 2, 3 }, new[] { 1, 2, 3 }, 2);
         yield return new TestCaseData(new[] { 1, 2, 4 }, new[] { 2, 2, 3 }, new[] { 1, 2, 3 }, (3 + 2 + 7 / 3d) / 3d);
@@ -245,7 +246,7 @@ public class PlayerScoreServiceTests
         Assert.ThrowsAsync<BadRequestException>(() => _playerScoreService.GetTeamKdaAsync(It.IsAny<int>()));
     }
 
-    public static IEnumerable<TestCaseData> TeamKdaTestCases()
+    private static IEnumerable<TestCaseData> TeamKdaTestCases()
     {
         yield return new TestCaseData(new[] { 1, 2, 3 }, new[] { 1, 2, 3 }, new[] { 1, 2, 3 }, 2);
         yield return new TestCaseData(new[] { 1, 2, 4 }, new[] { 2, 2, 3 }, new[] { 1, 2, 3 }, (3 + 2 + 7 / 3d) / 3d);
@@ -315,6 +316,80 @@ public class PlayerScoreServiceTests
         var kda = await _playerScoreService.GetTeamKdaAsync(It.IsAny<int>());
 
         Assert.That(kda, Is.EqualTo(expectedKda));
+    }
+
+    [Test]
+    public void GetPlayerScoresByUserId_PlayerNotFound_ThrowsException()
+    {
+        _userRepositoryMock.Setup(r => r.GetPlayerByUserIdAsync(It.IsAny<string>())).ReturnsAsync(default(Player));
+
+        Assert.ThrowsAsync<NotFoundException>(
+            () => _playerScoreService.GetPlayerScoresByUserId(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()));
+    }
+
+    [Test]
+    public async Task GetPlayerScoresByUserId_WhenPlayerHasScores_ShouldReturnDailyPlayerScores()
+    {
+        var player = new Player
+        {
+            Scores = new List<PlayerScore>
+            {
+                new PlayerScore { Kills = 3, Assists = 1, Deaths = 2, CreatedAt = DateTime.Today.AddDays(-1) },
+                new PlayerScore { Kills = 2, Assists = 2, Deaths = 1, CreatedAt = DateTime.Today.AddDays(-1) },
+                new PlayerScore { Kills = 1, Assists = 0, Deaths = 2, CreatedAt = DateTime.Today },
+            }
+        };
+            
+        _userRepositoryMock.Setup(r => r.GetPlayerByUserIdAsync(It.IsAny<string>())).ReturnsAsync(player);
+
+        var from = DateTime.Today.AddDays(-1);
+        var to = DateTime.Today;
+        var result = await _playerScoreService.GetPlayerScoresByUserId("id", from, to);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Count, Is.EqualTo(2));
+
+        var firstDailyScore = result.First();
+        Assert.That(firstDailyScore.Date, Is.EqualTo(DateTime.Today.AddDays(-1)));
+        Assert.That(firstDailyScore.TotalKills, Is.EqualTo(5));
+        Assert.That(firstDailyScore.TotalAssists, Is.EqualTo(3));
+        Assert.That(firstDailyScore.TotalDeaths, Is.EqualTo(3));
+
+        var secondDailyScore = result.Last();
+        Assert.That(secondDailyScore.Date, Is.EqualTo(DateTime.Today));
+        Assert.That(secondDailyScore.TotalKills, Is.EqualTo(1));
+        Assert.That(secondDailyScore.TotalAssists, Is.EqualTo(0));
+        Assert.That(secondDailyScore.TotalDeaths, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task GetPlayerScoresByUserId_PlayerDoesNotHaveScoresInGivenPeriod_ShouldReturnDailyScoresAsZero()
+    {
+        var player = new Player
+        {
+            Scores = new List<PlayerScore>()
+        };
+
+        _userRepositoryMock.Setup(r => r.GetPlayerByUserIdAsync(It.IsAny<string>())).ReturnsAsync(player);
+
+        var from = DateTime.Today.AddDays(-1);
+        var to = DateTime.Today;
+        var result = await _playerScoreService.GetPlayerScoresByUserId("id", from, to);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Count, Is.EqualTo(2));
+
+        var firstDailyScore = result.First();
+        Assert.That(firstDailyScore.Date, Is.EqualTo(DateTime.Today.AddDays(-1)));
+        Assert.That(firstDailyScore.TotalKills, Is.EqualTo(0));
+        Assert.That(firstDailyScore.TotalAssists, Is.EqualTo(0));
+        Assert.That(firstDailyScore.TotalDeaths, Is.EqualTo(0));
+
+        var secondDailyScore = result.Last();
+        Assert.That(secondDailyScore.Date, Is.EqualTo(DateTime.Today));
+        Assert.That(secondDailyScore.TotalKills, Is.EqualTo(0));
+        Assert.That(secondDailyScore.TotalAssists, Is.EqualTo(0));
+        Assert.That(secondDailyScore.TotalDeaths, Is.EqualTo(0));
     }
 
     [Test]

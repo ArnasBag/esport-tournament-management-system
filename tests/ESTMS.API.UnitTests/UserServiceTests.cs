@@ -2,7 +2,7 @@
 using ESTMS.API.DataAccess.Constants;
 using ESTMS.API.DataAccess.Entities;
 using ESTMS.API.DataAccess.Repositories;
-using ESTMS.API.Services;
+using ESTMS.API.Services.Users;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
@@ -147,5 +147,79 @@ public class UserServiceTests
         await _userService.GetUserByIdAsync(It.IsAny<string>());
 
         _userRepositoryMock.Verify(x => x.GetUserByIdAsync(It.IsAny<string>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetUsersAsync_ValidData_Ok()
+    {
+        _userRepositoryMock.Setup(x => x.GetUsersAsync()).ReturnsAsync(new List<ApplicationUser>()
+        {
+            new(),
+            new()
+        });
+
+        _userManagerMock.Setup(x => x.GetRolesAsync(It.IsAny<ApplicationUser>()))
+            .ReturnsAsync(new List<string>() { "role" });
+
+        await _userService.GetUsersAsync();
+
+        _userRepositoryMock.Verify(x => x.GetUsersAsync(), Times.Once);
+        _userManagerMock.Verify(x => x.GetRolesAsync(It.IsAny<ApplicationUser>()), Times.Exactly(2));
+    }
+
+    [Test]
+    public async Task GetPlayerScoresByUserId_PlayerDoesNotHaveScoresInGivenPeriod_ShouldReturnDailyScoresAsZero()
+    {
+        _userRepositoryMock.Setup(x => x.GetUsersAsync()).ReturnsAsync(new List<ApplicationUser>());
+
+        var from = DateTime.Today.AddDays(-1);
+        var to = DateTime.Today;
+        var result = await _userService.GetDailyCreatedUsersAsync(from, to);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Count, Is.EqualTo(2));
+
+        var firstDailyScore = result.First();
+        Assert.That(firstDailyScore.Date, Is.EqualTo(DateTime.Today.AddDays(-1)));
+        Assert.That(firstDailyScore.TotalCreatedUsers, Is.EqualTo(0));
+
+        var secondDailyScore = result.Last();
+        Assert.That(secondDailyScore.Date, Is.EqualTo(DateTime.Today));
+        Assert.That(secondDailyScore.TotalCreatedUsers, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task GetDailyCreatedUsersAsync_SomeUsersCreated_ReturnsCorrectDailyCreatedUsersCount()
+    {
+        _userRepositoryMock.Setup(x => x.GetUsersAsync()).ReturnsAsync(new List<ApplicationUser>()
+        {
+            new()
+            {
+                CreatedAt =  DateTime.Today.AddDays(-1)
+            },
+            new()
+            {
+                CreatedAt =  DateTime.Today.AddDays(-1)
+            },
+            new()
+            {
+                CreatedAt =  DateTime.Today
+            }
+        });
+
+        var from = DateTime.Today.AddDays(-1);
+        var to = DateTime.Today;
+        var result = await _userService.GetDailyCreatedUsersAsync(from, to);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Count, Is.EqualTo(2));
+
+        var firstDailyScore = result.First();
+        Assert.That(firstDailyScore.Date, Is.EqualTo(DateTime.Today.AddDays(-1)));
+        Assert.That(firstDailyScore.TotalCreatedUsers, Is.EqualTo(2));
+
+        var secondDailyScore = result.Last();
+        Assert.That(secondDailyScore.Date, Is.EqualTo(DateTime.Today));
+        Assert.That(secondDailyScore.TotalCreatedUsers, Is.EqualTo(1));
     }
 }

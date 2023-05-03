@@ -1,5 +1,5 @@
-﻿using ESTMS.API.Host.Models;
-using ESTMS.API.Services;
+﻿using ESTMS.API.Host.Models.Auth;
+using ESTMS.API.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
