@@ -71,10 +71,16 @@ public class TournamentService : ITournamentService
         var tournament = await _tournamentRepository.GetTournamentByIdAsync(id)
                          ?? throw new NotFoundException("Tournament with this id doesn't exist.");
 
+        if (!IsTournamentPerfect(updatedTournament.MaxTeamCount))
+        {
+            throw new BadRequestException("Cannot update tournament because max team count is not a perfect power of 2.");
+        }
+
         tournament.Name = updatedTournament.Name;
         tournament.Description = updatedTournament.Description;
         tournament.StartDate = updatedTournament.StartDate;
         tournament.EndDate = updatedTournament.EndDate;
+        tournament.MaxTeamCount = updatedTournament.MaxTeamCount;
 
         return await _tournamentRepository.UpdateTournamentAsync(tournament);
     }
