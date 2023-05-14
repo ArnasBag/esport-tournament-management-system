@@ -103,7 +103,7 @@ public class TournamentServiceTests
     {
         _tournamentRepositoryMock.Setup(x => x.GetTournamentByIdAsync(It.IsAny<int>())).ReturnsAsync(new Tournament());
 
-        await _tournamentService.UpdateTournamentAsync(It.IsAny<int>(), new Tournament());
+        await _tournamentService.UpdateTournamentAsync(It.IsAny<int>(), new Tournament() { MaxTeamCount = 2});
 
         _tournamentRepositoryMock.Verify(x => x.GetTournamentByIdAsync(It.IsAny<int>()), Times.Once);
         _tournamentRepositoryMock.Verify(x => x.UpdateTournamentAsync(It.IsAny<Tournament>()), Times.Once);
