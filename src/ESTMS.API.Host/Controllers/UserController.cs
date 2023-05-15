@@ -10,7 +10,6 @@ namespace ESTMS.API.Host.Controllers;
 
 [ApiController]
 [Route("users")]
-[EnableCors("AllowVueFrontend")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;

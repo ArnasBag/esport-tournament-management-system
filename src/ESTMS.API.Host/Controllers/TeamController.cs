@@ -53,7 +53,7 @@ public class TeamController : ControllerBase
 
         var createdTeam = await _teamService.CreateTeamAsync(team, request.Logo);
 
-        return Created("/test", _mapper.Map<TeamResponse>(createdTeam));
+        return Created("/teams", _mapper.Map<TeamResponse>(createdTeam));
     }
 
     [HttpPut("{id}")]

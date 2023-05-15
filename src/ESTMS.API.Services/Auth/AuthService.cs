@@ -39,6 +39,11 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByEmailAsync(email)
             ?? throw new BadRequestException();
 
+        if (!user.Active)
+        {
+            throw new BadRequestException("Invalid login data");
+        }
+
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
 
         if (!isPasswordValid)

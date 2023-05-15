@@ -31,6 +31,14 @@ public class UserService : IUserService
         var user = await _userRepository.GetUserByIdAsync(id)
                    ?? throw new BadRequestException("User with this id doesn't exist.");
 
+        var player = await _userRepository.GetPlayerByUserIdAsync(id);
+
+        if(player != null)
+        {
+            player.Team = null;
+            await _playerRepository.UpdatePlayerAsync(player);
+        }
+
         user.Active = status;
 
         await _userRepository.UpdateUserAsync(user);
