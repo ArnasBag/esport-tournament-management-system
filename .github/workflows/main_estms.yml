@@ -52,12 +52,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: .net-app
-
+          
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'estmsapi'
+          app-name: 'estms'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8F3BFE9271AB405CAAC2295012FC35A4 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1B986CAAE7E44A0CBAAA6B7032BD6130 }}
           package: .
