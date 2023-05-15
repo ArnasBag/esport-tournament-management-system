@@ -24,7 +24,7 @@ builder.Services
 
 var app = builder.Build();
 
-//await SeedData();
+await SeedData();
 
 app.UseSwagger();
 app.UseSwaggerUI();
