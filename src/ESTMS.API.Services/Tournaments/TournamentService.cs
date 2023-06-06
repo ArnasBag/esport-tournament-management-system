@@ -304,7 +304,7 @@ public class TournamentService : ITournamentService
             return tournament;
         }
 
-        var winners = round.Matches.Select(match => match.Winner.WinnerTeamId).ToList();
+        var winners = round.Matches.OrderBy(match => match.Id).Select(match => match.Winner.WinnerTeamId).ToList();
 
         if (winners.Count == 1)
         {
